@@ -696,6 +696,65 @@ body{background-image:none}
 .semfacts div{padding:10px 4px;border-radius:14px;background:color-mix(in srgb,currentColor 8%,transparent);font-size:11px;color:var(--p-muted);text-align:center}
 .semfacts b{display:block;font-size:17px;color:var(--p-text);margin-bottom:1px;font-variant-numeric:tabular-nums}
 .sem .badge{margin-left:8px;height:22px;font-size:11px;vertical-align:middle}
+
+/* =========================================================
+   FIX SCROLL, FILTER MATA KULIAH
+   ========================================================= */
+.frame{grid-template-rows:minmax(0,1fr)}
+.rail{min-height:0}
+.main{grid-template-rows:auto minmax(0,1fr)}
+.stage{overscroll-behavior:contain}
+@media (max-height:720px) and (min-width:861px){
+  .logo{display:none}.rail{padding:12px 0 12px 18px}.rail-top,.rail-foot{gap:8px}
+  .rail-btn{width:36px;height:36px}.swatch{width:24px;height:24px;margin:5px 5px 0}.themes{padding:0 0 5px}.avatar{width:38px;height:38px}
+}
+@media (max-height:560px) and (min-width:861px){.rail{overflow-y:auto;scrollbar-width:none}.rail-btn::after{display:none}}
+.filter{display:flex;gap:10px;align-items:center;margin-bottom:var(--gap)}
+.filter .field{flex:1;min-width:0;margin:0}
+.filter .sel{max-width:48%;min-width:0}
+.clnk{display:flex;gap:6px;margin-top:6px}
+.clnk .chip-b{height:26px;padding:0 10px;font-size:11.5px}
+
+/* =========================================================
+   MUTABAAH & PENANDA EVENT SOLID
+   ========================================================= */
+.ev-biasa{--evbg:var(--a2);--evfg:var(--a-ink)}
+.ev-penting{--evbg:#e8a33d;--evfg:#1d1608}
+.ev-ujian{--evbg:#d64545;--evfg:#fff}
+.cd.ev{background:var(--evbg);color:var(--evfg)}
+.cd.ev:hover{background:var(--evbg);filter:brightness(1.08)}
+.cd.ev.sel{outline:2.5px solid var(--text);outline-offset:2px;animation:none}
+.cd.ev.today{box-shadow:inset 0 0 0 2px rgba(255,255,255,.7)}
+.cd.ev .mk i{background:currentColor}
+.lg.blk{width:12px;height:12px;border-radius:4px;background:var(--evbg)}
+.mbs{display:grid;gap:var(--gap)}
+.mb{padding:22px}
+.mb-top{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+.mb-h{display:flex;gap:14px;align-items:flex-start;min-width:0}
+.mb-ic{width:46px;height:46px;border-radius:15px;display:grid;place-items:center;flex:none;background:linear-gradient(140deg,var(--a1),var(--a2));color:var(--a-ink)}
+.mb-t{min-width:0}.mb-t h3{font-size:18px;letter-spacing:-.02em;display:flex;align-items:center;flex-wrap:wrap;gap:4px}
+.mb-t small{display:block;color:var(--p-muted);font-size:12.5px;line-height:1.6}
+.mb-pct{font-size:32px;font-weight:700;letter-spacing:-.03em;line-height:1}
+.mb-bar{height:10px;border-radius:99px;overflow:hidden;background:color-mix(in srgb,currentColor 12%,transparent);margin:16px 0 8px}
+.mb-bar i{display:block;height:100%;border-radius:inherit;background:linear-gradient(90deg,var(--a1),var(--a2));transition:width .7s var(--ease)}
+.mb-now{font-size:13px;font-weight:600;margin-bottom:14px}
+.mb-chips{display:flex;flex-wrap:wrap;gap:8px}
+.mb-chip{display:flex;align-items:center;gap:8px;padding:6px 14px 6px 6px;border-radius:99px;border:1.5px solid var(--panel-line);background:color-mix(in srgb,currentColor 6%,transparent);font-size:13px;font-weight:600;cursor:pointer;transition:background .25s,border-color .25s,box-shadow .25s}
+.mb-chip.on{border-color:var(--a1);box-shadow:0 0 0 3px color-mix(in srgb,var(--a1) 25%,transparent)}
+.mb-chip.done{background:color-mix(in srgb,var(--a2) 34%,transparent)}
+.mb-ck{width:26px;height:26px;border-radius:50%;display:grid;place-items:center;border:1.5px solid var(--panel-line);flex:none}
+.mb-chip.done .mb-ck{background:var(--a2);border-color:var(--a2);color:var(--a-ink)}
+.mb-ck svg{width:14px;height:14px;opacity:0}.mb-chip.done .mb-ck svg{opacity:1}
+.mb-chips.list{flex-direction:column}
+.mb-chips.list .mb-chip{border-radius:16px;padding:10px 14px 10px 10px;line-height:1.5;align-items:flex-start}
+.mb-detail{margin-top:14px;padding:14px 16px;border-radius:18px;background:color-mix(in srgb,currentColor 8%,transparent);font-size:13.5px;line-height:1.6}
+.mb-detail b{display:block;font-size:15px}.mb-detail p{color:var(--p-muted);margin:4px 0 12px}
+.mb-add{display:flex;gap:8px;margin-top:14px}
+.mb-add input{flex:1;min-width:0;height:42px;border-radius:99px;padding:0 16px;background:var(--m-field,var(--panel));border:1px solid var(--m-line,var(--panel-line));color:inherit}
+.seg{display:flex;gap:8px;margin-bottom:14px}
+@media (min-width:861px) and (max-height:860px){.logo{display:none}.rail-btn{width:38px;height:38px}}
+@media (min-width:861px) and (max-height:720px){.rail-btn{width:34px;height:34px}.rail{padding:12px 0 12px 18px}.rail-top,.rail-foot{gap:8px}.swatch{width:24px;height:24px;margin:5px 5px 0}.themes{padding:0 0 5px}.avatar{width:38px;height:38px}}
+@media (max-width:860px){.rail-btn{width:31px;height:31px}.rail-btn svg{width:18px;height:18px}.mb{padding:16px}.mb-pct{font-size:26px}}
 </style>
 </head>
 <body>
@@ -735,7 +794,6 @@ body{background-image:none}
         </button>
       </div>
     </header>
-    <div class="ann" id="ann"></div>
     <main class="stage" id="stage"><div class="view" id="view"></div></main>
   </div>
 
@@ -792,7 +850,10 @@ const ICON = {
   zout:'<circle cx="11" cy="11" r="7"/><path d="M21 21l-5-5M8 11h6"/>',
   trash:'<path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13"/>',
   todo:'<path d="M9 6h11M9 12h11M9 18h11M4 6l1 1 2-2M4 12l1 1 2-2M4 18l1 1 2-2"/>',
-  bell:'<path d="M6 16v-5a6 6 0 0 1 12 0v5l2 2H4zM10 21h4"/>'
+  bell:'<path d="M6 16v-5a6 6 0 0 1 12 0v5l2 2H4zM10 21h4"/>',
+  mutabaah:'<path d="M12 6c-2-2-5-2.5-8-2v14c3-.5 6 0 8 2 2-2 5-2.5 8-2V4c-3-.5-6 0-8 2zM12 6v14"/>',
+  quran:'<path d="M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2z"/><path d="M12 7l1.2 2.3 2.5.4-1.8 1.8.4 2.5L12 12.7 9.7 14l.4-2.5-1.8-1.8 2.5-.4z"/>',
+  hadist:'<path d="M7 4h11a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H7a3 3 0 0 1-3-3V7a3 3 0 0 1 3-3zM8 9h8M8 13h8"/>'
 };
 const ic = n => `<svg class="i" viewBox="0 0 24 24" aria-hidden="true">${ICON[n]}</svg>`;
 
@@ -879,7 +940,7 @@ function tween(el, to, dec = 0, from) {
 }
 
 /* ---------- Chrome: topbar, nav, tema ---------- */
-const NAV = [['home','Beranda'],['schedule','Jadwal'],['tasks','Tugas'],['todo','To-Do'],['grades','Nilai'],['notes','Catatan'],['room','My Room'],['latihan','Latihan'],['focus','Fokus']];
+const NAV = [['home','Beranda'],['schedule','Jadwal'],['tasks','Tugas'],['todo','To-Do'],['grades','Nilai'],['notes','Catatan'],['room','My Room'],['latihan','Latihan'],['mutabaah','Mutabaah'],['focus','Fokus']];
 const THEMES = [['malam','Malam','linear-gradient(135deg,#0D1B2A 45%,#415A77)'],['fajar','Fajar','linear-gradient(135deg,#F4F1DE 45%,#D4C4A8)'],['hutan','Hutan','linear-gradient(135deg,#415A77 45%,#778D7A)']];
 const THEME_COLOR = {malam:'#0D1B2A', fajar:'#D4C4A8', hutan:'#415A77'};
 
@@ -909,7 +970,7 @@ function chrome() {
     if (b.dataset.v === view) b.setAttribute('aria-current', 'page'); else b.removeAttribute('aria-current');
   });
   document.querySelectorAll('.swatch').forEach(b => b.setAttribute('aria-pressed', b.dataset.t === S.theme));
-  moveInd(); annRender();
+  moveInd();
 }
 function setTheme(t) {
   const apply = () => { S.theme = t; save(); chrome(); };
@@ -1072,8 +1133,8 @@ function calInner(dir = 0) {
   let g = '';
   for (let i = 0; i < cells; i++) {
     const d = new Date(cal.y, cal.m, 1 - off + i), ds = iso(d), {cl, tk, ev} = dayInfo(ds);
-    const mk = (cl.length ? `<i class="c" style="--c:${colorOf(cl[0].name)}"></i>` : '') + (tk.length ? `<i class="t" style="--c:${PRIO[tk[0].priority].c}"></i>` : '') + (ev.length ? '<i class="e"></i>' : '');
-    g += `<button class="cd ${HD.has(ds) ? 'hot' : ''} ${d.getMonth() === cal.m ? '' : 'out'} ${ds === td ? 'today' : ''} ${ds === cal.sel ? 'sel' : ''}" data-act="calsel" data-d="${ds}" aria-pressed="${ds === cal.sel}" aria-label="${d.toLocaleDateString('id-ID', {weekday:'long', day:'numeric', month:'long'})}: ${cl.length} kelas, ${tk.length} tugas, ${ev.length} kegiatan">${d.getDate()}${HD.has(ds) ? FLAME : ''}<span class="mk">${mk}</span></button>`;
+    const mk = (cl.length ? `<i class="c" style="--c:${colorOf(cl[0].name)}"></i>` : '') + (tk.length ? `<i class="t" style="--c:${PRIO[tk[0].priority].c}"></i>` : '') + '';
+    g += `<button class="cd ${evKind(ev, tk) ? 'ev ev-' + evKind(ev, tk) : ''} ${HD.has(ds) ? 'hot' : ''} ${d.getMonth() === cal.m ? '' : 'out'} ${ds === td ? 'today' : ''} ${ds === cal.sel ? 'sel' : ''}" data-act="calsel" data-d="${ds}" aria-pressed="${ds === cal.sel}" aria-label="${d.toLocaleDateString('id-ID', {weekday:'long', day:'numeric', month:'long'})}: ${cl.length} kelas, ${tk.length} tugas, ${ev.length} kegiatan">${d.getDate()}${HD.has(ds) ? FLAME : ''}<span class="mk">${mk}</span></button>`;
   }
   const title = new Date(cal.y, cal.m, 1).toLocaleDateString('id-ID', {month:'long', year:'numeric'});
   return `<div class="cal-h"><h3>${title}</h3><div class="cal-nav">
@@ -1082,7 +1143,7 @@ function calInner(dir = 0) {
       <button class="round-btn" data-act="calnav" data-n="1" aria-label="Bulan berikutnya">${ic('next')}</button></div></div>
     <div class="cal-wd">${WD.map(w => `<span>${w}</span>`).join('')}</div>
     <div class="cal-g ${dir > 0 ? 's-next' : dir < 0 ? 's-prev' : ''}">${g}</div>
-    <div class="leg"><span><i class="lg c" style="--c:var(--k1)"></i>Kelas</span><span><i class="lg t"></i>Tenggat tugas</span><span><i class="lg e"></i>Kegiatan</span><span>${FLAME}Ujian/penting H-3</span></div>`;
+    <div class="leg"><span><i class="lg c" style="--c:var(--k1)"></i>Kelas</span><span><i class="lg t"></i>Tenggat tugas</span><span><i class="lg blk ev-biasa"></i>Kegiatan</span><span><i class="lg blk ev-penting"></i>Penting</span><span><i class="lg blk ev-ujian"></i>Ujian</span><span>${FLAME}Ujian/penting H-3</span></div>`;
 }
 function agendaInner() {
   const ds = cal.sel, d = new Date(ds + 'T00:00:00'), {cl, tk, ev} = dayInfo(ds);
@@ -1183,7 +1244,7 @@ function setMode(m) {
 }
 
 /* ---------- Render ---------- */
-const VIEWS = {home:vHome, schedule:vSchedule, tasks:vTasks, grades:vGrades, notes:vNotes, room:vRoom, latihan:vLatihan, todo:vTodo, focus:vFocus};
+const VIEWS = {home:vHome, schedule:vSchedule, tasks:vTasks, grades:vGrades, notes:vNotes, room:vRoom, latihan:vLatihan, todo:vTodo, mutabaah:vMutabaah, focus:vFocus};
 function render({anim = false, keep = false} = {}) {
   const st = $('#stage').scrollTop; ri = 0;
   const v = $('#view'); v.className = 'view ' + (anim ? 'anim' : 'still');
@@ -1393,36 +1454,7 @@ if (!S.pdfs) S.pdfs = []; if (!S.quizzes) S.quizzes = [];
 let rdId = null, rd = null, rdZ = 1, rdTick = 0, QZ = null;
 const fmtSize = b => b > 1048576 ? (b / 1048576).toFixed(1) + ' MB' : Math.max(1, Math.round(b / 1024)) + ' KB';
 const courseDL = () => `<datalist id="cl">${[...new Set([...S.classes.map(c => c.name), ...S.courses.map(c => c.name)])].map(n => `<option value="${esc(n)}">`).join('')}</datalist>`;
-const pdfCard = f => `<article class="card glass fx pdf rise" style="${ix()};--c:${colorOf(f.course || f.name)}" data-s="${esc((f.name + ' ' + f.course).toLowerCase())}"><div class="pdf-ic">${ic('notes')}</div><b>${esc(f.name)}</b><small>${esc(f.course || 'Tanpa mata kuliah')} · ${fmtSize(f.size)}${f.page > 1 ? ' · hal ' + f.page : ''}</small>
-  <div class="acts"><button class="btn" data-act="room-open" data-id="${f.id}">Baca</button><button class="round-btn" data-act="room-edit" data-id="${f.id}" aria-label="Ubah">${ic('edit')}</button><button class="round-btn" data-act="room-del" data-id="${f.id}" aria-label="Hapus">${ic('trash')}</button></div></article>`;
 
-function vRoom() {
-  const f = rdId && S.pdfs.find(x => x.id === rdId);
-  if (f) return `<div class="page-head rise" style="${ix()}"><div><h2>${esc(f.name)}</h2><p>${esc(f.course || 'Tanpa mata kuliah')} · ${fmtSize(f.size)}</p></div><button class="btn ghost" data-act="room-close">${ic('prev')}Kembali</button></div>
-    <div class="card glass reader rise" style="${ix()}"><div class="rd-bar"><button class="round-btn" data-act="rd-zoom" data-z="-.15" aria-label="Perkecil">${ic('zout')}</button><span id="rd-z">${Math.round(rdZ * 100)}%</span><button class="round-btn" data-act="rd-zoom" data-z=".15" aria-label="Perbesar">${ic('zin')}</button>
-      <label class="rd-pg spacer">Hal <input id="rd-go" type="number" min="1" value="1"> / <b id="rd-n">–</b></label></div><div class="rd-pages" id="rd-pages"><div class="empty">Memuat PDF…</div></div></div>`;
-  rdId = null;
-  return head('My Room', 'Simpan PDF materi kuliahmu, lalu baca di sini. Halaman terakhir dibaca diingat otomatis.', `<button class="btn" data-act="room-pick">${ic('up')}Unggah PDF</button>`) +
-    `<input id="pdf-in" type="file" accept="application/pdf,.pdf" multiple hidden>
-    <div class="card glass drop rise" style="${ix()}" id="drop"><b>Seret PDF ke sini</b><span class="muted">atau ketuk Unggah PDF. File tersimpan di perangkat ini saja.</span></div>
-    <div class="field rise" style="${ix()}"><input id="room-q" placeholder="Cari PDF atau mata kuliah…" autocomplete="off"></div>
-    <div class="pdfs">${S.pdfs.map(pdfCard).join('') || '<div class="card glass empty">Belum ada PDF. Unggah materi pertamamu.</div>'}</div>`;
-}
-async function addPdfs(files) {
-  let n = 0;
-  for (const f of files) {
-    if (!/\.pdf$/i.test(f.name) && f.type !== 'application/pdf') continue;
-    const id = uid();
-    try { await idb.put({id, blob:f}); } catch { toast('Penyimpanan penuh atau ditolak browser'); break; }
-    S.pdfs.push({id, name:f.name.replace(/\.pdf$/i, ''), course:'', size:f.size, date:todayISO(), page:1}); n++;
-  }
-  if (n) { save(); render({keep:true}); toast(`${n} PDF ditambahkan`); }
-}
-function pdfEdit(id) {
-  const f = S.pdfs.find(x => x.id === id);
-  openModal(`<h3>Ubah PDF</h3><form id="pf"><label class="field">Nama<input id="pf-n" value="${esc(f.name)}"></label><label class="field">Mata kuliah<input id="pf-c" list="cl" value="${esc(f.course)}" placeholder="Pilih atau ketik" autocomplete="off"></label>${courseDL()}<div class="mact"><button type="button" class="btn ghost" data-act="close">Batal</button><button class="btn">Simpan</button></div></form>`);
-  $('#pf').onsubmit = e => { e.preventDefault(); f.name = $('#pf-n').value.trim() || f.name; f.course = $('#pf-c').value.trim(); save(); closeModal(); render({keep:true}); };
-}
 const loadPdfJs = () => window.pdfjsLib ? Promise.resolve() : new Promise((ok, no) => {
   const s = document.createElement('script'); s.src = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js';
   s.onload = () => { pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js'; ok(); }; s.onerror = no; document.head.appendChild(s);
@@ -1489,33 +1521,6 @@ function parseQ(txt) {
 const shuffle = a => { for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
 const L = i => String.fromCharCode(65 + i);
 const qzOf = () => S.quizzes.find(x => x.id === QZ.id);
-function vLatihan() {
-  if (QZ) return QZ.end ? qzResult() : qzCard();
-  const cards = S.quizzes.map(z => `<article class="card glass fx pdf rise" style="${ix()};--c:${colorOf(z.course || z.title)}"><div class="pdf-ic">${ic('latihan')}</div><b>${esc(z.title)}</b><small>${esc(z.course || 'Tanpa mata kuliah')} · ${z.qs.length} soal${z.best != null ? ' · terbaik ' + z.best + '%' : ''}</small>
-    <div class="acts"><button class="btn" data-act="qz-start" data-id="${z.id}">${ic('play')}Mulai</button><button class="round-btn" data-act="qz-edit" data-id="${z.id}" aria-label="Ubah">${ic('edit')}</button></div></article>`).join('');
-  return head('Latihan', 'Tempel soal dalam format sederhana, langsung jadi kuis pilihan ganda interaktif.',
-    `<div class="chips"><button class="chip-b" data-act="qz-shuf" aria-pressed="${!!S.qshuf}">Acak soal</button><button class="btn" data-act="qz-edit">${ic('plus')}Buat set soal</button></div>`) +
-    (cards ? `<div class="pdfs">${cards}</div>` : `<div class="card glass empty rise" style="${ix()}">Belum ada set soal. Tempel soalmu, jadilah kuis.<button class="btn" data-act="qz-edit">${ic('plus')}Buat set soal</button></div>`);
-}
-function qzEdit(id) {
-  const z = id ? S.quizzes.find(x => x.id === id) : {title:'', course:'', src:''};
-  openModal(`<h3>${id ? 'Ubah' : 'Buat'} set soal</h3><form id="qf" novalidate><div class="two"><label class="field">Judul<input id="qf-t" value="${esc(z.title)}" placeholder="Contoh: Kuis Basis Data bab 2" autocomplete="off"></label><label class="field">Mata kuliah<input id="qf-c" list="cl" value="${esc(z.course)}" autocomplete="off"></label></div>${courseDL()}
-    <label class="field">Soal<textarea id="qf-s" class="qsrc" placeholder="Tempel soal di sini">${esc(z.src)}</textarea></label>
-    <div class="qhint"><span id="qf-n"></span><button type="button" class="chip-b" data-act="qz-sample">Isi contoh</button><button type="button" class="chip-b" data-act="qz-file">Impor .txt</button></div>
-    <small class="qfmt">Tulis soal, lalu pilihan A–E di baris baru. Tandai jawaban benar dengan * di akhir pilihan, atau tambah baris "Jawaban: B". Baris "Penjelasan: …" boleh ditambahkan. Pisahkan tiap soal dengan baris kosong.</small>
-    <div class="err" id="err" hidden></div>
-    <div class="mact">${id ? `<button type="button" class="btn ghost spacer" data-act="qz-del" data-id="${id}">Hapus</button>` : ''}<button type="button" class="btn ghost" data-act="close">Batal</button><button class="btn">Simpan</button></div></form><input type="file" id="qf-f" accept=".txt,text/plain" hidden>`);
-  $('#modal').style.width = 'min(660px,100%)';
-  const upd = () => { $('#qf-n').textContent = parseQ($('#qf-s').value).length + ' soal terdeteksi'; }; $('#qf-s').oninput = upd; upd();
-  $('#qf-f').onchange = async e => { const f = e.target.files[0]; if (f) { $('#qf-s').value = await f.text(); upd(); } };
-  $('#qf').onsubmit = e => {
-    e.preventDefault(); const src = $('#qf-s').value, qs = parseQ(src), er = $('#err');
-    if (!qs.length) { er.hidden = false; er.textContent = 'Belum ada soal yang terbaca. Pastikan tiap soal punya minimal 2 pilihan (A. B.).'; return; }
-    const d = {title:$('#qf-t').value.trim() || 'Set soal baru', course:$('#qf-c').value.trim(), src, qs};
-    if (id) Object.assign(z, d); else S.quizzes.push({id:uid(), best:null, ...d});
-    save(); closeModal(); render({keep:true}); toast('Set soal disimpan');
-  };
-}
 function qzStart(id, only) {
   const z = S.quizzes.find(x => x.id === id); let o = only ? [...only] : z.qs.map((_, i) => i); if (S.qshuf) shuffle(o);
   QZ = {id, order:o, i:0, ans:{}, end:false}; render({anim:true});
@@ -1594,16 +1599,10 @@ function annList() {
   if (act.length >= 4) out.push({t:`Tugasmu menumpuk! ${act.length} tugas belum selesai`, go:'tasks', say:`Tugas menumpuk (${act.length})`});
   else if (act.length) out.push({t:`Tugas terdekat: ${act[0].title} · ${dueLabel(act[0].due)}`, go:'tasks', say:`${cut(act[0].title, 14)} · ${dueLabel(act[0].due).toLowerCase()}`});
   if (td) out.push({t:`${td} to-do belum dicentang`, go:'todo', say:`${td} to-do belum selesai`});
+  S.mut.filter(t => t.deadline && mbStat(t).pct < 100 && daysLeft(t.deadline) >= 0 && daysLeft(t.deadline) <= 7).forEach(t => out.push({t:`Hafalan ${t.title} · ${dl(daysLeft(t.deadline))}`, go:'mutabaah', say:`${daysLeft(t.deadline) <= 3 ? '🔥 ' : ''}${cut(t.title, 14)} · ${dl(daysLeft(t.deadline))}`}));
   const m = MOTI[(new Date().getDate() + new Date().getHours()) % MOTI.length]; out.push({t:m, go:'focus', say:m, m:true});
   return out;
 }
-const AN = {i:0};
-function annRender() {
-  const el = $('#ann'); if (!el) return; const out = annList(), n = AN.i % out.length, a = out[n], k = a.t + a.hot;
-  if (el.dataset.k === k) return; el.dataset.k = k;
-  el.innerHTML = `<button class="ann-b ${a.hot ? 'hot' : ''}" data-act="goto" data-v="${a.go}">${a.hot ? FLAME : `<span class="ai">${ic('bell')}</span>`}<span class="ann-t">${esc(a.t)}</span><em>${n + 1}/${out.length}</em></button>`;
-}
-setInterval(() => { if (!document.hidden) { AN.i++; annRender(); } }, 6500);
 
 function vTodo() {
   const all = S.todos, done = all.filter(t => t.done).length, pct = all.length ? Math.round(done / all.length * 100) : 0;
@@ -1688,7 +1687,7 @@ function vGrades() {
   const g = statOf(S.courses), cur = S.curSem || 1, top = Math.max(cur, ...S.courses.map(semNo)), fa = v => v == null ? '–' : v.toFixed(1);
   const per = Array.from({length:top}, (_, i) => { const n = i + 1, l = S.courses.filter(c => semNo(c) === n); return {n, l, st:statOf(l), ipk:statOf(S.courses.filter(c => semNo(c) <= n)).ips}; });
   const bars = per.map(p => `<div class="sb ${p.n === cur ? 'now' : ''}"><div class="sbar"><i style="height:${p.st.n ? Math.max(5, p.st.ips / 4 * 100) : 0}%"></i></div><b>${p.st.n ? p.st.ips.toFixed(2) : '–'}</b><small>S${p.n}</small></div>`).join('');
-  const row = c => `<div class="crow"><div><b>${esc(c.name)}</b><br><small>${c.sks} SKS${scoreOf(c) != null ? ' · angka ' + scoreOf(c) : ''}</small></div><small class="bw">Bobot ${GRADES[c.grade].toFixed(1)}</small><select class="sel" data-grade="${c.id}" aria-label="Nilai ${esc(c.name)}">${Object.keys(GRADES).map(k => `<option ${k === c.grade ? 'selected' : ''}>${k}</option>`).join('')}</select><button class="x" data-act="edit" data-t="course" data-id="${c.id}" aria-label="Ubah ${esc(c.name)}">${ic('edit')}</button></div>`;
+  const row = c => `<div class="crow"><div><b>${esc(c.name)}</b><br><small>${c.sks} SKS${scoreOf(c) != null ? ' · angka ' + scoreOf(c) : ''}</small><div class="clnk"><button class="chip-b" data-act="to-room" data-c="${esc(c.name)}">PDF ${S.pdfs.filter(f => f.course === c.name).length}</button><button class="chip-b" data-act="to-qz" data-c="${esc(c.name)}">Latihan ${S.quizzes.filter(z => z.course === c.name).length}</button></div></div><small class="bw">Bobot ${GRADES[c.grade].toFixed(1)}</small><select class="sel" data-grade="${c.id}" aria-label="Nilai ${esc(c.name)}">${Object.keys(GRADES).map(k => `<option ${k === c.grade ? 'selected' : ''}>${k}</option>`).join('')}</select><button class="x" data-act="edit" data-t="course" data-id="${c.id}" aria-label="Ubah ${esc(c.name)}">${ic('edit')}</button></div>`;
   const sec = per.slice().reverse().map(p => `<article class="card glass sem rise" style="${ix()}"><div class="ch"><h3>Semester ${p.n}${p.n === cur ? '<span class="badge live">Sekarang</span>' : ''}</h3><button class="round-btn" data-act="add-course" data-sem="${p.n}" aria-label="Tambah mata kuliah semester ${p.n}">${ic('plus')}</button></div>
     <div class="semfacts"><div><b>${p.st.n ? p.st.ips.toFixed(2) : '–'}</b>IPS</div><div><b>${p.st.n ? p.ipk.toFixed(2) : '–'}</b>IPK</div><div><b>${fa(p.st.avg)}</b>Rata² angka</div><div><b>${p.st.sks}</b>SKS</div></div>
     ${p.l.map(row).join('') || '<div class="none">Belum ada mata kuliah di semester ini.</div>'}</article>`).join('');
@@ -1700,6 +1699,201 @@ function vGrades() {
 }
 document.addEventListener('change', e => { const s = e.target.closest('[data-cursem]'); if (s) { S.curSem = +s.value; save(); render({keep:true}); } });
 document.addEventListener('click', e => { const el = e.target.closest('[data-act=add-course]'); if (el) { pendSem = +el.dataset.sem; openForm('course'); pendSem = 0; } });
+
+/* ---------- PDF & soal terhubung ke mata kuliah ---------- */
+let roomCourse = '', quizCourse = '';
+const courseNames = () => [...new Set([...S.courses.map(c => c.name), ...S.classes.map(c => c.name)])];
+function courseOpts(val, none) {
+  const g = {}; S.courses.slice().sort((a, b) => semNo(a) - semNo(b)).forEach(c => (g['Semester ' + semNo(c)] ||= []).push(c.name));
+  const used = new Set(S.courses.map(c => c.name)), rest = [...new Set(S.classes.map(c => c.name))].filter(n => !used.has(n));
+  if (rest.length) g['Dari jadwal'] = rest;
+  const opt = n => `<option value="${esc(n)}" ${n === val ? 'selected' : ''}>${esc(n)}</option>`;
+  return `<option value="">${none}</option>` + Object.entries(g).map(([k, v]) => `<optgroup label="${k}">${[...new Set(v)].map(opt).join('')}</optgroup>`).join('') + (val && !courseNames().includes(val) ? opt(val) : '');
+}
+const pdfCard = f => `<article class="card glass fx pdf rise" style="${ix()};--c:${colorOf(f.course || f.name)}" data-s="${esc((f.name + ' ' + f.course).toLowerCase())}"><div class="pdf-ic">${ic('notes')}</div><b>${esc(f.name)}</b><small>${esc(f.course || 'Tanpa mata kuliah')} · ${fmtSize(f.size)}${f.page > 1 ? ' · hal ' + f.page : ''}</small>
+  <div class="acts"><button class="btn" data-act="room-open" data-id="${f.id}">Baca</button><button class="round-btn" data-act="room-edit" data-id="${f.id}" aria-label="Ubah">${ic('edit')}</button><button class="round-btn" data-act="room-del" data-id="${f.id}" aria-label="Hapus">${ic('trash')}</button></div></article>`;
+function vRoom() {
+  const f = rdId && S.pdfs.find(x => x.id === rdId);
+  if (f) return `<div class="page-head rise" style="${ix()}"><div><h2>${esc(f.name)}</h2><p>${esc(f.course || 'Tanpa mata kuliah')} · ${fmtSize(f.size)}</p></div><button class="btn ghost" data-act="room-close">${ic('prev')}Kembali</button></div>
+    <div class="card glass reader rise" style="${ix()}"><div class="rd-bar"><button class="round-btn" data-act="rd-zoom" data-z="-.15" aria-label="Perkecil">${ic('zout')}</button><span id="rd-z">${Math.round(rdZ * 100)}%</span><button class="round-btn" data-act="rd-zoom" data-z=".15" aria-label="Perbesar">${ic('zin')}</button>
+      <label class="rd-pg spacer">Hal <input id="rd-go" type="number" min="1" value="1"> / <b id="rd-n">–</b></label></div><div class="rd-pages" id="rd-pages"><div class="empty">Memuat PDF…</div></div></div>`;
+  rdId = null;
+  const list = S.pdfs.filter(x => !roomCourse || x.course === roomCourse);
+  return head('My Room', 'Simpan PDF materi per mata kuliah, lalu baca di sini. Halaman terakhir diingat otomatis.', `<button class="btn" data-act="room-pick">${ic('up')}Unggah PDF</button>`) +
+    `<input id="pdf-in" type="file" accept="application/pdf,.pdf" multiple hidden>
+    <div class="filter rise" style="${ix()}"><select class="sel" id="room-c" aria-label="Mata kuliah">${courseOpts(roomCourse, 'Semua mata kuliah')}</select><div class="field"><input id="room-q" placeholder="Cari PDF…" autocomplete="off"></div></div>
+    <div class="card glass drop rise" style="${ix()}" id="drop"><b>Seret PDF ke sini</b><span class="muted">${roomCourse ? 'Akan diunggah ke ' + esc(roomCourse) : 'Kamu akan memilih mata kuliah tujuannya.'}</span></div>
+    <div class="pdfs">${list.map(pdfCard).join('') || '<div class="card glass empty">Belum ada PDF di sini.</div>'}</div>`;
+}
+function addPdfs(files) {
+  files = files.filter(f => /\.pdf$/i.test(f.name) || f.type === 'application/pdf'); if (!files.length) return toast('Pilih file PDF');
+  if (roomCourse) return savePdfs(files, roomCourse);
+  openModal(`<h3>Unggah ${files.length} PDF</h3><form id="pf"><p class="qfmt">${files.map(f => esc(f.name)).join('<br>')}</p><label class="field">Untuk mata kuliah<select id="pf-c">${courseOpts('', 'Tanpa mata kuliah')}</select></label><div class="mact"><button type="button" class="btn ghost" data-act="close">Batal</button><button class="btn">Unggah</button></div></form>`);
+  $('#pf').onsubmit = e => { e.preventDefault(); const c = $('#pf-c').value; closeModal(); savePdfs(files, c); };
+}
+async function savePdfs(files, course) {
+  let n = 0;
+  for (const f of files) {
+    const id = uid();
+    try { await idb.put({id, blob:f}); } catch { toast('Penyimpanan penuh atau ditolak browser'); break; }
+    S.pdfs.push({id, name:f.name.replace(/\.pdf$/i, ''), course, size:f.size, date:todayISO(), page:1}); n++;
+  }
+  if (n) { save(); render({keep:true}); toast(`${n} PDF ditambahkan`); }
+}
+function pdfEdit(id) {
+  const f = S.pdfs.find(x => x.id === id);
+  openModal(`<h3>Ubah PDF</h3><form id="pf"><label class="field">Nama<input id="pf-n" value="${esc(f.name)}"></label><label class="field">Mata kuliah<select id="pf-c">${courseOpts(f.course, 'Tanpa mata kuliah')}</select></label><div class="mact"><button type="button" class="btn ghost" data-act="close">Batal</button><button class="btn">Simpan</button></div></form>`);
+  $('#pf').onsubmit = e => { e.preventDefault(); f.name = $('#pf-n').value.trim() || f.name; f.course = $('#pf-c').value; save(); closeModal(); render({keep:true}); };
+}
+const toSrc = qs => qs.map((q, i) => `${i + 1}. ${q.q}\n${q.o.map((t, j) => `${L(j)}. ${t}${j === q.a ? ' *' : ''}`).join('\n')}${q.e ? `\nPenjelasan: ${q.e}` : ''}`).join('\n\n');
+function vLatihan() {
+  if (QZ) return QZ.end ? qzResult() : qzCard();
+  const list = S.quizzes.filter(z => !quizCourse || z.course === quizCourse);
+  const cards = list.map(z => `<article class="card glass fx pdf rise" style="${ix()};--c:${colorOf(z.course || z.title)}"><div class="pdf-ic">${ic('latihan')}</div><b>${esc(z.title)}</b><small>${esc(z.course || 'Tanpa mata kuliah')} · ${z.qs.length} soal${z.best != null ? ' · terbaik ' + z.best + '%' : ''}</small>
+    <div class="acts"><button class="btn" data-act="qz-start" data-id="${z.id}">${ic('play')}Mulai</button><button class="round-btn" data-act="qz-edit" data-id="${z.id}" aria-label="Ubah">${ic('edit')}</button></div></article>`).join('');
+  return head('Latihan', 'Soal terhubung ke mata kuliah. Buat otomatis dari PDF-mu, lengkap dengan penjelasan dari isinya.',
+    `<div class="chips"><button class="chip-b" data-act="qz-shuf" aria-pressed="${!!S.qshuf}">Acak soal</button><button class="btn ghost" data-act="qz-ai">${ic('latihan')}Buat dari PDF</button><button class="btn" data-act="qz-edit">${ic('plus')}Tulis soal</button></div>`) +
+    `<div class="filter rise" style="${ix()}"><select class="sel" id="qz-c" aria-label="Mata kuliah">${courseOpts(quizCourse, 'Semua mata kuliah')}</select></div>` +
+    (cards ? `<div class="pdfs">${cards}</div>` : `<div class="card glass empty rise" style="${ix()}">Belum ada set soal di sini. Buat dari PDF atau tulis sendiri.</div>`);
+}
+function qzEdit(id) {
+  const z = id ? S.quizzes.find(x => x.id === id) : {title:'', course:quizCourse, src:''};
+  openModal(`<h3>${id ? 'Ubah' : 'Tulis'} set soal</h3><form id="qf" novalidate><label class="field">Judul<input id="qf-t" value="${esc(z.title)}" placeholder="Contoh: Kuis Basis Data bab 2" autocomplete="off"></label><label class="field">Mata kuliah<select id="qf-c">${courseOpts(z.course, 'Tanpa mata kuliah')}</select></label>
+    <label class="field">Soal<textarea id="qf-s" class="qsrc" placeholder="Tempel soal di sini">${esc(z.src)}</textarea></label>
+    <div class="qhint"><span id="qf-n"></span><button type="button" class="chip-b" data-act="qz-sample">Isi contoh</button><button type="button" class="chip-b" data-act="qz-file">Impor .txt</button></div>
+    <small class="qfmt">Tulis soal, lalu pilihan A–E di baris baru. Tandai jawaban benar dengan * di akhir pilihan, atau tambah baris "Jawaban: B". Baris "Penjelasan: …" boleh ditambahkan. Pisahkan tiap soal dengan baris kosong.</small>
+    <div class="err" id="err" hidden></div>
+    <div class="mact">${id ? `<button type="button" class="btn ghost spacer" data-act="qz-del" data-id="${id}">Hapus</button>` : ''}<button type="button" class="btn ghost" data-act="close">Batal</button><button class="btn">Simpan</button></div></form><input type="file" id="qf-f" accept=".txt,text/plain" hidden>`);
+  $('#modal').style.width = 'min(660px,100%)';
+  const upd = () => { $('#qf-n').textContent = parseQ($('#qf-s').value).length + ' soal terdeteksi'; }; $('#qf-s').oninput = upd; upd();
+  $('#qf-f').onchange = async e => { const f = e.target.files[0]; if (f) { $('#qf-s').value = await f.text(); upd(); } };
+  $('#qf').onsubmit = e => {
+    e.preventDefault(); const src = $('#qf-s').value, qs = parseQ(src), er = $('#err');
+    if (!qs.length) { er.hidden = false; er.textContent = 'Belum ada soal yang terbaca. Pastikan tiap soal punya minimal 2 pilihan (A. B.).'; return; }
+    const d = {title:$('#qf-t').value.trim() || 'Set soal baru', course:$('#qf-c').value, src, qs};
+    if (id) Object.assign(z, d); else S.quizzes.push({id:uid(), best:null, ...d});
+    save(); closeModal(); render({keep:true}); toast('Set soal disimpan');
+  };
+}
+async function pdfText(id, a, b) {
+  await loadPdfJs(); const rec = await idb.get(id), doc = await pdfjsLib.getDocument({data:await rec.blob.arrayBuffer()}).promise; let out = '';
+  for (let p = a; p <= Math.min(b, doc.numPages) && out.length < 45000; p++) { const tc = await (await doc.getPage(p)).getTextContent(); out += `\n[Hal ${p}] ` + tc.items.map(i => i.str).join(' ').replace(/\s+/g, ' '); }
+  return out.trim();
+}
+function qzAI() {
+  if (!S.pdfs.length) return toast('Unggah PDF dulu di My Room');
+  const pool = S.pdfs.filter(f => !quizCourse || f.course === quizCourse), list = pool.length ? pool : S.pdfs;
+  openModal(`<h3>Buat soal dari PDF</h3><form id="af"><label class="field">PDF<select id="af-p">${list.map(f => `<option value="${f.id}">${esc(f.name)}${f.course ? ' · ' + esc(f.course) : ''}</option>`).join('')}</select></label>
+    <div class="two"><label class="field">Dari halaman<input id="af-a" type="number" min="1" value="1"></label><label class="field">Sampai halaman<input id="af-b" type="number" min="1" value="25"></label></div>
+    <label class="field">Jumlah soal<select id="af-n">${[5, 10, 15, 20].map(n => `<option ${n === 10 ? 'selected' : ''}>${n}</option>`).join('')}</select></label>
+    <small class="qfmt">Claude membaca halaman yang kamu pilih, lalu menyusun soal pilihan ganda. Penjelasan tiap soal diambil dari isi PDF beserta nomor halamannya. Soal tersimpan di mata kuliah milik PDF itu.</small>
+    <div class="err" id="err" hidden></div><div class="mact"><button type="button" class="btn ghost" data-act="close">Batal</button><button class="btn" id="af-go">Buat soal</button></div></form>`);
+  $('#modal').style.width = 'min(560px,100%)';
+  $('#af').onsubmit = async e => {
+    e.preventDefault(); const f = S.pdfs.find(x => x.id === $('#af-p').value), n = +$('#af-n').value, a = Math.max(1, +$('#af-a').value || 1), b = Math.max(a, +$('#af-b').value || a), er = $('#err'), go = $('#af-go');
+    const say = t => { er.hidden = false; er.textContent = t; }; go.disabled = true; say('Membaca PDF…');
+    try {
+      const sample = window.claude ? await claude.use('sample') : null; if (!sample) throw {code:'none'};
+      const txt = await pdfText(f.id, a, b); if (txt.length < 200) throw {code:'empty'};
+      say('Claude sedang menyusun soal, tunggu sebentar…');
+      const out = await sample.json(`Kamu pembuat soal ujian kuliah. Mata kuliah: "${f.course || f.name}". Berdasarkan HANYA materi di bawah, buat ${n} soal pilihan ganda berkualitas dalam bahasa yang sama dengan materi. Aturan: tiap soal punya 4 opsi dengan tepat 1 jawaban benar dan pengecoh yang masuk akal; sebar soal di seluruh materi dengan tingkat kesulitan bervariasi; acak posisi jawaban benar; jangan membuat soal tentang hal yang tidak ada di materi. Penjelasan "e" berisi 1-2 kalimat dari isi materi dan diakhiri nomor halaman sumbernya, contoh "(hal. 5)", berdasarkan penanda [Hal N]. Balas HANYA JSON array tanpa markdown: [{"q":"pertanyaan","o":["opsi A","opsi B","opsi C","opsi D"],"a":0,"e":"penjelasan (hal. N)"}] dengan "a" = indeks jawaban benar (0-3).\n\nMATERI:\n${txt}`, {modelTier:'default'});
+      const qs = (Array.isArray(out) ? out : out?.soal || []).map(q => ({q:String(q.q || '').trim(), o:(q.o || []).map(String).slice(0, 5), a:+q.a, e:String(q.e || '').replace(/\s+/g, ' ').trim()})).filter(q => q.q && q.o.length >= 2 && q.a >= 0 && q.a < q.o.length);
+      if (!qs.length) throw {};
+      S.quizzes.push({id:uid(), title:'Soal: ' + f.name, course:f.course, src:toSrc(qs), qs, best:null, pdf:f.id});
+      if (quizCourse && f.course !== quizCourse) quizCourse = f.course;
+      save(); closeModal(); render({keep:true}); toast(`${qs.length} soal dibuat dari PDF`);
+    } catch (x) {
+      say({none:'Fitur pembuat soal belum tersedia di tampilan ini. Kamu tetap bisa menulis soal manual.', not_granted:'Izin Claude ditolak, jadi soal tidak bisa dibuat.', empty:'Halaman ini tidak berisi teks yang bisa dibaca (mungkin hasil scan). Coba rentang halaman lain.', rate_limited:'Terlalu sering. Tunggu sebentar lalu coba lagi.'}[x?.code] || 'Gagal membuat soal. Coba rentang halaman yang lebih kecil.');
+      go.disabled = false;
+    }
+  };
+}
+document.addEventListener('change', e => {
+  if (e.target.id === 'room-c') { roomCourse = e.target.value; render({keep:true}); }
+  if (e.target.id === 'qz-c') { quizCourse = e.target.value; render({keep:true}); }
+});
+document.addEventListener('click', e => {
+  const el = e.target.closest('[data-act]'); if (!el) return; const d = el.dataset;
+  if (d.act === 'qz-ai') qzAI();
+  else if (d.act === 'to-room') { roomCourse = d.c; rdId = null; go('room'); }
+  else if (d.act === 'to-qz') { quizCourse = d.c; QZ = null; go('latihan'); }
+});
+
+const evKind = (ev, tk) => ev.some(e => e.kind === 'ujian' || isExam(e.title)) || tk.some(t => !t.done && isExam(t.title)) ? 'ujian' : ev.some(e => e.kind === 'penting') ? 'penting' : ev.length ? 'biasa' : '';
+/* ---------- Mutabaah hafalan ---------- */
+if (!S.mut) S.mut = [];
+const SURAH = 'Al-Fatihah:7,Al-Baqarah:286,Ali Imran:200,An-Nisa:176,Al-Maidah:120,Al-Anam:165,Al-Araf:206,Al-Anfal:75,At-Taubah:129,Yunus:109,Hud:123,Yusuf:111,Ar-Rad:43,Ibrahim:52,Al-Hijr:99,An-Nahl:128,Al-Isra:111,Al-Kahf:110,Maryam:98,Taha:135,Al-Anbiya:112,Al-Hajj:78,Al-Muminun:118,An-Nur:64,Al-Furqan:77,Asy-Syuara:227,An-Naml:93,Al-Qasas:88,Al-Ankabut:69,Ar-Rum:60,Luqman:34,As-Sajdah:30,Al-Ahzab:73,Saba:54,Fatir:45,Yasin:83,As-Saffat:182,Sad:88,Az-Zumar:75,Gafir:85,Fussilat:54,Asy-Syura:53,Az-Zukhruf:89,Ad-Dukhan:59,Al-Jasiyah:37,Al-Ahqaf:35,Muhammad:38,Al-Fath:29,Al-Hujurat:18,Qaf:45,Az-Zariyat:60,At-Tur:49,An-Najm:62,Al-Qamar:55,Ar-Rahman:78,Al-Waqiah:96,Al-Hadid:29,Al-Mujadalah:22,Al-Hasyr:24,Al-Mumtahanah:13,As-Saff:14,Al-Jumuah:11,Al-Munafiqun:11,At-Tagabun:18,At-Talaq:12,At-Tahrim:12,Al-Mulk:30,Al-Qalam:52,Al-Haqqah:52,Al-Maarij:44,Nuh:28,Al-Jinn:28,Al-Muzzammil:20,Al-Muddassir:56,Al-Qiyamah:40,Al-Insan:31,Al-Mursalat:50,An-Naba:40,An-Naziat:46,Abasa:42,At-Takwir:29,Al-Infitar:19,Al-Mutaffifin:36,Al-Insyiqaq:25,Al-Buruj:22,At-Tariq:17,Al-Ala:19,Al-Gasyiyah:26,Al-Fajr:30,Al-Balad:20,Asy-Syams:15,Al-Lail:21,Ad-Duha:11,Al-Insyirah:8,At-Tin:8,Al-Alaq:19,Al-Qadr:5,Al-Bayyinah:8,Az-Zalzalah:8,Al-Adiyat:11,Al-Qariah:11,At-Takasur:8,Al-Asr:3,Al-Humazah:9,Al-Fil:5,Quraisy:4,Al-Maun:7,Al-Kausar:3,Al-Kafirun:6,An-Nasr:3,Al-Lahab:5,Al-Ikhlas:4,Al-Falaq:5,An-Nas:6'.split(',').map(x => x.split(':'));
+const normS = s => s.toLowerCase().replace(/^sura[th]\s+/, '').replace(/[^a-z]/g, '');
+const parseRanges = s => [...s.matchAll(/(\d+)\s*(?:[-–—]\s*(\d+))?/g)].map(m => ({id:uid(), from:+m[1], to:+(m[2] || m[1]), done:false})).filter(r => r.to >= r.from).sort((a, b) => a.from - b.from);
+const parseLines = s => s.split(/\n/).map(x => x.trim()).filter(Boolean).map(x => ({id:uid(), text:x, done:false}));
+const mbSel = {}; let mfType = 'quran';
+function mbStat(t) {
+  if (t.type === 'hadist') { const n = t.items.length, d = t.items.filter(i => i.done).length; return {n, d, pct:n ? Math.round(d / n * 100) : 0}; }
+  const total = Math.max(1, t.to - t.from + 1), dn = t.items.filter(i => i.done).sort((a, b) => a.from - b.from);
+  const done = dn.reduce((a, i) => a + Math.max(0, Math.min(i.to, t.to) - Math.max(i.from, t.from) + 1), 0);
+  let reach = t.from - 1; dn.forEach(i => { if (i.from <= reach + 1) reach = Math.max(reach, i.to); });
+  return {total, done, reach:Math.min(reach, t.to), pct:Math.min(100, Math.round(done / total * 100))};
+}
+function mbDetail(t, st) {
+  const k = t.items.findIndex(i => i.id === mbSel[t.id]); if (k < 0) return '';
+  const i = t.items[k], q = t.type === 'quran', at = q ? Math.round((Math.min(i.to, t.to) - t.from + 1) / st.total * 100) : Math.round((k + 1) / t.items.length * 100);
+  return `<div class="mb-detail"><b>${q ? `Ayat ${i.from}–${i.to}` : `Hadist ke-${k + 1}`} · ${i.done ? 'sudah dihafal' : 'belum dihafal'}</b><p>${q ? `Ujung mutabaah ini di ayat ${i.to} dari ${t.to}, atau ${at}% dari target.` : `${esc(i.text)}<br>Urutan ${k + 1} dari ${t.items.length}, atau ${at}% dari target.`} Progres kamu sekarang ${st.pct}%.</p>
+    <div class="acts"><button class="btn" data-act="mb-toggle" data-t="${t.id}" data-i="${i.id}">${i.done ? 'Batalkan' : 'Tandai hafal'}</button><button class="round-btn" data-act="mb-delitem" data-t="${t.id}" data-i="${i.id}" aria-label="Hapus">${ic('trash')}</button></div></div>`;
+}
+function mbCard(t) {
+  const st = mbStat(t), q = t.type === 'quran', d0 = t.deadline ? daysLeft(t.deadline) : null, fire = d0 != null && d0 >= 0 && d0 <= 3 && st.pct < 100;
+  const rem = q ? st.total - st.done : st.n - st.d, per = d0 != null && d0 >= 0 && rem > 0 ? Math.ceil(rem / Math.max(1, d0)) : 0;
+  const sub = [q ? `Ayat ${t.from}–${t.to}` : `${t.items.length} hadist`, t.deadline ? `target ${new Date(t.deadline + 'T00:00').toLocaleDateString('id-ID', {day:'numeric', month:'short'})} · ${d0 < 0 ? 'lewat' : dl(d0)}` : ''].filter(Boolean).join(' · ');
+  const now = q ? (st.reach >= t.from ? `Sampai ayat ${st.reach} dari ${t.to} · ${st.done} ayat dihafal` : st.done ? `${st.done} ayat dihafal dari ${t.to}` : `Belum ada ayat dihafal dari ${t.to}`) : `${st.d} dari ${st.n} hadist dihafal`;
+  const chips = t.items.map((i, k) => `<div class="mb-chip ${i.done ? 'done' : ''} ${mbSel[t.id] === i.id ? 'on' : ''}" data-act="mb-pick" data-t="${t.id}" data-i="${i.id}"><button class="mb-ck" data-act="mb-toggle" data-t="${t.id}" data-i="${i.id}" aria-label="Tandai hafal">${ic('check')}</button><span>${q ? `${i.from}–${i.to}` : `${k + 1}. ${esc(i.text)}`}</span></div>`).join('');
+  return `<article class="card glass mb rise" style="${ix()}"><div class="mb-top"><div class="mb-h"><div class="mb-ic">${ic(q ? 'quran' : 'hadist')}</div><div class="mb-t"><h3>${esc(t.title)}${fire ? FLAME : ''}</h3><small>${sub}</small></div></div><div class="mb-pct">${st.pct}%</div></div>
+    <div class="mb-bar"><i style="width:${st.pct}%"></i></div><div class="mb-now">${now}${per ? ` · ±${per} ${q ? 'ayat' : 'hadist'}/hari` : ''}</div>
+    <div class="mb-chips ${q ? '' : 'list'}">${chips || '<small class="muted">Belum ada mutabaah. Tambahkan di bawah.</small>'}</div>${mbDetail(t, st)}
+    <form class="mb-add" data-t="${t.id}"><input placeholder="${q ? 'Tambah mutabaah, mis. 1-20 atau 1-20, 21-30' : 'Tambah hadist yang harus dihafal'}" autocomplete="off"><button class="btn">Tambah</button></form>
+    <div class="acts" style="margin-top:12px"><button class="chip-b" data-act="mb-edit" data-t="${t.id}">Ubah target</button><button class="chip-b" data-act="mb-del" data-t="${t.id}">Hapus</button></div></article>`;
+}
+function vMutabaah() {
+  return head('Mutabaah', 'Target hafalan Al-Qur\'an dan hadist. Pecah jadi mutabaah kecil, ketuk untuk melihat posisimu.', `<button class="btn" data-act="mb-new">${ic('plus')}Buat target</button>`) +
+    (S.mut.length ? `<div class="mbs">${S.mut.map(mbCard).join('')}</div>` : `<div class="card glass empty rise" style="${ix()}">Belum ada target. Buat target Al-Qur'an atau hadist pertamamu.</div>`);
+}
+function mbNew(id) {
+  const t = id ? S.mut.find(x => x.id === id) : {type:'quran', title:'', deadline:'', from:1, to:'', items:[]}; mfType = t.type;
+  openModal(`<h3>${id ? 'Ubah' : 'Buat'} target hafalan</h3><form id="mf" novalidate>
+    ${id ? '' : `<div class="seg"><button type="button" class="chip-b" data-act="mb-type" data-v="quran" aria-pressed="true">Al-Qur'an</button><button type="button" class="chip-b" data-act="mb-type" data-v="hadist" aria-pressed="false">Hadist</button></div>`}
+    <label class="field">Judul<input id="mf-t" list="sl" value="${esc(t.title)}" placeholder="Contoh: Ali Imran / Hadist semester ini" autocomplete="off"></label><datalist id="sl">${SURAH.map(s => `<option value="${s[0]}">`).join('')}</datalist>
+    <label class="field">Target selesai (opsional)<input id="mf-d" type="date" value="${t.deadline || ''}"></label>
+    <div id="mf-q" ${t.type === 'quran' ? '' : 'hidden'}><div class="two"><label class="field">Dari ayat<input id="mf-f" type="number" min="1" value="${t.from}"></label><label class="field">Sampai ayat<input id="mf-e" type="number" min="1" value="${t.to}"></label></div>${id ? '' : '<label class="field">Mutabaah (opsional)<input id="mf-r" placeholder="1-20, 21-30, 31-50" autocomplete="off"></label>'}</div>
+    <div id="mf-h" ${t.type === 'hadist' ? '' : 'hidden'}>${id ? '' : '<label class="field">Daftar hadist (satu per baris)<textarea id="mf-l" rows="6" placeholder="Hadist niat&#10;Hadist Islam, Iman, Ihsan"></textarea></label>'}</div>
+    <div class="err" id="err" hidden></div><div class="mact"><button type="button" class="btn ghost" data-act="close">Batal</button><button class="btn">Simpan</button></div></form>`);
+  $('#mf-t').oninput = () => { if (mfType !== 'quran') return; const s = SURAH.find(x => normS(x[0]) === normS($('#mf-t').value)); if (s && !$('#mf-e').dataset.u) $('#mf-e').value = s[1]; };
+  $('#mf-e').oninput = () => { $('#mf-e').dataset.u = 1; };
+  $('#mf').onsubmit = e => {
+    e.preventDefault(); const er = $('#err'), bad = m => { er.hidden = false; er.textContent = m; }, title = $('#mf-t').value.trim(); if (!title) return bad('Isi judul target.');
+    const base = {title, deadline:$('#mf-d').value};
+    if (mfType === 'quran') { const f = +$('#mf-f').value || 1, to = +$('#mf-e').value; if (!to || to < f) return bad('Isi ayat target dengan benar.'); Object.assign(base, {from:f, to}); }
+    if (id) Object.assign(t, base);
+    else S.mut.push({id:uid(), type:mfType, from:1, to:0, ...base, items:mfType === 'quran' ? parseRanges($('#mf-r').value) : parseLines($('#mf-l').value)});
+    save(); closeModal(); render({keep:true});
+  };
+}
+document.addEventListener('submit', e => {
+  const f = e.target.closest('.mb-add'); if (!f) return; e.preventDefault();
+  const t = S.mut.find(x => x.id === f.dataset.t), inp = f.querySelector('input'), add = t.type === 'quran' ? parseRanges(inp.value) : parseLines(inp.value);
+  if (!add.length) return toast(t.type === 'quran' ? 'Tulis rentang ayat, mis. 1-20' : 'Tulis hadistnya dulu');
+  t.items.push(...add); if (t.type === 'quran') t.items.sort((a, b) => a.from - b.from); save(); render({keep:true});
+});
+document.addEventListener('click', e => {
+  const el = e.target.closest('[data-act^="mb-"]'); if (!el) return; const d = el.dataset, t = S.mut.find(x => x.id === d.t), it = t?.items.find(x => x.id === d.i);
+  switch (d.act) {
+    case 'mb-new': mbNew(); break;
+    case 'mb-edit': mbNew(d.t); break;
+    case 'mb-type': mfType = d.v; $('#mf-q').hidden = mfType !== 'quran'; $('#mf-h').hidden = mfType !== 'hadist'; document.querySelectorAll('.seg .chip-b').forEach(b => b.setAttribute('aria-pressed', b.dataset.v === mfType)); break;
+    case 'mb-pick': mbSel[d.t] = mbSel[d.t] === d.i ? null : d.i; render({keep:true}); break;
+    case 'mb-toggle': it.done = !it.done; mbSel[d.t] = d.i; save(); if (it.done) { const r = el.getBoundingClientRect(); burst(r.left + 13, r.top + 13); } render({keep:true}); break;
+    case 'mb-delitem': t.items = t.items.filter(x => x.id !== d.i); mbSel[d.t] = null; save(); render({keep:true}); break;
+    case 'mb-del': if (confirm(`Hapus target "${t.title}"?`)) { S.mut = S.mut.filter(x => x.id !== d.t); save(); render({keep:true}); toast('Target dihapus'); } break;
+  }
+});
 
 /* ---------- Mulai ---------- */
 buildChrome();
