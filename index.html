@@ -584,6 +584,118 @@ body{background-image:none}
 .rv{padding:14px 4px;border-bottom:1px solid var(--panel-line);font-size:13.5px;line-height:1.6}.rv:last-child{border:0}
 .rv b{display:block;margin-bottom:4px}.rv small{display:block;color:var(--p-muted)}
 @media (max-width:860px){.rail-btn{width:38px;height:38px}.quiz{padding:18px}.pdfs{grid-template-columns:1fr}.rd-pages{padding:8px}}
+
+/* =========================================================
+   ANNOUNCEMENT, API, PERJALANAN MOBIL, TO-DO, KALENDER HP
+   ========================================================= */
+@keyframes roadrun{to{transform:translateX(-72px)}}
+@keyframes ringdash{from{stroke-dashoffset:var(--C)}}
+.anim .pg{animation-name:ringdash}
+.road{bottom:-90px;height:calc(13% + 90px)}
+.road i{top:26px;animation-name:roadrun}
+.main{grid-template-rows:auto auto minmax(0,1fr)}
+.ann{margin:14px 30px 0 16px}
+.ann-b{display:flex;align-items:center;gap:12px;width:100%;text-align:left;padding:10px 18px;border-radius:999px;background:var(--pill);border:1px solid var(--pill-line);color:var(--pill-text);font-size:13.5px;font-weight:600;animation:annin .5s var(--ease)}
+.ann-b .ai{display:grid;place-items:center;width:28px;height:28px;border-radius:50%;flex:none;background:linear-gradient(140deg,var(--a1),var(--a2));color:var(--a-ink)}
+.ann-b .ai svg{width:16px;height:16px}
+.ann-t{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ann-b em{font-style:normal;font-size:11.5px;opacity:.65;flex:none}
+.ann-b.hot{background:linear-gradient(90deg,rgba(255,122,46,.3),var(--pill) 72%);border-color:rgba(255,150,70,.65)}
+@keyframes annin{from{opacity:0;transform:translateY(-6px)}}
+.fl{display:inline-block;width:15px;height:21px;flex:none;vertical-align:-4px;margin-left:5px;transform-origin:50% 100%;animation:flick .7s ease-in-out infinite alternate}
+.ann-b .fl{width:22px;height:28px;margin:0}
+@keyframes flick{from{transform:scale(.9,1) rotate(-4deg)}to{transform:scale(1.08,1.14) rotate(4deg)}}
+.cd{position:relative;min-width:0}
+.cd.hot{background:color-mix(in srgb,#ff7a2e 24%,transparent);box-shadow:0 0 14px rgba(255,122,46,.4)}
+.cd .fl{position:absolute;top:1px;right:2px;width:13px;height:18px;margin:0}
+.leg .fl{width:11px;height:15px;margin:0}
+.scene{container-type:inline-size;--tlx:-24cqw}
+.title{padding-bottom:190px}
+.layer.ride{transform:rotate(var(--tilt,0deg));transform-origin:50% 100%;transition:transform 1.7s ease-in-out;will-change:transform}
+.mt-w{position:absolute;left:100%;bottom:11%;width:80%;height:56%;pointer-events:none}
+.mt-w svg{display:block;width:100%;height:100%;fill:var(--g1)}
+.mt-on .mt-w{animation:mtpass 14s linear forwards}
+@keyframes mtpass{to{transform:translateX(-180cqw)}}
+.zz{position:absolute;left:100%;bottom:calc(13% - 4px);width:46px;height:auto}
+.zz-on .zz{animation:zzpass 9s linear forwards}
+@keyframes zzpass{to{transform:translateX(calc(-100cqw - 120px))}}
+.tl{position:absolute;left:100%;bottom:calc(13% - 4px);width:34px}
+.tl svg{display:block;width:100%;height:auto}
+.tl circle{fill:#33404f}
+.tl[data-l=red] .lr{fill:#ff5a4d}.tl[data-l=yellow] .ly{fill:#ffd25a}.tl[data-l=green] .lg{fill:#58d68d}
+.tl-in .tl{animation:tlin 3.4s cubic-bezier(.2,.7,.3,1) forwards}
+.tl-out .tl{animation:tlout 6.5s linear forwards}
+@keyframes tlin{to{transform:translateX(var(--tlx))}}
+@keyframes tlout{from{transform:translateX(var(--tlx))}to{transform:translateX(calc(-100cqw - 80px))}}
+.scene[data-ph=slow] .road i{animation-duration:1.4s}
+.scene[data-ph=slow] .whl{animation-duration:2.6s}
+.scene[data-ph=stop] .road i,.scene[data-ph=stop] .whl,.scene[data-ph=stop] .dust circle,.scene[data-ph=stop] .r3{animation-play-state:paused}
+.scene[data-ph=stop] .dust{opacity:0}
+.cv svg{transition:transform .6s var(--ease);transform-origin:50% 100%}
+.scene[data-ph=slow] .cv svg,.scene[data-ph=stop] .cv svg{transform:rotate(1.3deg)}
+.say{position:absolute;right:8%;bottom:104%;width:max-content;max-width:min(230px,56vw);padding:9px 13px;border-radius:16px 16px 4px 16px;background:var(--card);color:var(--card-text);font-size:12.5px;font-weight:600;line-height:1.4;box-shadow:0 10px 24px rgba(0,0,0,.3);opacity:0;transform:translateY(8px) scale(.9);transform-origin:80% 100%;transition:opacity .3s,transform .35s var(--ease);pointer-events:none;z-index:4}
+.say.on{opacity:1;transform:none}
+.say::after{content:"";position:absolute;right:46px;bottom:-5px;width:11px;height:11px;background:inherit;transform:rotate(45deg)}
+.td{padding:12px 16px}
+.td-a{display:flex;gap:2px}
+.td.star .tds{color:var(--a1)}.td.star .tds svg{fill:currentColor}
+.td.star{box-shadow:inset 3px 0 0 var(--a1)}
+.todo-add{display:flex;gap:10px;padding:12px;margin-bottom:var(--gap)}
+.todo-add input{flex:1;min-width:0;height:44px;border-radius:999px;padding:0 18px;background:var(--m-field,var(--panel));border:1px solid var(--m-line,var(--panel-line));color:inherit}
+@media (hover:none){.cd:hover{translate:none}}
+@media (max-height:760px){.logo{display:none}.rail-btn{width:40px;height:40px}}
+@media (max-width:860px){
+  .ann{margin:10px 14px 0}
+  .ann-b{padding:9px 14px;font-size:12.5px;border-radius:20px;align-items:center}
+  .ann-t{white-space:normal;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+  .title{padding-bottom:150px}
+  .scene{--tlx:-15cqw}
+  .rail-nav{padding:5px 6px}.rail-btn{width:34px;height:34px}
+  .topbar .pill.add{display:none}
+  .sched>*{min-width:0}
+  .cal{padding:14px 10px}
+  .cal-h{flex-wrap:wrap;gap:8px}.cal-h h3{font-size:18px}
+  .cal-nav{gap:6px}.cal-nav .chip-b{height:34px;padding:0 12px}.cal-nav .round-btn{width:34px;height:34px}
+  .cal-wd,.cal-g{gap:3px}.cal-wd span{font-size:11px}
+  .cd{aspect-ratio:1/1.08;min-height:0;padding:7px 0 0;gap:4px;border-radius:11px;font-size:13px}
+  .mk{gap:3px;height:6px}.mk i,.lg{width:6px;height:6px}
+  .cd .fl{width:11px;height:15px;top:1px;right:1px}
+  .leg{gap:8px 14px;font-size:11.5px}
+}
+
+/* =========================================================
+   MINI CAR & KELILING DUNIA
+   ========================================================= */
+.scene-top{gap:8px;flex-wrap:wrap}
+.cty{margin-left:auto;animation:annin .5s var(--ease)}
+.tint{position:absolute;inset:0;pointer-events:none;background-color:var(--tint,transparent);opacity:.3;transition:background-color 1.8s}
+.cv{width:clamp(110px,17%,170px)}
+.scene{--tlx:-20cqw}
+.lm-w{position:absolute;left:100%;bottom:11%;width:clamp(105px,14cqw,140px);color:var(--g2);pointer-events:none;animation:lmpass 18s linear forwards}
+.lm-w svg{display:block;width:100%;height:auto;fill:currentColor;overflow:visible}
+@keyframes lmpass{to{transform:translateX(calc(-100cqw - 100%))}}
+.scene[data-ph=stop] .lm-w{animation-play-state:paused}
+.mt-on .mt-w{animation-duration:12s}
+@media (max-width:860px){.cty{font-size:12px;height:32px;padding:0 12px}}
+
+/* =========================================================
+   MOBIL LEBIH BESAR, BUBBLE RINGKAS, NILAI PER SEMESTER
+   ========================================================= */
+.cv{width:clamp(150px,24%,240px)}
+.say{right:30%;max-width:min(200px,50vw);padding:7px 12px;border-radius:14px 14px 4px 14px;font-size:12px;white-space:nowrap}
+.say::after{right:12px}
+.semcol{display:grid;gap:var(--gap);min-width:0}
+.semsel{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:600}
+.sbars{display:flex;gap:8px;height:170px;overflow-x:auto;padding-top:6px}
+.sb{flex:1;min-width:34px;height:100%;display:flex;flex-direction:column;align-items:center;gap:4px;font-size:11px}
+.sbar{flex:1;width:100%;display:flex;align-items:flex-end;justify-content:center}
+.sbar i{width:100%;max-width:38px;border-radius:10px 10px 4px 4px;background:color-mix(in srgb,currentColor 22%,transparent);transition:height .6s var(--ease)}
+.sb.now .sbar i{background:linear-gradient(180deg,var(--a1),var(--a2))}
+.sb b{font-variant-numeric:tabular-nums}.sb small{color:var(--p-muted)}
+.semfacts{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:10px}
+.semfacts div{padding:10px 4px;border-radius:14px;background:color-mix(in srgb,currentColor 8%,transparent);font-size:11px;color:var(--p-muted);text-align:center}
+.semfacts b{display:block;font-size:17px;color:var(--p-text);margin-bottom:1px;font-variant-numeric:tabular-nums}
+.sem .badge{margin-left:8px;height:22px;font-size:11px;vertical-align:middle}
 </style>
 </head>
 <body>
@@ -623,6 +735,7 @@ body{background-image:none}
         </button>
       </div>
     </header>
+    <div class="ann" id="ann"></div>
     <main class="stage" id="stage"><div class="view" id="view"></div></main>
   </div>
 
@@ -677,7 +790,9 @@ const ICON = {
   up:'<path d="M12 16V4M7 9l5-5 5 5M4 20h16"/>',
   zin:'<circle cx="11" cy="11" r="7"/><path d="M21 21l-5-5M11 8v6M8 11h6"/>',
   zout:'<circle cx="11" cy="11" r="7"/><path d="M21 21l-5-5M8 11h6"/>',
-  trash:'<path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13"/>'
+  trash:'<path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13"/>',
+  todo:'<path d="M9 6h11M9 12h11M9 18h11M4 6l1 1 2-2M4 12l1 1 2-2M4 18l1 1 2-2"/>',
+  bell:'<path d="M6 16v-5a6 6 0 0 1 12 0v5l2 2H4zM10 21h4"/>'
 };
 const ic = n => `<svg class="i" viewBox="0 0 24 24" aria-hidden="true">${ICON[n]}</svg>`;
 
@@ -764,7 +879,7 @@ function tween(el, to, dec = 0, from) {
 }
 
 /* ---------- Chrome: topbar, nav, tema ---------- */
-const NAV = [['home','Beranda'],['schedule','Jadwal'],['tasks','Tugas'],['grades','Nilai'],['notes','Catatan'],['room','My Room'],['latihan','Latihan'],['focus','Fokus']];
+const NAV = [['home','Beranda'],['schedule','Jadwal'],['tasks','Tugas'],['todo','To-Do'],['grades','Nilai'],['notes','Catatan'],['room','My Room'],['latihan','Latihan'],['focus','Fokus']];
 const THEMES = [['malam','Malam','linear-gradient(135deg,#0D1B2A 45%,#415A77)'],['fajar','Fajar','linear-gradient(135deg,#F4F1DE 45%,#D4C4A8)'],['hutan','Hutan','linear-gradient(135deg,#415A77 45%,#778D7A)']];
 const THEME_COLOR = {malam:'#0D1B2A', fajar:'#D4C4A8', hutan:'#415A77'};
 
@@ -794,7 +909,7 @@ function chrome() {
     if (b.dataset.v === view) b.setAttribute('aria-current', 'page'); else b.removeAttribute('aria-current');
   });
   document.querySelectorAll('.swatch').forEach(b => b.setAttribute('aria-pressed', b.dataset.t === S.theme));
-  moveInd();
+  moveInd(); annRender();
 }
 function setTheme(t) {
   const apply = () => { S.theme = t; save(); chrome(); };
@@ -837,42 +952,32 @@ const tile = d => `url("data:image/svg+xml,${encodeURIComponent(`<svg xmlns='htt
   s.setProperty('--m-r3', tile(pines));
 }
 
-const BOX = 'M26 54a22 22 0 0 1 22-22H240a22 22 0 0 1 22 22V142H26Z';
-const CAB = 'M262 62H286C298 62 306 68 313 80L335 114C341 123 346 128 346 138V142H262Z';
-const wheel = cx => `<g class="whl"><circle cx="${cx}" cy="142" r="22" fill="#0D1B2A"/><circle cx="${cx}" cy="142" r="12" style="fill:var(--sand)"/><path d="M${cx} 132v20M${cx - 10} 142h20M${cx - 7} 135l14 14M${cx + 7} 135l-14 14" stroke="#0D1B2A" stroke-width="3" stroke-linecap="round"/><circle cx="${cx}" cy="127" r="2" fill="#fff" opacity=".75"/></g>`;
-const CARAVAN = `<div class="cv"><svg viewBox="0 0 380 172" aria-hidden="true">
+const wheel = cx => `<g class="whl"><circle cx="${cx}" cy="76" r="15" fill="#0D1B2A"/><circle cx="${cx}" cy="76" r="8" style="fill:var(--sand)"/><path d="M${cx} 69v14M${cx - 7} 76h14" stroke="#0D1B2A" stroke-width="2.4" stroke-linecap="round"/></g>`;
+const CARAVAN = `<div class="cv"><svg viewBox="0 0 200 100" aria-hidden="true">
 <defs>
 <linearGradient id="cvShell" x1="0" y1="0" x2="0" y2="1"><stop offset="0" style="stop-color:var(--shell1)"/><stop offset="1" style="stop-color:var(--shell2)"/></linearGradient>
 <linearGradient id="cvGlass" x1="0" y1="0" x2="1" y2="1"><stop offset="0" style="stop-color:var(--win1)"/><stop offset="1" style="stop-color:var(--win2)"/></linearGradient>
 <linearGradient id="cvBeam" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#fff2bf" stop-opacity=".75"/><stop offset="1" stop-color="#fff2bf" stop-opacity="0"/></linearGradient>
-<clipPath id="cvClip"><path d="${BOX}"/><path d="${CAB}"/></clipPath>
 </defs>
-<ellipse cx="190" cy="166" rx="172" ry="5" fill="#000" opacity=".3"/>
-<g class="dust" style="fill:var(--sand)"><circle cx="22" cy="158" r="7"/><circle cx="22" cy="158" r="6"/><circle cx="22" cy="158" r="8"/></g>
-<path class="beam" d="M346 124L480 92V166L346 130Z" fill="url(#cvBeam)"/>
+<ellipse cx="100" cy="93" rx="88" ry="3.5" fill="#000" opacity=".3"/>
+<g class="dust" style="fill:var(--sand)"><circle cx="10" cy="88" r="5"/><circle cx="10" cy="88" r="4"/><circle cx="10" cy="88" r="6"/></g>
+<path class="beam" d="M194 62L270 46V92L194 68Z" fill="url(#cvBeam)"/>
 <g class="cv-body">
-  <rect x="92" y="22" width="66" height="12" rx="6" style="fill:var(--shell2)"/>
-  <rect x="172" y="20" width="46" height="14" rx="4" fill="#0D1B2A" opacity=".55"/>
-  <path d="${BOX}" fill="url(#cvShell)"/><path d="${CAB}" fill="url(#cvShell)"/>
-  <g clip-path="url(#cvClip)"><rect x="20" y="110" width="340" height="12" style="fill:var(--shell2)" opacity=".5"/></g>
-  <rect x="46" y="56" width="78" height="44" rx="12" fill="url(#cvGlass)" class="win"/>
-  <rect x="136" y="56" width="64" height="44" rx="12" fill="url(#cvGlass)" class="win"/>
-  <rect x="214" y="52" width="36" height="80" rx="8" fill="none" stroke="#fff" stroke-opacity=".35" stroke-width="2"/>
-  <rect x="221" y="60" width="22" height="30" rx="6" fill="url(#cvGlass)" class="win"/>
-  <rect x="240" y="104" width="5" height="3" rx="1.5" fill="#fff" opacity=".7"/>
-  <path d="M270 70H286C293 70 299 74 304 82L318 106H270Z" fill="url(#cvGlass)" class="win"/>
-  <rect x="20" y="100" width="6" height="14" rx="3" fill="#e0675a"/>
-  <rect x="18" y="134" width="14" height="8" rx="4" fill="#0D1B2A" opacity=".7"/>
-  <rect x="336" y="134" width="14" height="8" rx="4" fill="#0D1B2A" opacity=".7"/>
-  <circle cx="343" cy="124" r="5.5" fill="#fff6d0"/>
-  <path d="M52 142a26 26 0 0 1 52 0Z M268 142a26 26 0 0 1 52 0Z" fill="#0D1B2A" opacity=".88"/>
+  <path d="M8 74V62Q8 54 18 52L48 48Q58 24 84 22H120Q144 22 156 46L180 52Q194 56 194 68V74Z" fill="url(#cvShell)"/>
+  <rect x="10" y="64" width="182" height="4" style="fill:var(--shell2)" opacity=".5"/>
+  <path d="M62 48Q68 30 86 30H98V48ZM106 30H120Q136 30 146 48H106Z" fill="url(#cvGlass)"/>
+  <circle cx="124" cy="40" r="6.5" fill="#0D1B2A"/><path d="M112 48c0-8 5-10 12-10s12 2 12 10z" fill="#0D1B2A"/>
+  <circle cx="188" cy="62" r="5" fill="#fff6d0"/><rect x="8" y="60" width="5" height="9" rx="2" fill="#e0675a"/>
+  <rect x="186" y="70" width="10" height="5" rx="2" fill="#0D1B2A" opacity=".7"/><rect x="4" y="70" width="10" height="5" rx="2" fill="#0D1B2A" opacity=".7"/>
+  <path d="M32 76a20 20 0 0 1 40 0ZM130 76a20 20 0 0 1 40 0Z" fill="#0D1B2A" opacity=".88"/>
 </g>
-${wheel(78)}${wheel(294)}
-</svg></div>`;
+${wheel(52)}${wheel(150)}
+</svg><div class="say" id="say" role="status" aria-live="polite"></div></div>`;
 const LAND = `<div class="layer" style="--k:-4;--p:.3" aria-hidden="true"><i class="rg r1" style="--t:140s"></i></div>
 <div class="layer" style="--k:-8;--p:.2" aria-hidden="true"><i class="rg r2" style="--t:80s"></i></div>
 <div class="layer" style="--k:-12;--p:.12" aria-hidden="true"><i class="rg r3" style="--t:42s"></i></div>
-<div class="layer" style="--k:-16;--p:.05" aria-hidden="true"><div class="road"><i></i></div>${CARAVAN}</div>`;
+<div class="lm-w" aria-hidden="true"></div><div class="mt-w" aria-hidden="true"><svg viewBox="0 0 600 300" preserveAspectRatio="none"><path d="M0 300L150 90L215 140L330 10L470 170L520 120L600 300Z"/><path d="M330 10L295 62L330 48L362 66Z" fill="rgba(255,255,255,.55)"/><path d="M150 90L128 122L152 112L176 124Z" fill="rgba(255,255,255,.4)"/></svg></div>
+<div class="layer ride" aria-hidden="true"><div class="road"><i></i></div><svg class="zz" viewBox="0 0 60 120" aria-hidden="true"><rect x="28" y="40" width="4" height="80" fill="#0D1B2A" opacity=".8"/><path d="M30 2L58 30L30 58L2 30Z" fill="#e8c35a" stroke="#0D1B2A" stroke-width="3"/><path d="M18 40L26 28L34 36L42 22" fill="none" stroke="#0D1B2A" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg><div class="tl" data-l="red" aria-hidden="true"><svg viewBox="0 0 40 110"><rect x="18" y="30" width="4" height="80" rx="2" fill="#0D1B2A" opacity=".85"/><rect x="5" y="0" width="30" height="62" rx="9" fill="#0D1B2A"/><circle class="lr" cx="20" cy="14" r="7"/><circle class="ly" cx="20" cy="31" r="7"/><circle class="lg" cx="20" cy="48" r="7"/></svg></div>${CARAVAN}</div>`;
 
 /* ---------- Beranda ---------- */
 function nextInner(nx) {
@@ -908,9 +1013,9 @@ function vHome() {
   const notes = [...S.notes].reverse().slice(0, 3);
   return `<section class="bento">
     <article class="scene rise" style="${ix()}" data-scene>
-      ${skyLayers(true)}
+      <i class="tint"></i>${skyLayers(true)}
       <div class="layer" style="--k:14;--p:.42" aria-hidden="true"><span class="orb"></span></div>
-      <div class="scene-top"><span class="chip">${ic('clock')}${hi}, ${esc(S.name)}</span></div>
+      <div class="scene-top"><span class="chip">${ic('clock')}${hi}, ${esc(S.name)}</span><span class="chip cty" id="cty"></span></div>
       <h1 class="title"><span>Welcome</span><span>Home</span></h1>
       ${LAND}
     </article>
@@ -926,7 +1031,7 @@ function vHome() {
     <article class="card glass fx tilt c-gpa rise" style="${ix()}">
       <div class="ch"><h3>Indeks prestasi</h3><button class="round-btn" data-act="goto" data-v="grades" aria-label="Buka nilai">${ic('arrow')}</button></div>
       <div class="gpa-row">${ring(g.gpa / 4, g.gpa.toFixed(2), 'dari 4.00', {count:g.gpa.toFixed(2), dec:2})}
-        <div class="info"><b>${predikat(g.gpa)}</b><span>${g.sks} SKS · ${S.courses.length} mata kuliah</span></div></div>
+        <div class="info"><b>${predikat(g.gpa)}</b><span>Semester ${S.curSem || 1} · ${g.sks} SKS · ${S.courses.length} mata kuliah</span></div></div>
     </article>
 
     <article class="card glass fx tilt c-focus rise" style="${ix()}">
@@ -963,12 +1068,12 @@ const dayInfo = ds => {
 };
 function calInner(dir = 0) {
   const first = new Date(cal.y, cal.m, 1), off = (first.getDay() + 6) % 7, len = new Date(cal.y, cal.m + 1, 0).getDate();
-  const cells = Math.ceil((off + len) / 7) * 7, td = todayISO();
+  const cells = Math.ceil((off + len) / 7) * 7, td = todayISO(), HD = hotDates();
   let g = '';
   for (let i = 0; i < cells; i++) {
     const d = new Date(cal.y, cal.m, 1 - off + i), ds = iso(d), {cl, tk, ev} = dayInfo(ds);
     const mk = (cl.length ? `<i class="c" style="--c:${colorOf(cl[0].name)}"></i>` : '') + (tk.length ? `<i class="t" style="--c:${PRIO[tk[0].priority].c}"></i>` : '') + (ev.length ? '<i class="e"></i>' : '');
-    g += `<button class="cd ${d.getMonth() === cal.m ? '' : 'out'} ${ds === td ? 'today' : ''} ${ds === cal.sel ? 'sel' : ''}" data-act="calsel" data-d="${ds}" aria-pressed="${ds === cal.sel}" aria-label="${d.toLocaleDateString('id-ID', {weekday:'long', day:'numeric', month:'long'})}: ${cl.length} kelas, ${tk.length} tugas, ${ev.length} kegiatan">${d.getDate()}<span class="mk">${mk}</span></button>`;
+    g += `<button class="cd ${HD.has(ds) ? 'hot' : ''} ${d.getMonth() === cal.m ? '' : 'out'} ${ds === td ? 'today' : ''} ${ds === cal.sel ? 'sel' : ''}" data-act="calsel" data-d="${ds}" aria-pressed="${ds === cal.sel}" aria-label="${d.toLocaleDateString('id-ID', {weekday:'long', day:'numeric', month:'long'})}: ${cl.length} kelas, ${tk.length} tugas, ${ev.length} kegiatan">${d.getDate()}${HD.has(ds) ? FLAME : ''}<span class="mk">${mk}</span></button>`;
   }
   const title = new Date(cal.y, cal.m, 1).toLocaleDateString('id-ID', {month:'long', year:'numeric'});
   return `<div class="cal-h"><h3>${title}</h3><div class="cal-nav">
@@ -977,13 +1082,13 @@ function calInner(dir = 0) {
       <button class="round-btn" data-act="calnav" data-n="1" aria-label="Bulan berikutnya">${ic('next')}</button></div></div>
     <div class="cal-wd">${WD.map(w => `<span>${w}</span>`).join('')}</div>
     <div class="cal-g ${dir > 0 ? 's-next' : dir < 0 ? 's-prev' : ''}">${g}</div>
-    <div class="leg"><span><i class="lg c" style="--c:var(--k1)"></i>Kelas</span><span><i class="lg t"></i>Tenggat tugas</span><span><i class="lg e"></i>Kegiatan</span></div>`;
+    <div class="leg"><span><i class="lg c" style="--c:var(--k1)"></i>Kelas</span><span><i class="lg t"></i>Tenggat tugas</span><span><i class="lg e"></i>Kegiatan</span><span>${FLAME}Ujian/penting H-3</span></div>`;
 }
 function agendaInner() {
   const ds = cal.sel, d = new Date(ds + 'T00:00:00'), {cl, tk, ev} = dayInfo(ds);
   const items = [
     ...cl.map(c => [c.start, `<button class="cls" style="--c:${colorOf(c.name)}" data-act="edit" data-t="class" data-id="${c.id}"><b>${esc(c.name)}</b><span>Kelas · ${c.start}–${c.end}</span><span>${esc(c.room || 'Ruang belum diisi')}</span></button>`]),
-    ...ev.map(x => [x.start || '00:00', `<button class="cls" style="--c:var(--a1)" data-act="edit" data-t="event" data-id="${x.id}"><b>${esc(x.title)}</b><span>Kegiatan · ${evTime(x)}</span>${x.place ? `<span>${esc(x.place)}</span>` : ''}</button>`]),
+    ...ev.map(x => [x.start || '00:00', `<button class="cls" style="--c:var(--a1)" data-act="edit" data-t="event" data-id="${x.id}"><b>${esc(x.title)}${evHot(x) ? FLAME : ''}</b><span>${x.kind === 'ujian' ? 'Ujian' : x.kind === 'penting' ? 'Penting' : 'Kegiatan'} · ${evTime(x)}</span>${x.place ? `<span>${esc(x.place)}</span>` : ''}</button>`]),
     ...tk.map(t => ['99:99', `<button class="cls" style="--c:${PRIO[t.priority].c}" data-act="edit" data-t="task" data-id="${t.id}"><b>${esc(t.title)}</b><span>Tenggat${t.done ? ' · selesai' : ''}</span><span>${esc(t.course || 'Tanpa mata kuliah')}</span></button>`])
   ].sort((a, b) => a[0].localeCompare(b[0]));
   return `<div class="ag-h"><b>${d.toLocaleDateString('id-ID', {weekday:'long', day:'numeric', month:'long'})}</b><small>${cl.length} kelas · ${tk.length} tugas · ${ev.length} kegiatan</small></div>
@@ -1036,19 +1141,6 @@ function vTasks() {
 }
 
 /* ---------- Nilai ---------- */
-function vGrades() {
-  const g = gpaOf();
-  const rows = S.courses.map(c => `<div class="crow">
-    <div><b>${esc(c.name)}</b><br><small>${c.sks} SKS</small></div>
-    <small class="bw">Bobot ${GRADES[c.grade].toFixed(1)}</small>
-    <select class="sel" data-grade="${c.id}" aria-label="Nilai ${esc(c.name)}">${Object.keys(GRADES).map(k => `<option ${k === c.grade ? 'selected' : ''}>${k}</option>`).join('')}</select>
-    <button class="x" data-act="edit" data-t="course" data-id="${c.id}" aria-label="Ubah ${esc(c.name)}">${ic('edit')}</button></div>`).join('');
-  return head('Nilai & IPK', 'IPK dihitung dari bobot nilai dikali SKS. Ganti nilai langsung dari daftar.', addBtn('course', 'Tambah mata kuliah')) +
-    `<div class="grades"><div class="card glass gpa rise" style="${ix()}">${ring(g.gpa / 4, g.gpa.toFixed(2), 'dari 4.00', {cls:'mid', count:g.gpa.toFixed(2), dec:2})}
-      <b>${predikat(g.gpa)}</b>
-      <div class="facts"><div><b>${g.sks}</b>Total SKS</div><div><b>${S.courses.length}</b>Mata kuliah</div></div></div>
-      <div class="card glass rise" style="${ix()}">${rows || '<div class="empty">Belum ada mata kuliah.</div>'}</div></div>`;
-}
 
 /* ---------- Catatan ---------- */
 function vNotes() {
@@ -1091,7 +1183,7 @@ function setMode(m) {
 }
 
 /* ---------- Render ---------- */
-const VIEWS = {home:vHome, schedule:vSchedule, tasks:vTasks, grades:vGrades, notes:vNotes, room:vRoom, latihan:vLatihan, focus:vFocus};
+const VIEWS = {home:vHome, schedule:vSchedule, tasks:vTasks, grades:vGrades, notes:vNotes, room:vRoom, latihan:vLatihan, todo:vTodo, focus:vFocus};
 function render({anim = false, keep = false} = {}) {
   const st = $('#stage').scrollTop; ri = 0;
   const v = $('#view'); v.className = 'view ' + (anim ? 'anim' : 'still');
@@ -1104,6 +1196,7 @@ function render({anim = false, keep = false} = {}) {
   chrome();
   if (view === 'focus' || view === 'home') tmUI();
   if (view === 'room') roomMount();
+  if (view === 'home') routeApply();
 }
 const go = v => { view = v; render({anim:true}); };
 
@@ -1124,15 +1217,17 @@ const FORMS = {
   ], def:() => ({name:'', day:1, start:'08:00', end:'10:00', room:'', lecturer:''})},
   course:{label:'mata kuliah', coll:'courses', fields:[
     {n:'name', l:'Nama mata kuliah', req:1},
-    {row:[{n:'sks', l:'SKS', t:'number', req:1, min:1, max:8, num:1}, {n:'grade', l:'Nilai', t:'select', o:Object.keys(GRADES).map(k => [k, k])}]}
-  ], def:() => ({name:'', sks:2, grade:'A'})},
+    {row:[{n:'sem', l:'Semester', t:'select', o:Array.from({length:14}, (_, i) => [i + 1, 'Semester ' + (i + 1)]), num:1}, {n:'sks', l:'SKS', t:'number', req:1, min:1, max:8, num:1}]},
+    {row:[{n:'grade', l:'Nilai huruf', t:'select', o:Object.keys(GRADES).map(k => [k, k])}, {n:'score', l:'Nilai angka (opsional)', t:'number', ph:'0–100'}]}
+  ], def:() => ({name:'', sem:pendSem || S.curSem || 1, sks:2, grade:'A', score:''})},
   event:{label:'kegiatan', coll:'events', fields:[
     {n:'title', l:'Nama kegiatan', req:1, ph:'Contoh: Rapat organisasi'},
     {n:'date', l:'Tanggal', t:'date', req:1},
     {row:[{n:'start', l:'Mulai', t:'time'}, {n:'end', l:'Selesai', t:'time'}]},
+    {n:'kind', l:'Jenis kegiatan', t:'select', o:[['biasa','Biasa'],['penting','Penting (api saat H-3)'],['ujian','Ujian (api saat H-3)']]},
     {n:'place', l:'Tempat'},
     {n:'note', l:'Catatan singkat'}
-  ], def:() => ({title:'', date:cal.sel || todayISO(), start:'09:00', end:'10:00', place:'', note:''})},
+  ], def:() => ({title:'', date:cal.sel || todayISO(), start:'09:00', end:'10:00', place:'', note:'', kind:'biasa'})},
   note:{label:'catatan', coll:'notes', fields:[
     {n:'title', l:'Judul', req:1},
     {n:'body', l:'Isi catatan', t:'textarea'}
@@ -1477,6 +1572,134 @@ document.addEventListener('keydown', e => {
   if (QZ.ans[QZ.i] == null) { const i = /^\d$/.test(k) ? +k - 1 : /^[A-H]$/.test(k) ? k.charCodeAt(0) - 65 : -1; if (i >= 0 && i < q.o.length) qzPick(i); }
   else if (e.key === 'Enter') qzNext();
 });
+
+/* ---------- Api, announcement, to-do ---------- */
+if (!S.todos) S.todos = [];
+const FLAME = '<svg class="fl" viewBox="0 0 24 32" aria-hidden="true"><path d="M12 1c1 6 8 9 8 18a8 8 0 0 1-16 0c0-4 2-6 4-8 0 3 1 4 2 5 1-5-1-9 2-15z" fill="#ff7a2e"/><path d="M12 13c1 4 5 5 5 10a5 5 0 0 1-10 0c0-3 1-4 3-6 0 1 .5 2 1 2 .5-2 0-4 1-6z" fill="#ffc83d"/><path d="M12 21c1 2 2 2 2 4a2 2 0 0 1-4 0c0-1 .5-2 2-4z" fill="#fff3b0"/></svg>';
+const isExam = t => /\b(ujian|uts|uas|kuis|quiz)\b/i.test(t || '');
+const importantItems = () => [
+  ...S.events.filter(e => e.kind === 'ujian' || e.kind === 'penting' || isExam(e.title)).map(e => ({id:e.id, title:e.title, date:e.date, ujian:e.kind === 'ujian' || isExam(e.title)})),
+  ...S.tasks.filter(t => !t.done && isExam(t.title)).map(t => ({id:t.id, title:t.title, date:t.due, ujian:true}))
+].map(x => ({...x, d:daysLeft(x.date)})).filter(x => x.d >= 0).sort((a, b) => a.d - b.d);
+const hotItems = () => importantItems().filter(x => x.d <= 3);
+const hotDates = () => new Set(hotItems().map(x => x.date));
+const evHot = e => hotItems().some(h => h.id === e.id);
+const dl = d => d === 0 ? 'hari ini' : d === 1 ? 'besok' : `H-${d}`;
+const MOTI = ['Pelan-pelan, yang penting terus jalan.', 'Satu langkah kecil hari ini sudah cukup.', 'Kamu sudah sejauh ini. Lanjut, ya!', 'Istirahat itu bagian dari belajar.', 'Fokus 25 menit saja, lalu tarik napas.', 'Kamu punya ritme sendiri, tidak perlu terburu-buru.'];
+const cut = (s, n) => s.length > n ? s.slice(0, n - 1).trimEnd() + '…' : s;
+function annList() {
+  const out = [], act = activeTasks(), late = act.filter(t => daysLeft(t.due) < 0), td = S.todos.filter(t => !t.done).length;
+  importantItems().filter(x => x.d <= 14).forEach(x => out.push({t:`${x.ujian ? 'Ujian' : 'Penting'}: ${x.title} · ${dl(x.d)}`, go:'schedule', hot:x.d <= 3, say:`${x.d <= 3 ? '🔥 ' : ''}${cut(x.title, 14)} · ${dl(x.d)}`}));
+  if (late.length) out.push({t:`${late.length} tugas terlambat. Kerjakan yang paling mendesak dulu`, go:'tasks', say:`${late.length} tugas terlambat`});
+  if (act.length >= 4) out.push({t:`Tugasmu menumpuk! ${act.length} tugas belum selesai`, go:'tasks', say:`Tugas menumpuk (${act.length})`});
+  else if (act.length) out.push({t:`Tugas terdekat: ${act[0].title} · ${dueLabel(act[0].due)}`, go:'tasks', say:`${cut(act[0].title, 14)} · ${dueLabel(act[0].due).toLowerCase()}`});
+  if (td) out.push({t:`${td} to-do belum dicentang`, go:'todo', say:`${td} to-do belum selesai`});
+  const m = MOTI[(new Date().getDate() + new Date().getHours()) % MOTI.length]; out.push({t:m, go:'focus', say:m, m:true});
+  return out;
+}
+const AN = {i:0};
+function annRender() {
+  const el = $('#ann'); if (!el) return; const out = annList(), n = AN.i % out.length, a = out[n], k = a.t + a.hot;
+  if (el.dataset.k === k) return; el.dataset.k = k;
+  el.innerHTML = `<button class="ann-b ${a.hot ? 'hot' : ''}" data-act="goto" data-v="${a.go}">${a.hot ? FLAME : `<span class="ai">${ic('bell')}</span>`}<span class="ann-t">${esc(a.t)}</span><em>${n + 1}/${out.length}</em></button>`;
+}
+setInterval(() => { if (!document.hidden) { AN.i++; annRender(); } }, 6500);
+
+function vTodo() {
+  const all = S.todos, done = all.filter(t => t.done).length, pct = all.length ? Math.round(done / all.length * 100) : 0;
+  const rows = [...all].sort((a, b) => (a.done - b.done) || ((b.star ? 1 : 0) - (a.star ? 1 : 0))).map(t => `<div class="card glass task td rise ${t.done ? 'done' : ''} ${t.star ? 'star' : ''}" style="${ix()}" data-act="td-toggle" data-id="${t.id}"><button class="chk" role="checkbox" aria-checked="${t.done}" aria-label="Tandai selesai">${ic('check')}</button><div><div class="nm">${esc(t.text)}</div></div><div class="td-a"><button class="x tds" data-act="td-star" data-id="${t.id}" aria-label="Tandai penting">${ic('event')}</button><button class="x" data-act="td-del" data-id="${t.id}" aria-label="Hapus">${ic('trash')}</button></div></div>`).join('');
+  return head('To-Do', 'Daftar kecil harian. Tulis, centang, selesai. Bintang menandai yang penting.', done ? '<button class="btn ghost" data-act="td-clear">Bersihkan yang selesai</button>' : '') +
+    `<div class="card glass task-top rise" style="${ix()}"><div><div class="t"><span>${done} dari ${all.length} selesai</span><b>${pct}%</b></div><div class="bar"><i style="width:${pct}%"></i></div></div></div>
+    <form class="card glass todo-add rise" id="td-form" style="${ix()}"><input id="td-in" placeholder="Tulis to-do baru, lalu Enter…" autocomplete="off" maxlength="120"><button class="btn">${ic('plus')}Tambah</button></form>
+    ${rows ? `<div class="tasks">${rows}</div>` : '<div class="card glass empty">Belum ada to-do. Tulis yang pertama di atas.</div>'}`;
+}
+document.addEventListener('submit', e => {
+  if (e.target.id !== 'td-form') return; e.preventDefault();
+  const v = $('#td-in').value.trim(); if (!v) return;
+  S.todos.push({id:uid(), text:v, done:false, star:false}); save(); render({keep:true}); $('#td-in').focus();
+});
+document.addEventListener('click', e => {
+  const el = e.target.closest('[data-act]'); if (!el) return; const d = el.dataset, t = S.todos.find(x => x.id === d.id);
+  switch (d.act) {
+    case 'td-toggle': t.done = !t.done; save(); if (t.done) { const r = el.getBoundingClientRect(); burst(r.left + 40, r.top + r.height / 2); } render({keep:true}); break;
+    case 'td-star': t.star = !t.star; save(); render({keep:true}); break;
+    case 'td-del': S.todos = S.todos.filter(x => x.id !== d.id); save(); render({keep:true}); break;
+    case 'td-clear': S.todos = S.todos.filter(x => !x.done); save(); render({keep:true}); toast('To-do selesai dibersihkan'); break;
+  }
+});
+
+/* ---------- Perjalanan mobil ---------- */
+/* ---------- Keliling dunia ---------- */
+const LM = {
+  uk:'<svg viewBox="0 0 160 240"><rect x="60" y="76" width="40" height="164"/><path d="M56 76h48l-6-16H62z"/><path d="M64 60h32L80 6z"/><rect x="2" y="196" width="156" height="44"/><rect x="14" y="176" width="12" height="22"/><rect x="40" y="184" width="10" height="14"/><rect x="112" y="184" width="10" height="14"/><rect x="134" y="176" width="12" height="22"/><circle cx="80" cy="102" r="12" fill="#F4F1DE"/><path d="M80 94v8l5 3" stroke="#0D1B2A" stroke-width="2" fill="none"/></svg>',
+  fr:'<svg viewBox="0 0 160 240"><path d="M80 2L85 34H93L96 62L106 112L122 162L148 238H120L109 206Q80 184 51 206L40 238H12L38 162L54 112L64 62L67 34H75Z"/><rect x="58" y="92" width="44" height="6"/><rect x="46" y="142" width="68" height="7"/></svg>',
+  it:'<svg viewBox="0 0 160 240"><g transform="rotate(5 80 236)"><rect x="56" y="44" width="48" height="192" rx="3"/><rect x="62" y="24" width="36" height="22" rx="3"/><path d="M66 24h28l-4-12H70z"/><g fill="#F4F1DE" opacity=".35"><rect x="52" y="76" width="56" height="4"/><rect x="52" y="112" width="56" height="4"/><rect x="52" y="148" width="56" height="4"/><rect x="52" y="184" width="56" height="4"/></g></g><rect x="0" y="206" width="44" height="34"/><path d="M0 206Q22 176 44 206Z"/></svg>',
+  us:'<svg viewBox="0 0 160 240"><rect x="46" y="196" width="68" height="44"/><rect x="54" y="170" width="52" height="28"/><path d="M62 170L68 92H92L98 170Z"/><circle cx="80" cy="78" r="12"/><path d="M68 70L58 56M75 66L73 48M80 65V46M85 66L87 48M92 70L102 56" stroke="currentColor" stroke-width="4" stroke-linecap="round"/><path d="M92 98L114 62L120 30" stroke="currentColor" stroke-width="9" stroke-linecap="round" fill="none"/><path d="M110 30h20l-5-14h-10z"/><circle cx="120" cy="10" r="7" fill="#ffc83d"/><rect x="56" y="104" width="14" height="22" rx="2"/></svg>',
+  br:'<svg viewBox="0 0 160 240"><path d="M-10 240Q80 150 170 240Z"/><circle cx="80" cy="30" r="11"/><rect x="12" y="46" width="136" height="12" rx="6"/><path d="M68 52h24l12 118H56z"/><rect x="52" y="168" width="56" height="34"/></svg>',
+  id:'<svg viewBox="0 0 200 240"><rect x="26" y="206" width="148" height="34"/><rect x="40" y="180" width="120" height="28"/><rect x="54" y="156" width="92" height="26"/><rect x="68" y="136" width="64" height="22"/><path d="M82 136a18 26 0 0 1 36 0z"/><rect x="98" y="96" width="4" height="22"/><path d="M58 156a8 11 0 0 1 16 0zM126 156a8 11 0 0 1 16 0zM44 180a8 11 0 0 1 16 0zM140 180a8 11 0 0 1 16 0z"/><path d="M12 240V150" stroke="currentColor" stroke-width="5"/><path d="M12 150q-26-4-34 10M12 150q26-4 34 10M12 150q-12-22-30-16M12 150q12-22 30-16" stroke="currentColor" stroke-width="4" fill="none" stroke-linecap="round"/></svg>',
+  kr:'<svg viewBox="0 0 160 240"><rect x="10" y="196" width="140" height="44"/><rect x="22" y="152" width="116" height="46"/><path d="M0 152Q34 150 44 128H116Q126 150 160 152Q124 164 112 158H48Q36 164 0 152Z"/><rect x="48" y="104" width="64" height="26"/><path d="M26 108Q58 106 66 82H94Q102 106 134 108Q106 120 96 114H64Q54 120 26 108Z"/><path d="M80 66l-16 16h32z"/><path d="M66 240v-26a14 14 0 0 1 28 0v26z" fill="#F4F1DE" opacity=".25"/></svg>'
+};
+const LEGS = [['Inggris · Big Ben', '#6b7f95', 'uk'], ['Prancis · Menara Eiffel', '#c9a6c8', 'fr'], ['Italia · Menara Pisa', '#e0a15a', 'it'], ['Amerika · Patung Liberty', '#5a7fc9', 'us'], ['Brasil · Cristo Redentor', '#3fae6a', 'br'], ['Indonesia · Borobudur', '#2fa89a', 'id'], ['Korea · Gwanghwamun', '#e6a1b8', 'kr']];
+const EV = [[['climb', 6], ['down', 6]], [['zig', 11]], [['slow', 3.6], ['stop', 5.5], ['go', 2]]];
+const ROUTE = reduce ? [['cruise', 10, 0]] : LEGS.flatMap((_, k) => [['cruise', 6, k], ...EV[k % 3], ['cruise', 5]]);
+const ZIG = [-6, 5, -6, 5, -5], RT = {ph:'cruise', tilt:0, mt:false, zz:false, tl:'', l:'red', i:0, k:0, t0:Date.now()};
+let rtI = 0, rtT = 0;
+function routeApply() {
+  const sc = $('[data-scene]'); if (!sc) return; const L = LEGS[RT.k];
+  sc.dataset.ph = RT.ph; sc.style.setProperty('--tilt', RT.tilt + 'deg'); sc.style.setProperty('--tint', L[1]);
+  sc.classList.toggle('mt-on', RT.mt); sc.classList.toggle('zz-on', RT.zz);
+  sc.classList.toggle('tl-in', RT.tl === 'in'); sc.classList.toggle('tl-out', RT.tl === 'out');
+  const t = sc.querySelector('.tl'); if (t) t.dataset.l = RT.l;
+  const lm = sc.querySelector('.lm-w'), c = $('#cty');
+  if (lm && lm.dataset.k !== String(RT.k)) { lm.dataset.k = RT.k; lm.innerHTML = LM[L[2]]; lm.style.animation = 'none'; void lm.offsetWidth; lm.style.animation = ''; lm.style.animationDelay = -((Date.now() - RT.t0) / 1000) + 's'; }
+  if (c && c.textContent !== L[0]) c.textContent = L[0];
+}
+function carSay(text) {
+  const el = $('#say'); if (!el) return; el.textContent = text; el.classList.add('on');
+  clearTimeout(carSay.t); carSay.t = setTimeout(() => el.classList.remove('on'), 4800);
+}
+const remind = () => { const out = annList().filter(a => !a.m); return out.length ? out[RT.i++ % out.length].say : ''; };
+const sayNow = () => { const t = remind(); if (t && !document.hidden) carSay(t); };
+function routeStep() {
+  const [ph, sec, k] = ROUTE[rtI % ROUTE.length]; rtI++; RT.ph = ph; clearInterval(rtT);
+  if (k != null) { RT.k = k; RT.t0 = Date.now(); RT.tl = ''; }
+  if (ph === 'cruise') { RT.mt = false; RT.zz = false; RT.tilt = 0; }
+  if (ph === 'climb') { RT.mt = true; RT.tilt = -6; }
+  if (ph === 'down') RT.tilt = 5;
+  if (ph === 'zig') { RT.zz = true; let z = 0; RT.tilt = ZIG[0]; rtT = setInterval(() => { RT.tilt = ZIG[++z % ZIG.length]; routeApply(); }, 1800); }
+  if (ph === 'slow') { RT.tl = 'in'; RT.l = 'yellow'; }
+  if (ph === 'stop') RT.l = 'red';
+  if (ph === 'go') { RT.l = 'green'; RT.tl = 'out'; }
+  routeApply(); setTimeout(routeStep, sec * 1000);
+}
+routeStep(); setTimeout(sayNow, 2500); setInterval(sayNow, 8000);
+
+/* ---------- Nilai per semester ---------- */
+let pendSem = 0;
+S.courses.forEach(c => { if (!c.sem) c.sem = 1; });
+if (!S.curSem) S.curSem = Math.max(1, ...S.courses.map(c => +c.sem));
+const scoreOf = c => { const v = parseFloat(c.score); return isFinite(v) && v >= 0 && v <= 100 ? v : null; };
+function statOf(list) {
+  const sks = list.reduce((a, c) => a + +c.sks, 0), pts = list.reduce((a, c) => a + +c.sks * GRADES[c.grade], 0), sc = list.map(scoreOf).filter(v => v != null);
+  return {sks, n:list.length, ips:sks ? pts / sks : 0, avg:sc.length ? sc.reduce((a, b) => a + b, 0) / sc.length : null};
+}
+const semNo = c => +c.sem || 1;
+function vGrades() {
+  const g = statOf(S.courses), cur = S.curSem || 1, top = Math.max(cur, ...S.courses.map(semNo)), fa = v => v == null ? '–' : v.toFixed(1);
+  const per = Array.from({length:top}, (_, i) => { const n = i + 1, l = S.courses.filter(c => semNo(c) === n); return {n, l, st:statOf(l), ipk:statOf(S.courses.filter(c => semNo(c) <= n)).ips}; });
+  const bars = per.map(p => `<div class="sb ${p.n === cur ? 'now' : ''}"><div class="sbar"><i style="height:${p.st.n ? Math.max(5, p.st.ips / 4 * 100) : 0}%"></i></div><b>${p.st.n ? p.st.ips.toFixed(2) : '–'}</b><small>S${p.n}</small></div>`).join('');
+  const row = c => `<div class="crow"><div><b>${esc(c.name)}</b><br><small>${c.sks} SKS${scoreOf(c) != null ? ' · angka ' + scoreOf(c) : ''}</small></div><small class="bw">Bobot ${GRADES[c.grade].toFixed(1)}</small><select class="sel" data-grade="${c.id}" aria-label="Nilai ${esc(c.name)}">${Object.keys(GRADES).map(k => `<option ${k === c.grade ? 'selected' : ''}>${k}</option>`).join('')}</select><button class="x" data-act="edit" data-t="course" data-id="${c.id}" aria-label="Ubah ${esc(c.name)}">${ic('edit')}</button></div>`;
+  const sec = per.slice().reverse().map(p => `<article class="card glass sem rise" style="${ix()}"><div class="ch"><h3>Semester ${p.n}${p.n === cur ? '<span class="badge live">Sekarang</span>' : ''}</h3><button class="round-btn" data-act="add-course" data-sem="${p.n}" aria-label="Tambah mata kuliah semester ${p.n}">${ic('plus')}</button></div>
+    <div class="semfacts"><div><b>${p.st.n ? p.st.ips.toFixed(2) : '–'}</b>IPS</div><div><b>${p.st.n ? p.ipk.toFixed(2) : '–'}</b>IPK</div><div><b>${fa(p.st.avg)}</b>Rata² angka</div><div><b>${p.st.sks}</b>SKS</div></div>
+    ${p.l.map(row).join('') || '<div class="none">Belum ada mata kuliah di semester ini.</div>'}</article>`).join('');
+  const sel = `<label class="semsel">Semester sekarang<select class="sel" data-cursem>${Array.from({length:14}, (_, i) => `<option value="${i + 1}" ${i + 1 === cur ? 'selected' : ''}>${i + 1}</option>`).join('')}</select></label>`;
+  return head('Nilai & IPK', 'Nilai per mata kuliah, dikelompokkan per semester. IPS = IPK satu semester, IPK = kumulatif.', `<div class="chips">${sel}${addBtn('course', 'Tambah mata kuliah')}</div>`) +
+    `<div class="grades"><div class="card glass gpa rise" style="${ix()}">${ring(g.ips / 4, g.ips.toFixed(2), 'IPK total', {cls:'mid', count:g.ips.toFixed(2), dec:2})}<b>${predikat(g.ips)}</b>
+      <div class="facts"><div><b>${g.sks}</b>Total SKS</div><div><b>${g.n}</b>Mata kuliah</div><div><b>${fa(g.avg)}</b>Rata² angka total</div><div><b>${cur}</b>Semester sekarang</div></div></div>
+      <div class="semcol"><article class="card glass rise" style="${ix()}"><div class="ch"><h3>IPS per semester</h3></div><div class="sbars">${bars}</div></article>${sec}</div></div>`;
+}
+document.addEventListener('change', e => { const s = e.target.closest('[data-cursem]'); if (s) { S.curSem = +s.value; save(); render({keep:true}); } });
+document.addEventListener('click', e => { const el = e.target.closest('[data-act=add-course]'); if (el) { pendSem = +el.dataset.sem; openForm('course'); pendSem = 0; } });
 
 /* ---------- Mulai ---------- */
 buildChrome();
