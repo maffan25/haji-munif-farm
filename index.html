@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="id" data-theme="malam">
+<html lang="id" data-theme="malam" data-sky="night">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -71,7 +71,7 @@ html[data-theme="hutan"]{
   --card:#D4C4A8; --card-text:#0D1B2A; --card-muted:#1B263B;
   --a1:#F4F1DE; --a2:#D4C4A8; --a-ink:#0D1B2A;
   --rail:rgba(13,27,42,.28); --rail-icon:rgba(244,241,222,.85); --rail-on-icon:#0D1B2A;
-  --orb:#D4C4A8; --orb-glow:rgba(212,196,168,.7); --orb-x:70%; --orb-y:40%; --stars:.4; --cloud:rgba(244,241,222,.16);
+  --orb:#D4C4A8; --orb-glow:rgba(212,196,168,.7); --orb-x:70%; --orb-y:40%; --stars:.9; --cloud:rgba(244,241,222,.16);
   --shell1:#D4C4A8; --shell2:#415A77; --win1:#F4F1DE; --win2:#415A77;
   --k0:#D4C4A8; --k1:#F4F1DE; --k2:#8fb0d3; --k3:#a9c0ab;
   --hi:#F4F1DE; --mid:#D4C4A8; --lo:#a9c0ab;
@@ -191,8 +191,8 @@ button.pill:hover{transform:translateY(-2px)}
 .c-week{grid-column:span 8}
 .c-notes{grid-column:span 4}
 
-.scene{position:relative;min-height:440px;border-radius:var(--r-card);overflow:hidden;background:var(--sky);display:flex;flex-direction:column;padding:20px 24px 0;border:1px solid var(--panel-line);isolation:isolate}
-.layer{position:absolute;inset:0;pointer-events:none;transform:translate3d(calc(var(--mx,0) * var(--k) * 1px),calc(var(--my,0) * var(--k) * .6px),0);transition:transform .4s var(--ease)}
+.scene{position:relative;min-height:480px;border-radius:var(--r-card);overflow:hidden;background:var(--sky);display:flex;flex-direction:column;padding:20px 24px 0;border:1px solid var(--panel-line);isolation:isolate}
+.layer{position:absolute;inset:0;pointer-events:none;translate:0 calc(var(--sy,0) * var(--p,0) * 1px);will-change:translate;transform:translate3d(calc(var(--mx,0) * var(--k) * 1px),calc(var(--my,0) * var(--k) * .6px),0);transition:transform .4s var(--ease)}
 .stars{position:absolute;inset:0;opacity:var(--stars);transition:opacity 1s;z-index:0}
 .stars i{position:absolute;width:var(--s);height:var(--s);border-radius:50%;background:#F4F1DE;animation:twinkle var(--d) ease-in-out infinite alternate}
 @keyframes twinkle{from{opacity:.15;transform:scale(.7)}to{opacity:1;transform:scale(1.2)}}
@@ -203,13 +203,10 @@ button.pill:hover{transform:translateY(-2px)}
 .scene-top{position:relative;z-index:3;display:flex;justify-content:space-between;align-items:center}
 .chip{display:inline-flex;align-items:center;gap:8px;height:36px;padding:0 16px;border-radius:99px;font-size:13px;font-weight:600;background:rgba(244,241,222,.16);color:#F4F1DE;border:1px solid rgba(244,241,222,.28);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)}
 html[data-theme="fajar"] .chip{background:rgba(255,255,255,.5);color:#0D1B2A;border-color:rgba(255,255,255,.8)}
-.title{position:relative;z-index:1;flex:1;display:grid;place-content:center;text-align:center;font-weight:300;font-size:clamp(40px,5.6vw,86px);line-height:1;letter-spacing:-.04em;padding-top:8px}
+.title{position:relative;z-index:1;flex:1;display:grid;place-content:center;text-align:center;font-weight:300;font-size:clamp(40px,5.6vw,86px);line-height:1;letter-spacing:-.04em;padding:8px 0 140px;translate:0 calc(var(--sy,0) * .28px);opacity:calc(1 - var(--sy,0) / 480)}
 .title span{display:block;color:transparent;-webkit-background-clip:text;background-clip:text;background-image:linear-gradient(100deg,var(--title-a) calc(var(--sh) - 26%),var(--title-b) var(--sh),var(--title-a) calc(var(--sh) + 26%));animation:shine 9s linear infinite}
 .title span:nth-child(2){animation-delay:-.8s}
 @keyframes shine{from{--sh:-30%}to{--sh:130%}}
-.pav{position:relative;inset:auto;margin:-40px auto 0;width:86%;z-index:2}
-.pav svg{display:block;width:100%;height:auto;filter:drop-shadow(0 26px 30px rgba(0,0,0,.35));animation:bob 7s ease-in-out infinite alternate}
-@keyframes bob{to{transform:translateY(-7px)}}
 .win{animation:glow 4.5s ease-in-out infinite alternate}
 @keyframes glow{from{filter:brightness(.92)}to{filter:brightness(1.25)}}
 
@@ -379,6 +376,98 @@ html[data-theme="fajar"] .choices .i{color:var(--steel)}
 .fab{display:none}
 
 /* =========================================================
+   LANGIT HIDUP, LANSKAP, PARALLAX
+   ========================================================= */
+:root{--bird:#1B263B;--g1:#34506e;--g2:#1f3550;--g3:#14243a;--road:#0a1522;--dash:#D4C4A8}
+html[data-theme="fajar"]{--g1:#a9b8a0;--g2:#778D7A;--g3:#415A77;--road:#2b3b4e;--dash:#F4F1DE}
+html[data-theme="hutan"]{--g1:#6f8a86;--g2:#4a6a62;--g3:#1B263B;--road:#16222f;--dash:#D4C4A8;--bird:#0D1B2A}
+.skybg{position:absolute;inset:0;overflow:hidden;pointer-events:none;z-index:0}
+.aurora i{translate:0 calc(var(--sy,0) * -.1px)}
+.pl{position:absolute;left:-12%;right:-12%;top:-8%;bottom:-40%;translate:0 calc(var(--sy,0) * var(--p,0) * -1px);will-change:translate}
+.pl.h{top:-10%;bottom:0;translate:0 calc(var(--sy,0) * var(--p,0) * 1px)}
+.sk-day,.shoots{position:absolute;inset:0;transition:opacity 1.2s}
+html[data-sky="day"] .sk-night{opacity:0!important}
+html[data-sky="night"] .sk-day{opacity:0}
+.sd{position:absolute;inset:0;transform-origin:80% 120%;animation:sdrift 90s ease-in-out infinite alternate}
+.stars.near .sd{transform-origin:15% 125%;animation:sdrift2 60s ease-in-out infinite alternate}
+.stars.near i{box-shadow:0 0 7px 1px rgba(244,241,222,.65)}
+@keyframes sdrift{from{transform:rotate(-5deg)}to{transform:rotate(5deg)}}
+@keyframes sdrift2{from{transform:rotate(5deg)}to{transform:rotate(-5deg)}}
+.shoot{position:absolute;width:120px;height:2px;border-radius:2px;background:linear-gradient(90deg,transparent,rgba(255,255,255,.95));filter:drop-shadow(0 0 5px #fff);opacity:0}
+.shoot::after{content:"";position:absolute;right:-1px;top:-2px;width:6px;height:6px;border-radius:50%;background:#fff;box-shadow:0 0 10px 3px rgba(255,255,255,.8)}
+.cloud{position:absolute;left:-40%;width:var(--w,150px);height:34px;border-radius:99px;background:var(--cloud);filter:blur(1.2px);animation:drift linear infinite}
+.cloud::before,.cloud::after{content:"";position:absolute;border-radius:50%;background:inherit}
+.cloud::before{width:42%;aspect-ratio:1;left:14%;bottom:40%}
+.cloud::after{width:52%;aspect-ratio:1;left:40%;bottom:30%}
+.bird{position:absolute;left:-6%;width:26px;height:14px;color:var(--bird);scale:var(--sc,1);animation:fly var(--t,34s) linear infinite}
+.bird b{position:absolute;inset:0;animation:bob2 1.6s ease-in-out infinite alternate}
+.bird b::before,.bird b::after{content:"";position:absolute;top:6px;width:13px;height:2.4px;border-radius:2px;background:currentColor}
+.bird b::before{left:0;transform-origin:100% 50%;animation:wl .5s ease-in-out infinite alternate}
+.bird b::after{right:0;transform-origin:0 50%;animation:wr .5s ease-in-out infinite alternate}
+@keyframes fly{to{left:108%}}
+@keyframes bob2{to{transform:translateY(-9px)}}
+@keyframes wl{from{transform:rotate(26deg)}to{transform:rotate(-24deg)}}
+@keyframes wr{from{transform:rotate(-26deg)}to{transform:rotate(24deg)}}
+.rg{position:absolute;left:0;bottom:0;width:200%;animation:pan var(--t,60s) linear infinite;-webkit-mask-image:var(--m);mask-image:var(--m);-webkit-mask-size:50% 100%;mask-size:50% 100%;-webkit-mask-repeat:repeat-x;mask-repeat:repeat-x;-webkit-mask-position:0 100%;mask-position:0 100%}
+.r1{--m:var(--m-r1);height:48%;background:var(--g1)}
+.r2{--m:var(--m-r2);height:36%;background:var(--g2)}
+.r3{--m:var(--m-r3);height:21%;background:var(--g3)}
+@keyframes pan{to{transform:translateX(-50%)}}
+.road{position:absolute;left:-30px;right:-30px;bottom:0;height:13%;background:var(--road);border-top:3px solid color-mix(in srgb,var(--dash) 20%,transparent);overflow:hidden}
+.road i{position:absolute;left:0;top:46%;height:3px;width:calc(100% + 72px);background:repeating-linear-gradient(90deg,var(--dash) 0 36px,transparent 36px 72px);opacity:.8;animation:dash .55s linear infinite}
+@keyframes dash{to{transform:translateX(-72px)}}
+.cv{position:absolute;left:50%;bottom:4.4%;width:clamp(200px,34%,310px);translate:-50% 0}
+.cv svg{display:block;width:100%;height:auto;overflow:visible;filter:drop-shadow(0 8px 10px rgba(0,0,0,.3))}
+.cv-body{animation:cvbob .8s ease-in-out infinite alternate}
+@keyframes cvbob{to{transform:translateY(-2px)}}
+.whl{transform-box:fill-box;transform-origin:center;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.dust circle{opacity:0;transform-box:fill-box;transform-origin:center;animation:dust 1.3s ease-out infinite}
+.dust circle:nth-child(2){animation-delay:.43s}
+.dust circle:nth-child(3){animation-delay:.86s}
+@keyframes dust{0%{opacity:.55;transform:translate(0,0) scale(.5)}100%{opacity:0;transform:translate(-56px,-12px) scale(1.7)}}
+.beam{opacity:0;transition:opacity 1.2s}
+html[data-sky="night"] .beam{opacity:1}
+
+/* ---------- Umpan balik tombol ---------- */
+button:active,.pill:active{scale:.93}
+.note:active,.task:active,.cd:active{scale:.97}
+.tap{position:fixed;width:84px;height:84px;border-radius:50%;border:2px solid var(--a1);background:radial-gradient(circle,color-mix(in srgb,var(--a1) 32%,transparent),transparent 70%);pointer-events:none;z-index:90}
+
+/* ---------- Kalender & agenda ---------- */
+.sched{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(280px,1fr);gap:var(--gap);align-items:start;margin-bottom:28px}
+.agenda{position:sticky;top:0}
+.cal{padding:22px}
+.cal-h{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:16px}
+.cal-h h3{font-size:21px;font-weight:600;letter-spacing:-.03em;text-transform:capitalize}
+.cal-nav{display:flex;gap:8px;align-items:center}
+.cal-nav .round-btn{width:38px;height:38px}
+.cal-wd,.cal-g{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px}
+.cal-wd span{text-align:center;font-size:11.5px;font-weight:600;color:var(--p-muted);padding:2px 0 8px}
+.cal-g.s-next{animation:slideN .45s var(--ease)}
+.cal-g.s-prev{animation:slideP .45s var(--ease)}
+@keyframes slideN{from{opacity:0;transform:translateX(44px)}}
+@keyframes slideP{from{opacity:0;transform:translateX(-44px)}}
+.cd{display:flex;flex-direction:column;align-items:center;gap:6px;padding-top:9px;min-height:54px;aspect-ratio:1/.8;border-radius:16px;font-size:14px;font-weight:600;background:color-mix(in srgb,currentColor 6%,transparent);transition:translate .25s var(--ease),background .25s}
+.cd:hover{translate:0 -3px;background:color-mix(in srgb,currentColor 14%,transparent)}
+.cd.out{opacity:.38}
+.cd.today{box-shadow:inset 0 0 0 2px var(--a1)}
+.cd.sel{background:linear-gradient(160deg,var(--a1),var(--a2));color:var(--a-ink);opacity:1;animation:selpop .45s var(--ease)}
+@keyframes selpop{from{transform:scale(.8)}}
+.mk{display:flex;gap:4px;height:8px;align-items:center}
+.mk i,.lg{display:block;width:7px;height:7px;background:var(--c,var(--a1))}
+.mk .c,.lg.c{border-radius:50%}
+.mk .t,.lg.t{border-radius:2px}
+.mk .e,.lg.e{transform:rotate(45deg) scale(.85);border-radius:1px}
+.cd.sel .mk i{background:var(--a-ink)}
+.leg{display:flex;gap:18px;flex-wrap:wrap;margin-top:16px;font-size:12px;color:var(--p-muted)}
+.leg span{display:flex;align-items:center;gap:7px}
+.ag-h{margin-bottom:16px}
+.ag-h b{display:block;font-size:20px;font-weight:600;letter-spacing:-.03em;text-transform:capitalize}
+.ag-h small{display:block;margin-top:4px;font-size:12.5px;color:var(--p-muted)}
+.sub-h{font-size:18px;font-weight:600;letter-spacing:-.02em;margin:0 4px 14px}
+
+/* =========================================================
    RESPONSIVE
    ========================================================= */
 @media (max-width:1180px){
@@ -386,6 +475,8 @@ html[data-theme="fajar"] .choices .i{color:var(--steel)}
   .c-tasks,.c-gpa{grid-column:span 6}
   .week{grid-template-columns:repeat(3,minmax(0,1fr))}
   .pill-stats{display:none}
+  .sched{grid-template-columns:1fr}
+  .agenda{position:static}
 }
 @media (max-width:860px){
   body{padding:8px}
@@ -405,7 +496,12 @@ html[data-theme="fajar"] .choices .i{color:var(--steel)}
   .stage{padding:16px 14px 92px}
   .bento{gap:12px}
   .c-tasks,.c-gpa{grid-column:span 12}
-  .scene{min-height:360px;padding:16px 16px 0}
+  .scene{min-height:410px;padding:16px 16px 0}
+  .title{padding-bottom:118px}
+  .cal{padding:16px}
+  .cal-wd,.cal-g{gap:4px}
+  .cd{min-height:46px;border-radius:12px;padding-top:6px;font-size:13px}
+  .cal-h h3{font-size:17px}
   .weekstrip{gap:5px}
   .wd{padding:12px 2px 10px;border-radius:16px}
   .wd b{font-size:16px}
@@ -421,11 +517,79 @@ html[data-theme="fajar"] .choices .i{color:var(--steel)}
   .fab .i{width:26px;height:26px;stroke-width:2.2}
 }
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
+
+/* =========================================================
+   PERFORMA — buang efek mahal, pertahankan tampilan
+   ========================================================= */
+body{background-image:none}
+.aurora i{filter:none;will-change:transform;translate:none}
+.aurora i:nth-child(1){background:radial-gradient(circle,var(--blob1),transparent 66%)}
+.aurora i:nth-child(2){background:radial-gradient(circle,var(--blob2),transparent 66%)}
+.aurora i:nth-child(3){background:radial-gradient(circle,var(--blob3),transparent 66%)}
+.glass,.pill,.rail-nav,.themes,.chip,.overlay{-webkit-backdrop-filter:none;backdrop-filter:none}
+.overlay{background:rgba(8,18,29,.78)}
+.fx{transform:none;transition:box-shadow .3s}.fx::after{display:none}
+.layer,.pl,.pl.h{translate:none;transform:none;transition:none;will-change:auto}
+.title{translate:none;opacity:1}
+.title span{animation:none;--sh:55%}
+.scene{contain:layout paint}
+.stars i{animation:none}
+.stars .sd{will-change:transform}
+.stars.near{animation:tw 4s ease-in-out infinite alternate}
+@keyframes tw{from{opacity:.5}to{opacity:1}}
+.pl{container-type:inline-size}
+.cloud{filter:none;left:-200px;animation-name:drift2}
+@keyframes drift2{to{transform:translateX(calc(100cqw + 420px))}}
+.bird{left:-60px;animation-name:fly2}
+@keyframes fly2{to{transform:translateX(calc(100cqw + 140px))}}
+.win{animation:none}.cv svg{filter:none}
+.r1,.r2{animation:none}
+
+/* =========================================================
+   MY ROOM & LATIHAN
+   ========================================================= */
+.pdfs{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:var(--gap)}
+.pdf{display:flex;flex-direction:column;gap:6px;border-top:4px solid var(--c,var(--a1))}
+.pdf[hidden]{display:none}
+.pdf b{font-size:15px;line-height:1.35;word-break:break-word}
+.pdf small{color:var(--p-muted);font-size:12px}
+.pdf .acts{margin-top:14px;align-items:center}
+.pdf-ic{width:44px;height:44px;border-radius:14px;display:grid;place-items:center;background:color-mix(in srgb,var(--c) 28%,transparent);margin-bottom:6px}
+.drop{display:grid;gap:4px;text-align:center;padding:24px;margin-bottom:var(--gap);border:1.5px dashed var(--panel-line);transition:background .25s,border-color .25s}
+.drop.on{border-color:var(--a1);background:color-mix(in srgb,var(--a1) 14%,transparent)}
+.drop span{font-size:12.5px}
+.reader{padding:0;overflow:clip}
+.rd-bar{position:sticky;top:0;z-index:3;display:flex;align-items:center;gap:10px;padding:10px 16px;background:var(--modal);color:var(--modal-text);border-bottom:1px solid var(--m-line);font-size:13px;font-weight:600}
+.rd-bar .round-btn{width:36px;height:36px}.rd-bar .spacer{margin-left:auto}
+.rd-pg{display:flex;align-items:center;gap:6px}
+.rd-pg input{width:62px;background:var(--m-field);border:1px solid var(--m-line);border-radius:10px;padding:6px 8px;color:inherit;text-align:center}
+.rd-pages{display:flex;flex-direction:column;align-items:safe center;gap:14px;padding:16px;background:rgba(0,0,0,.18);overflow-x:auto;min-height:60dvh}
+.pgbox{flex:none;background:#fff;border-radius:6px;box-shadow:0 8px 24px rgba(0,0,0,.3);scroll-margin-top:72px;overflow:hidden}
+.pgbox canvas{display:block;width:100%;height:100%}
+.rd-if{width:100%;height:78dvh;border:0;border-radius:8px;background:#fff}
+.quiz{max-width:760px;margin:0 auto;padding:26px}
+.qq{font-size:clamp(18px,2.4vw,24px);font-weight:600;letter-spacing:-.02em;line-height:1.4;margin:22px 0 18px}
+.opts{display:grid;gap:10px}
+.opt{display:flex;align-items:center;gap:14px;text-align:left;padding:14px 16px;border-radius:18px;background:color-mix(in srgb,currentColor 7%,transparent);border:1.5px solid var(--panel-line);font-size:14.5px;line-height:1.5;transition:transform .25s var(--ease),background .25s,border-color .25s}
+.opt:hover:not(:disabled){transform:translateX(4px);border-color:var(--a1)}
+.opt b{width:32px;height:32px;border-radius:50%;display:grid;place-items:center;flex:none;font-size:13px;background:color-mix(in srgb,currentColor 14%,transparent)}
+.opt.ok{background:color-mix(in srgb,var(--a2) 38%,transparent);border-color:var(--a2)}
+.opt.no{background:color-mix(in srgb,#c0564a 30%,transparent);border-color:#c0564a}
+.opt.dim{opacity:.5}.opt:disabled{cursor:default}
+.fb{margin-top:16px;padding:14px 16px;border-radius:18px;font-size:13.5px;line-height:1.6;background:color-mix(in srgb,currentColor 8%,transparent)}
+.fb b{display:block;font-size:15px;margin-bottom:4px}.fb span,.fb p{display:block;color:var(--p-muted)}
+.qsrc{min-height:220px!important;font-family:ui-monospace,Menlo,monospace;font-size:13px}
+.qhint{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:-4px 0 10px;font-size:12.5px}.qhint span{margin-right:auto;font-weight:600}
+.qfmt{display:block;font-size:12px;line-height:1.6;opacity:.75;margin-bottom:14px}
+.rv{padding:14px 4px;border-bottom:1px solid var(--panel-line);font-size:13.5px;line-height:1.6}.rv:last-child{border:0}
+.rv b{display:block;margin-bottom:4px}.rv small{display:block;color:var(--p-muted)}
+@media (max-width:860px){.rail-btn{width:38px;height:38px}.quiz{padding:18px}.pdfs{grid-template-columns:1fr}.rd-pages{padding:8px}}
 </style>
 </head>
 <body>
 
 <div class="frame" id="frame">
+  <div class="skybg" id="skybg" aria-hidden="true"></div>
   <div class="aurora" aria-hidden="true"><i></i><i></i><i></i></div>
 
   <aside class="rail">
@@ -504,14 +668,28 @@ const ICON = {
   check:'<path d="M5 12.5l4.5 4.5L19 7.5"/>',
   play:'<path d="M7 4l13 8-13 8z"/>',
   pause:'<path d="M8 5v14M16 5v14"/>',
-  reset:'<path d="M3 12a9 9 0 1 0 3-6.7L3 8M3 3v5h5"/>'
+  reset:'<path d="M3 12a9 9 0 1 0 3-6.7L3 8M3 3v5h5"/>',
+  event:'<path d="M12 3l2.6 5.6 6.1.7-4.5 4.2 1.2 6-5.4-3-5.4 3 1.2-6-4.5-4.2 6.1-.7z"/>',
+  prev:'<path d="M15 5l-7 7 7 7"/>',
+  next:'<path d="M9 5l7 7-7 7"/>',
+  room:'<path d="M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2z"/><path d="M4 19V5M9 8h6"/>',
+  latihan:'<circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.7.4-1 .9-1 1.7M12 17h.01"/>',
+  up:'<path d="M12 16V4M7 9l5-5 5 5M4 20h16"/>',
+  zin:'<circle cx="11" cy="11" r="7"/><path d="M21 21l-5-5M11 8v6M8 11h6"/>',
+  zout:'<circle cx="11" cy="11" r="7"/><path d="M21 21l-5-5M8 11h6"/>',
+  trash:'<path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13"/>'
 };
 const ic = n => `<svg class="i" viewBox="0 0 24 24" aria-hidden="true">${ICON[n]}</svg>`;
 
 /* ---------- State ---------- */
 const KEY = 'kuliahku.v1';
+const seedEvents = () => [
+  {id:uid(), title:'Rapat organisasi', date:addDays(2), start:'16:00', end:'17:30', place:'Ruang diskusi', note:'Bahas agenda bulan depan'},
+  {id:uid(), title:'Kerja kelompok Basis Data', date:addDays(4), start:'13:00', end:'15:00', place:'Perpustakaan', note:''},
+  {id:uid(), title:'Seminar teknologi', date:addDays(8), start:'09:00', end:'11:30', place:'Aula utama', note:''}
+];
 const seed = () => ({
-  name:'Mahasiswa', theme:'malam', sessions:{date:'', count:0},
+  name:'Affan', theme:(hr => hr >= 5 && hr < 18 ? 'fajar' : 'malam')(new Date().getHours()), events:seedEvents(), sessions:{date:'', count:0},
   classes:[
     {id:uid(), name:'Struktur Data', day:1, start:'08:00', end:'10:30', room:'Lab Komputer 2', lecturer:'Dr. Rina Wijaya'},
     {id:uid(), name:'Basis Data', day:2, start:'10:00', end:'12:30', room:'Gedung B 3.04', lecturer:'Pak Bambang S.'},
@@ -545,6 +723,8 @@ try { S = JSON.parse(localStorage.getItem(KEY)) || seed(); } catch { S = seed();
 if (S.theme === 'dusk') S.theme = 'malam';
 if (S.theme === 'light') S.theme = 'fajar';
 if (!S.sessions) S.sessions = {date:'', count:0};
+if (S.name === 'Mahasiswa') S.name = 'Affan';
+if (!S.events) S.events = seedEvents();
 const save = () => { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch {} };
 let view = 'home', taskFilter = 'all', ri = 0;
 const ix = () => `--i:${Math.min(ri++, 14)}`;
@@ -584,11 +764,12 @@ function tween(el, to, dec = 0, from) {
 }
 
 /* ---------- Chrome: topbar, nav, tema ---------- */
-const NAV = [['home','Beranda'],['schedule','Jadwal'],['tasks','Tugas'],['grades','Nilai'],['notes','Catatan'],['focus','Fokus']];
+const NAV = [['home','Beranda'],['schedule','Jadwal'],['tasks','Tugas'],['grades','Nilai'],['notes','Catatan'],['room','My Room'],['latihan','Latihan'],['focus','Fokus']];
 const THEMES = [['malam','Malam','linear-gradient(135deg,#0D1B2A 45%,#415A77)'],['fajar','Fajar','linear-gradient(135deg,#F4F1DE 45%,#D4C4A8)'],['hutan','Hutan','linear-gradient(135deg,#415A77 45%,#778D7A)']];
 const THEME_COLOR = {malam:'#0D1B2A', fajar:'#D4C4A8', hutan:'#415A77'};
 
 function buildChrome() {
+  $('#skybg').innerHTML = skyLayers(false);
   $('#nav').innerHTML = '<span class="ind"></span>' + NAV.map(([k, l]) =>
     `<button class="rail-btn" data-act="goto" data-v="${k}" data-label="${l}" aria-label="${l}">${ic(k)}</button>`).join('');
   $('#themes').innerHTML = THEMES.map(([k, l, bg]) =>
@@ -602,6 +783,7 @@ function moveInd() {
 }
 function chrome() {
   document.documentElement.dataset.theme = S.theme;
+  document.documentElement.dataset.sky = skyMode();
   document.querySelector('meta[name=theme-color]').content = THEME_COLOR[S.theme];
   $('#today').textContent = new Date().toLocaleDateString('id-ID', {weekday:'long', day:'numeric', month:'short'});
   tween($('#s-class'), S.classes.filter(c => c.day === new Date().getDay()).length);
@@ -616,7 +798,7 @@ function chrome() {
 }
 function setTheme(t) {
   const apply = () => { S.theme = t; save(); chrome(); };
-  if (document.startViewTransition && !reduce) document.startViewTransition(apply); else apply();
+  apply();
 }
 
 /* ---------- Komponen ---------- */
@@ -631,25 +813,66 @@ function ring(frac, big, small, o = {}) {
     <div><strong ${o.timer ? 'id="rb"' : ''} ${o.count != null ? `data-count="${o.count}" data-dec="${o.dec || 0}"` : ''}>${big}</strong><small>${small}</small></div></div>`;
 }
 
-/* Langit bintang (acak tetap) */
-const STARS = (() => { let s = 7; const rnd = () => (s = (s * 16807) % 2147483647) / 2147483647;
-  return Array.from({length:46}, () => `<i style="left:${(rnd() * 100).toFixed(1)}%;top:${(rnd() * 62).toFixed(1)}%;--s:${(1 + rnd() * 2.2).toFixed(1)}px;--d:${(1.8 + rnd() * 3.5).toFixed(1)}s"></i>`).join(''); })();
+/* ---------- Langit hidup, lanskap, karavan ---------- */
+const skyMode = () => { const hr = new Date().getHours(); return S.theme === 'malam' ? 'night' : S.theme === 'fajar' ? 'day' : (hr >= 5 && hr < 18 ? 'day' : 'night'); };
+const rng = seed => () => (seed = seed * 16807 % 2147483647) / 2147483647;
+const starField = (n, seed, a, b) => { const r = rng(seed); return Array.from({length:n}, () => `<i style="left:${(r() * 100).toFixed(1)}%;top:${(r() * 100).toFixed(1)}%;--s:${(a + r() * (b - a)).toFixed(1)}px;--d:${(1.6 + r() * 3.6).toFixed(1)}s;animation-delay:-${(r() * 4).toFixed(1)}s"></i>`).join(''); };
+const SKY = {far:{h:starField(26, 7, 1, 2.2), g:starField(36, 11, 1, 2.2)}, near:{h:starField(8, 19, 2.4, 3.8), g:starField(12, 23, 2.4, 3.8)}};
+const CLOUDS = [[14,170,80,0], [36,120,105,-33], [26,92,64,-20], [50,150,130,-70]];
+const BIRDS = [[18,34,0,1], [23,34,-2.2,.78], [14,34,-3.4,.7], [34,48,-12,.9], [28,48,-14.5,.62]];
+function skyLayers(hero) {
+  const k = hero ? 'h' : 'g', c = hero ? 'pl h' : 'pl', p = hero ? [.5, .4, .3] : [.07, .15, .26];
+  return `<div class="${c}" style="--p:${p[0]}"><div class="stars sk-night"><div class="sd" style="animation-delay:${phase(180)}">${SKY.far[k]}</div></div></div>
+  <div class="${c}" style="--p:${p[1]}"><div class="stars near sk-night"><div class="sd" style="animation-delay:${phase(120)}">${SKY.near[k]}</div></div><div class="shoots sk-night"></div></div>
+  <div class="${c}" style="--p:${p[2]}">${CLOUDS.map(([y, w, t, o]) => `<b class="cloud" style="top:${y}%;--w:${w}px;animation-duration:${t}s;animation-delay:calc(${phase(t)} + ${o}s)"></b>`).join('')}
+    <div class="sk-day">${BIRDS.map(([y, t, o, s]) => `<span class="bird" style="top:${y}%;--t:${t}s;--sc:${s};animation-delay:calc(${phase(t)} + ${o}s)"><b></b></span>`).join('')}</div></div>`;
+}
 
-const PAVILION = `<svg viewBox="0 0 900 300" aria-hidden="true">
+const tile = d => `url("data:image/svg+xml,${encodeURIComponent(`<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 600 100' preserveAspectRatio='none'><path d='${d}'/></svg>`)}")`;
+{
+  const pines = [[34,50],[82,66],[130,38],[192,60],[240,44],[302,68],[354,40],[412,58],[464,36],[522,64],[574,46]].map(([x, t]) => `M${x - 16} 100L${x} ${t}L${x + 16} 100Z`).join('') + 'M0 93H600V100H0Z';
+  const s = document.documentElement.style;
+  s.setProperty('--m-r1', tile('M0 100V58C70 24 120 34 190 56S290 74 350 40 470 8 530 42 590 60 600 58V100Z'));
+  s.setProperty('--m-r2', tile('M0 100V64C50 44 110 40 170 58S260 78 320 60 430 30 500 52 570 70 600 64V100Z'));
+  s.setProperty('--m-r3', tile(pines));
+}
+
+const BOX = 'M26 54a22 22 0 0 1 22-22H240a22 22 0 0 1 22 22V142H26Z';
+const CAB = 'M262 62H286C298 62 306 68 313 80L335 114C341 123 346 128 346 138V142H262Z';
+const wheel = cx => `<g class="whl"><circle cx="${cx}" cy="142" r="22" fill="#0D1B2A"/><circle cx="${cx}" cy="142" r="12" style="fill:var(--sand)"/><path d="M${cx} 132v20M${cx - 10} 142h20M${cx - 7} 135l14 14M${cx + 7} 135l-14 14" stroke="#0D1B2A" stroke-width="3" stroke-linecap="round"/><circle cx="${cx}" cy="127" r="2" fill="#fff" opacity=".75"/></g>`;
+const CARAVAN = `<div class="cv"><svg viewBox="0 0 380 172" aria-hidden="true">
 <defs>
-<linearGradient id="shell" x1="0" y1="0" x2="0" y2="1"><stop offset="0" style="stop-color:var(--shell1)"/><stop offset="1" style="stop-color:var(--shell2)"/></linearGradient>
-<linearGradient id="glow" x1="0" y1="0" x2="1" y2="1"><stop offset="0" style="stop-color:var(--win1)"/><stop offset="1" style="stop-color:var(--win2)"/></linearGradient>
+<linearGradient id="cvShell" x1="0" y1="0" x2="0" y2="1"><stop offset="0" style="stop-color:var(--shell1)"/><stop offset="1" style="stop-color:var(--shell2)"/></linearGradient>
+<linearGradient id="cvGlass" x1="0" y1="0" x2="1" y2="1"><stop offset="0" style="stop-color:var(--win1)"/><stop offset="1" style="stop-color:var(--win2)"/></linearGradient>
+<linearGradient id="cvBeam" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#fff2bf" stop-opacity=".75"/><stop offset="1" stop-color="#fff2bf" stop-opacity="0"/></linearGradient>
+<clipPath id="cvClip"><path d="${BOX}"/><path d="${CAB}"/></clipPath>
 </defs>
-<ellipse cx="450" cy="270" rx="430" ry="16" fill="#0D1B2A" opacity=".35"/>
-<path d="M40 258C40 150 180 90 330 90H570C720 90 860 150 860 258Z" fill="url(#shell)"/>
-<path d="M110 120C180 98 250 90 330 90H570" fill="none" stroke="#fff" stroke-opacity=".5" stroke-width="3" stroke-linecap="round"/>
-<g class="win"><rect x="110" y="146" width="680" height="112" rx="56" fill="url(#glow)"/></g>
-<path d="M280 146v112M450 146v112M620 146v112" stroke="#fff" stroke-opacity=".5" stroke-width="6"/>
-<rect x="150" y="196" width="120" height="30" rx="15" fill="#fff" opacity=".22"/>
-<rect x="470" y="190" width="130" height="36" rx="18" fill="#fff" opacity=".18"/>
-<ellipse cx="70" cy="256" rx="46" ry="22" style="fill:var(--sage)"/><ellipse cx="830" cy="256" rx="52" ry="24" style="fill:var(--sage)"/>
-<path d="M30 262H870" stroke="#0D1B2A" stroke-opacity=".3" stroke-width="8" stroke-linecap="round"/>
-</svg>`;
+<ellipse cx="190" cy="166" rx="172" ry="5" fill="#000" opacity=".3"/>
+<g class="dust" style="fill:var(--sand)"><circle cx="22" cy="158" r="7"/><circle cx="22" cy="158" r="6"/><circle cx="22" cy="158" r="8"/></g>
+<path class="beam" d="M346 124L480 92V166L346 130Z" fill="url(#cvBeam)"/>
+<g class="cv-body">
+  <rect x="92" y="22" width="66" height="12" rx="6" style="fill:var(--shell2)"/>
+  <rect x="172" y="20" width="46" height="14" rx="4" fill="#0D1B2A" opacity=".55"/>
+  <path d="${BOX}" fill="url(#cvShell)"/><path d="${CAB}" fill="url(#cvShell)"/>
+  <g clip-path="url(#cvClip)"><rect x="20" y="110" width="340" height="12" style="fill:var(--shell2)" opacity=".5"/></g>
+  <rect x="46" y="56" width="78" height="44" rx="12" fill="url(#cvGlass)" class="win"/>
+  <rect x="136" y="56" width="64" height="44" rx="12" fill="url(#cvGlass)" class="win"/>
+  <rect x="214" y="52" width="36" height="80" rx="8" fill="none" stroke="#fff" stroke-opacity=".35" stroke-width="2"/>
+  <rect x="221" y="60" width="22" height="30" rx="6" fill="url(#cvGlass)" class="win"/>
+  <rect x="240" y="104" width="5" height="3" rx="1.5" fill="#fff" opacity=".7"/>
+  <path d="M270 70H286C293 70 299 74 304 82L318 106H270Z" fill="url(#cvGlass)" class="win"/>
+  <rect x="20" y="100" width="6" height="14" rx="3" fill="#e0675a"/>
+  <rect x="18" y="134" width="14" height="8" rx="4" fill="#0D1B2A" opacity=".7"/>
+  <rect x="336" y="134" width="14" height="8" rx="4" fill="#0D1B2A" opacity=".7"/>
+  <circle cx="343" cy="124" r="5.5" fill="#fff6d0"/>
+  <path d="M52 142a26 26 0 0 1 52 0Z M268 142a26 26 0 0 1 52 0Z" fill="#0D1B2A" opacity=".88"/>
+</g>
+${wheel(78)}${wheel(294)}
+</svg></div>`;
+const LAND = `<div class="layer" style="--k:-4;--p:.3" aria-hidden="true"><i class="rg r1" style="--t:140s"></i></div>
+<div class="layer" style="--k:-8;--p:.2" aria-hidden="true"><i class="rg r2" style="--t:80s"></i></div>
+<div class="layer" style="--k:-12;--p:.12" aria-hidden="true"><i class="rg r3" style="--t:42s"></i></div>
+<div class="layer" style="--k:-16;--p:.05" aria-hidden="true"><div class="road"><i></i></div>${CARAVAN}</div>`;
 
 /* ---------- Beranda ---------- */
 function nextInner(nx) {
@@ -676,25 +899,20 @@ function vHome() {
   const mon = new Date(); mon.setDate(mon.getDate() - ((mon.getDay() + 6) % 7));
   const wk = Array.from({length:7}, (_, i) => {
     const d = new Date(mon); d.setDate(mon.getDate() + i);
-    const di = (i + 1) % 7, list = S.classes.filter(c => c.day === di);
-    return `<button class="wd ${iso(d) === todayISO() ? 'today' : ''}" data-act="goto" data-v="schedule" aria-label="${DAYS[di]}, ${list.length} kelas">
+    const di = (i + 1) % 7, list = S.classes.filter(c => c.day === di), evs = S.events.filter(e => e.date === iso(d));
+    return `<button class="wd ${iso(d) === todayISO() ? 'today' : ''}" data-act="goto" data-v="schedule" aria-label="${DAYS[di]}, ${list.length} kelas, ${evs.length} kegiatan">
       <small>${SHORT[di]}</small><b>${d.getDate()}</b>
-      <span class="dots">${list.slice(0, 3).map(c => `<i style="--c:${colorOf(c.name)}"></i>`).join('')}</span>
+      <span class="dots">${list.slice(0, 2).map(c => `<i style="--c:${colorOf(c.name)}"></i>`).join('')}${evs.slice(0, 1).map(() => '<i style="--c:var(--a1)"></i>').join('')}</span>
       <span class="n">${list.length ? list.length + ' kelas' : 'Kosong'}</span></button>`;
   }).join('');
   const notes = [...S.notes].reverse().slice(0, 3);
   return `<section class="bento">
     <article class="scene rise" style="${ix()}" data-scene>
-      <div class="stars" aria-hidden="true">${STARS}</div>
-      <div class="layer" style="--k:14" aria-hidden="true"><span class="orb"></span></div>
-      <div class="layer" style="--k:7" aria-hidden="true">
-        <b class="cloud" style="top:18%;animation-duration:70s;animation-delay:${phase(70)}"></b>
-        <b class="cloud" style="top:44%;width:26%;animation-duration:95s;animation-delay:${phase(95)}"></b>
-        <b class="cloud" style="top:30%;width:20%;animation-duration:55s;animation-delay:${phase(55)}"></b>
-      </div>
+      ${skyLayers(true)}
+      <div class="layer" style="--k:14;--p:.42" aria-hidden="true"><span class="orb"></span></div>
       <div class="scene-top"><span class="chip">${ic('clock')}${hi}, ${esc(S.name)}</span></div>
-      <h1 class="title"><span>Cara Baru</span><span>Menata Kuliah</span></h1>
-      <div class="layer pav" style="--k:-16" aria-hidden="true">${PAVILION}</div>
+      <h1 class="title"><span>Welcome</span><span>Home</span></h1>
+      ${LAND}
     </article>
 
     <article class="card glass fx tilt next rise" style="${ix()}" id="next-card">${nextInner(nextClass())}</article>
@@ -731,7 +949,49 @@ function vHome() {
   </section>`;
 }
 
-/* ---------- Jadwal ---------- */
+/* ---------- Jadwal + kalender ---------- */
+const cal = {y:new Date().getFullYear(), m:new Date().getMonth(), sel:todayISO()};
+const WD = ['Sen','Sel','Rab','Kam','Jum','Sab','Min'];
+const evTime = e => e.start ? (e.end ? `${e.start}–${e.end}` : e.start) : 'Seharian';
+const dayInfo = ds => {
+  const dow = new Date(ds + 'T00:00:00').getDay();
+  return {
+    cl:S.classes.filter(c => c.day === dow).sort((a, b) => a.start.localeCompare(b.start)),
+    tk:S.tasks.filter(t => t.due === ds),
+    ev:S.events.filter(e => e.date === ds).sort((a, b) => (a.start || '').localeCompare(b.start || ''))
+  };
+};
+function calInner(dir = 0) {
+  const first = new Date(cal.y, cal.m, 1), off = (first.getDay() + 6) % 7, len = new Date(cal.y, cal.m + 1, 0).getDate();
+  const cells = Math.ceil((off + len) / 7) * 7, td = todayISO();
+  let g = '';
+  for (let i = 0; i < cells; i++) {
+    const d = new Date(cal.y, cal.m, 1 - off + i), ds = iso(d), {cl, tk, ev} = dayInfo(ds);
+    const mk = (cl.length ? `<i class="c" style="--c:${colorOf(cl[0].name)}"></i>` : '') + (tk.length ? `<i class="t" style="--c:${PRIO[tk[0].priority].c}"></i>` : '') + (ev.length ? '<i class="e"></i>' : '');
+    g += `<button class="cd ${d.getMonth() === cal.m ? '' : 'out'} ${ds === td ? 'today' : ''} ${ds === cal.sel ? 'sel' : ''}" data-act="calsel" data-d="${ds}" aria-pressed="${ds === cal.sel}" aria-label="${d.toLocaleDateString('id-ID', {weekday:'long', day:'numeric', month:'long'})}: ${cl.length} kelas, ${tk.length} tugas, ${ev.length} kegiatan">${d.getDate()}<span class="mk">${mk}</span></button>`;
+  }
+  const title = new Date(cal.y, cal.m, 1).toLocaleDateString('id-ID', {month:'long', year:'numeric'});
+  return `<div class="cal-h"><h3>${title}</h3><div class="cal-nav">
+      <button class="chip-b" data-act="calnav" data-n="0">Hari ini</button>
+      <button class="round-btn" data-act="calnav" data-n="-1" aria-label="Bulan sebelumnya">${ic('prev')}</button>
+      <button class="round-btn" data-act="calnav" data-n="1" aria-label="Bulan berikutnya">${ic('next')}</button></div></div>
+    <div class="cal-wd">${WD.map(w => `<span>${w}</span>`).join('')}</div>
+    <div class="cal-g ${dir > 0 ? 's-next' : dir < 0 ? 's-prev' : ''}">${g}</div>
+    <div class="leg"><span><i class="lg c" style="--c:var(--k1)"></i>Kelas</span><span><i class="lg t"></i>Tenggat tugas</span><span><i class="lg e"></i>Kegiatan</span></div>`;
+}
+function agendaInner() {
+  const ds = cal.sel, d = new Date(ds + 'T00:00:00'), {cl, tk, ev} = dayInfo(ds);
+  const items = [
+    ...cl.map(c => [c.start, `<button class="cls" style="--c:${colorOf(c.name)}" data-act="edit" data-t="class" data-id="${c.id}"><b>${esc(c.name)}</b><span>Kelas · ${c.start}–${c.end}</span><span>${esc(c.room || 'Ruang belum diisi')}</span></button>`]),
+    ...ev.map(x => [x.start || '00:00', `<button class="cls" style="--c:var(--a1)" data-act="edit" data-t="event" data-id="${x.id}"><b>${esc(x.title)}</b><span>Kegiatan · ${evTime(x)}</span>${x.place ? `<span>${esc(x.place)}</span>` : ''}</button>`]),
+    ...tk.map(t => ['99:99', `<button class="cls" style="--c:${PRIO[t.priority].c}" data-act="edit" data-t="task" data-id="${t.id}"><b>${esc(t.title)}</b><span>Tenggat${t.done ? ' · selesai' : ''}</span><span>${esc(t.course || 'Tanpa mata kuliah')}</span></button>`])
+  ].sort((a, b) => a[0].localeCompare(b[0]));
+  return `<div class="ag-h"><b>${d.toLocaleDateString('id-ID', {weekday:'long', day:'numeric', month:'long'})}</b><small>${cl.length} kelas · ${tk.length} tugas · ${ev.length} kegiatan</small></div>
+    ${items.map(i => i[1]).join('') || '<div class="none">Belum ada agenda di hari ini.</div>'}
+    <button class="btn ghost" style="margin-top:8px" data-act="add" data-t="event">${ic('plus')}Tambah kegiatan</button>`;
+}
+function renderCal(dir = 0) { const c = $('#cal'); if (!c) return; c.innerHTML = calInner(dir); $('#agenda').innerHTML = agendaInner(); }
+
 function vSchedule() {
   const td = new Date().getDay();
   const mon = new Date(); mon.setDate(mon.getDate() - ((mon.getDay() + 6) % 7));
@@ -744,8 +1004,12 @@ function vSchedule() {
     </div>`;
   }).join('');
   const sun = S.classes.filter(c => c.day === 0);
-  return head('Jadwal kuliah', 'Seluruh kelas dalam satu minggu. Hari ini ditandai dengan garis aksen.', addBtn('class', 'Tambah kelas')) +
-    `<div class="week">${cols}</div>` +
+  return head('Jadwal & kalender', 'Kalender menandai kelas, tenggat tugas, dan kegiatanmu. Ketuk tanggal untuk melihat agendanya.',
+      `<div class="chips">${addBtn('event', 'Tambah kegiatan')}${addBtn('class', 'Tambah kelas')}</div>`) +
+    `<div class="sched"><article class="card glass cal rise" style="${ix()}" id="cal">${calInner()}</article>
+      <article class="card glass agenda rise" style="${ix()}" id="agenda">${agendaInner()}</article></div>
+    <h3 class="sub-h rise" style="${ix()}">Jadwal mingguan</h3>
+    <div class="week">${cols}</div>` +
     (sun.length ? `<div class="card glass rise" style="${ix()};margin-top:var(--gap)"><b>Minggu</b>${sun.map(c => `<button class="cls" style="--c:${colorOf(c.name)};margin-top:12px" data-act="edit" data-t="class" data-id="${c.id}"><b>${esc(c.name)}</b><span>${c.start}–${c.end} · ${esc(c.room)}</span></button>`).join('')}</div>` : '');
 }
 
@@ -827,7 +1091,7 @@ function setMode(m) {
 }
 
 /* ---------- Render ---------- */
-const VIEWS = {home:vHome, schedule:vSchedule, tasks:vTasks, grades:vGrades, notes:vNotes, focus:vFocus};
+const VIEWS = {home:vHome, schedule:vSchedule, tasks:vTasks, grades:vGrades, notes:vNotes, room:vRoom, latihan:vLatihan, focus:vFocus};
 function render({anim = false, keep = false} = {}) {
   const st = $('#stage').scrollTop; ri = 0;
   const v = $('#view'); v.className = 'view ' + (anim ? 'anim' : 'still');
@@ -839,6 +1103,7 @@ function render({anim = false, keep = false} = {}) {
   });
   chrome();
   if (view === 'focus' || view === 'home') tmUI();
+  if (view === 'room') roomMount();
 }
 const go = v => { view = v; render({anim:true}); };
 
@@ -861,6 +1126,13 @@ const FORMS = {
     {n:'name', l:'Nama mata kuliah', req:1},
     {row:[{n:'sks', l:'SKS', t:'number', req:1, min:1, max:8, num:1}, {n:'grade', l:'Nilai', t:'select', o:Object.keys(GRADES).map(k => [k, k])}]}
   ], def:() => ({name:'', sks:2, grade:'A'})},
+  event:{label:'kegiatan', coll:'events', fields:[
+    {n:'title', l:'Nama kegiatan', req:1, ph:'Contoh: Rapat organisasi'},
+    {n:'date', l:'Tanggal', t:'date', req:1},
+    {row:[{n:'start', l:'Mulai', t:'time'}, {n:'end', l:'Selesai', t:'time'}]},
+    {n:'place', l:'Tempat'},
+    {n:'note', l:'Catatan singkat'}
+  ], def:() => ({title:'', date:cal.sel || todayISO(), start:'09:00', end:'10:00', place:'', note:''})},
   note:{label:'catatan', coll:'notes', fields:[
     {n:'title', l:'Judul', req:1},
     {n:'body', l:'Isi catatan', t:'textarea'}
@@ -876,7 +1148,7 @@ const fieldHTML = (f, v) => {
   return `<label class="field" for="f-${f.n}">${f.l}${el}</label>`;
 };
 function openModal(html) { $('#modal').innerHTML = html; $('#overlay').hidden = false; const i = $('#modal input,#modal textarea'); if (i && !matchMedia('(max-width:860px)').matches) i.focus(); }
-function closeModal() { $('#overlay').hidden = true; $('#modal').innerHTML = ''; }
+function closeModal() { $('#overlay').hidden = true; $('#modal').innerHTML = ''; $('#modal').style.width = ''; }
 function toast(m) { const t = $('#toast'); t.textContent = m; t.classList.add('show'); clearTimeout(toast.id); toast.id = setTimeout(() => t.classList.remove('show'), 2400); }
 
 function openForm(type, id) {
@@ -902,6 +1174,8 @@ function openForm(type, id) {
     walk(F.fields);
     if (bad) return fail(`Isi kolom "${bad.l}" dulu.`, $('#f-' + bad.n));
     if (type === 'class' && toMin(data.end) <= toMin(data.start)) return fail('Jam selesai harus setelah jam mulai.');
+    if (type === 'event' && data.start && data.end && toMin(data.end) <= toMin(data.start)) return fail('Jam selesai harus setelah jam mulai.');
+    if (type === 'event') { const ed = new Date(data.date + 'T00:00:00'); cal.y = ed.getFullYear(); cal.m = ed.getMonth(); cal.sel = data.date; }
     if (item) Object.assign(item, data); else S[F.coll].push({id:uid(), ...F.def(), ...data});
     save(); closeModal(); render({keep:true}); toast(item ? 'Perubahan disimpan' : `${F.label[0].toUpperCase() + F.label.slice(1)} ditambahkan`);
   };
@@ -912,6 +1186,7 @@ function openQuick() {
   openModal(`<h3>Tambah baru</h3><div class="choices">
     <button data-act="add" data-t="task">${ic('tasks')}Tugas</button>
     <button data-act="add" data-t="class">${ic('schedule')}Kelas</button>
+    <button data-act="add" data-t="event">${ic('event')}Kegiatan</button>
     <button data-act="add" data-t="note">${ic('notes')}Catatan</button>
     <button data-act="add" data-t="course">${ic('grades')}Mata kuliah</button></div>
     <div class="mact" style="margin-top:18px"><button class="btn ghost spacer" data-act="wipe">Kosongkan semua data</button><button class="btn ghost" data-act="close">Tutup</button></div>`);
@@ -934,6 +1209,7 @@ function burst(x, y) {
 /* ---------- Event ---------- */
 document.addEventListener('click', e => {
   if (e.target === $('#overlay')) return closeModal();
+  const bt = e.target.closest('button'); if (bt && !bt.disabled) kick(bt, e);
   const el = e.target.closest('[data-act]'); if (!el) return;
   const d = el.dataset;
   switch (d.act) {
@@ -951,7 +1227,18 @@ document.addEventListener('click', e => {
     case 'theme': setTheme(d.t); break;
     case 'cycle': setTheme(THEMES[(THEMES.findIndex(t => t[0] === S.theme) + 1) % THEMES.length][0]); break;
     case 'name': { const n = prompt('Siapa namamu?', S.name); if (n && n.trim()) { S.name = n.trim().slice(0, 24); save(); render({keep:true}); } break; }
-    case 'wipe': if (confirm('Hapus semua jadwal, tugas, nilai, dan catatan? Tindakan ini tidak bisa dibatalkan.')) { S.classes = []; S.tasks = []; S.courses = []; S.notes = []; save(); closeModal(); render({anim:true}); toast('Semua data dikosongkan'); } break;
+    case 'wipe': if (confirm('Hapus semua jadwal, tugas, nilai, dan catatan? Tindakan ini tidak bisa dibatalkan.')) { S.classes = []; S.tasks = []; S.courses = []; S.notes = []; S.events = []; save(); closeModal(); render({anim:true}); toast('Semua data dikosongkan'); } break;
+    case 'calnav': {
+      const n = +d.n;
+      if (n === 0) { const t = new Date(); cal.y = t.getFullYear(); cal.m = t.getMonth(); cal.sel = todayISO(); renderCal(0); }
+      else { const x = new Date(cal.y, cal.m + n, 1); cal.y = x.getFullYear(); cal.m = x.getMonth(); renderCal(n); }
+      break;
+    }
+    case 'calsel': {
+      const x = new Date(d.d + 'T00:00:00'), mm = (x.getFullYear() - cal.y) * 12 + x.getMonth() - cal.m;
+      cal.sel = d.d; if (mm) { cal.y = x.getFullYear(); cal.m = x.getMonth(); }
+      renderCal(Math.sign(mm)); break;
+    }
     case 'tmmode': setMode(d.m); break;
     case 'tmtoggle':
       if (T.running) { clearInterval(T.id); T.running = false; }
@@ -968,23 +1255,227 @@ document.addEventListener('keydown', e => { if (e.key === 'Escape' && !$('#overl
 document.addEventListener('visibilitychange', () => { if (!document.hidden && T.running) tmTick(); });
 window.addEventListener('resize', moveInd);
 
-/* Parallax langit + sorotan kursor + kemiringan kartu */
-document.addEventListener('pointermove', e => {
-  if (e.pointerType !== 'mouse') return;
-  const sc = e.target.closest('[data-scene]');
-  if (sc) { const r = sc.getBoundingClientRect(); sc.style.setProperty('--mx', ((e.clientX - r.left) / r.width - .5) * 2); sc.style.setProperty('--my', ((e.clientY - r.top) / r.height - .5) * 2); }
-  const fx = e.target.closest('.fx');
-  if (fx) {
-    const r = fx.getBoundingClientRect(), x = e.clientX - r.left, y = e.clientY - r.top;
-    fx.style.setProperty('--px', x + 'px'); fx.style.setProperty('--py', y + 'px');
-    if (fx.classList.contains('tilt')) { fx.style.setProperty('--rx', ((y / r.height - .5) * -5).toFixed(2) + 'deg'); fx.style.setProperty('--ry', ((x / r.width - .5) * 5).toFixed(2) + 'deg'); }
+/* ---------- Gerak tombol ---------- */
+function kick(el, e) {
+  if (reduce) return;
+  const r = el.getBoundingClientRect(), big = r.width > 220 || r.height > 90;
+  const x = e.clientX || r.left + r.width / 2, y = e.clientY || r.top + r.height / 2;
+  const t = document.createElement('i'); t.className = 'tap'; t.style.left = x + 'px'; t.style.top = y + 'px'; document.body.appendChild(t);
+  t.animate([{transform:'translate(-50%,-50%) scale(.15)', opacity:.8}, {transform:'translate(-50%,-50%) scale(1.1)', opacity:0}], {duration:600, easing:'cubic-bezier(.2,.8,.2,1)'}).onfinish = () => t.remove();
+  el.animate(big ? [{scale:1}, {scale:.975, offset:.25}, {scale:1.01, offset:.6}, {scale:1}] : [{scale:1}, {scale:.84, offset:.22}, {scale:1.1, offset:.58}, {scale:1}], {duration:480, easing:'cubic-bezier(.3,.7,.3,1)'});
+  const i = el.querySelector('svg.i'); if (!i) return;
+  const a = el.dataset.act, spin = d => [{rotate:'0deg'}, {rotate:d}];
+  const kf = a === 'quick' || a === 'add' ? spin('180deg')
+    : a === 'tmreset' ? spin('-360deg')
+    : a === 'tmtoggle' || a === 'toggle' ? [{scale:1}, {scale:1.5}, {scale:1}]
+    : a === 'goto' && el.classList.contains('round-btn') ? [{translate:'0 0'}, {translate:'5px -5px', offset:.45}, {translate:'0 0'}]
+    : a === 'goto' ? [{translate:'0 0'}, {translate:'0 -8px', offset:.4}, {translate:'0 0'}]
+    : [{rotate:'0deg'}, {rotate:'-14deg', offset:.3}, {rotate:'12deg', offset:.65}, {rotate:'0deg'}];
+  i.animate(kf, {duration:520, easing:'cubic-bezier(.3,.8,.3,1)'});
+}
+
+/* ---------- Bintang jatuh ---------- */
+function shoot() {
+  if (reduce || document.hidden || document.documentElement.dataset.sky !== 'night') return;
+  document.querySelectorAll('.shoots').forEach(c => {
+    if (!c.offsetParent || Math.random() > .5) return;
+    const s = document.createElement('i'); s.className = 'shoot';
+    s.style.left = (10 + Math.random() * 70) + '%'; s.style.top = (Math.random() * 35) + '%';
+    c.appendChild(s);
+    const len = 280 + Math.random() * 200;
+    s.animate([{transform:'rotate(30deg) translateX(0)', opacity:0}, {opacity:1, offset:.15}, {transform:`rotate(30deg) translateX(${len}px)`, opacity:0}], {duration:900 + Math.random() * 600, easing:'cubic-bezier(.3,.1,.6,1)'}).onfinish = () => s.remove();
+  });
+}
+setInterval(shoot, 2400); setTimeout(shoot, 1200);
+
+/* ---------- My Room (PDF) ---------- */
+const idb = (() => {
+  let p; const open = () => p || (p = new Promise((ok, no) => { const r = indexedDB.open('kuliahku-room', 1); r.onupgradeneeded = () => r.result.createObjectStore('pdf', {keyPath:'id'}); r.onsuccess = () => ok(r.result); r.onerror = () => no(r.error); }));
+  const tx = async (m, f) => { const d = await open(); return new Promise((ok, no) => { const t = d.transaction('pdf', m), q = f(t.objectStore('pdf')); t.oncomplete = () => ok(q.result); t.onerror = () => no(t.error); }); };
+  return {get:id => tx('readonly', s => s.get(id)), put:o => tx('readwrite', s => s.put(o)), del:id => tx('readwrite', s => s.delete(id))};
+})();
+if (!S.pdfs) S.pdfs = []; if (!S.quizzes) S.quizzes = [];
+let rdId = null, rd = null, rdZ = 1, rdTick = 0, QZ = null;
+const fmtSize = b => b > 1048576 ? (b / 1048576).toFixed(1) + ' MB' : Math.max(1, Math.round(b / 1024)) + ' KB';
+const courseDL = () => `<datalist id="cl">${[...new Set([...S.classes.map(c => c.name), ...S.courses.map(c => c.name)])].map(n => `<option value="${esc(n)}">`).join('')}</datalist>`;
+const pdfCard = f => `<article class="card glass fx pdf rise" style="${ix()};--c:${colorOf(f.course || f.name)}" data-s="${esc((f.name + ' ' + f.course).toLowerCase())}"><div class="pdf-ic">${ic('notes')}</div><b>${esc(f.name)}</b><small>${esc(f.course || 'Tanpa mata kuliah')} · ${fmtSize(f.size)}${f.page > 1 ? ' · hal ' + f.page : ''}</small>
+  <div class="acts"><button class="btn" data-act="room-open" data-id="${f.id}">Baca</button><button class="round-btn" data-act="room-edit" data-id="${f.id}" aria-label="Ubah">${ic('edit')}</button><button class="round-btn" data-act="room-del" data-id="${f.id}" aria-label="Hapus">${ic('trash')}</button></div></article>`;
+
+function vRoom() {
+  const f = rdId && S.pdfs.find(x => x.id === rdId);
+  if (f) return `<div class="page-head rise" style="${ix()}"><div><h2>${esc(f.name)}</h2><p>${esc(f.course || 'Tanpa mata kuliah')} · ${fmtSize(f.size)}</p></div><button class="btn ghost" data-act="room-close">${ic('prev')}Kembali</button></div>
+    <div class="card glass reader rise" style="${ix()}"><div class="rd-bar"><button class="round-btn" data-act="rd-zoom" data-z="-.15" aria-label="Perkecil">${ic('zout')}</button><span id="rd-z">${Math.round(rdZ * 100)}%</span><button class="round-btn" data-act="rd-zoom" data-z=".15" aria-label="Perbesar">${ic('zin')}</button>
+      <label class="rd-pg spacer">Hal <input id="rd-go" type="number" min="1" value="1"> / <b id="rd-n">–</b></label></div><div class="rd-pages" id="rd-pages"><div class="empty">Memuat PDF…</div></div></div>`;
+  rdId = null;
+  return head('My Room', 'Simpan PDF materi kuliahmu, lalu baca di sini. Halaman terakhir dibaca diingat otomatis.', `<button class="btn" data-act="room-pick">${ic('up')}Unggah PDF</button>`) +
+    `<input id="pdf-in" type="file" accept="application/pdf,.pdf" multiple hidden>
+    <div class="card glass drop rise" style="${ix()}" id="drop"><b>Seret PDF ke sini</b><span class="muted">atau ketuk Unggah PDF. File tersimpan di perangkat ini saja.</span></div>
+    <div class="field rise" style="${ix()}"><input id="room-q" placeholder="Cari PDF atau mata kuliah…" autocomplete="off"></div>
+    <div class="pdfs">${S.pdfs.map(pdfCard).join('') || '<div class="card glass empty">Belum ada PDF. Unggah materi pertamamu.</div>'}</div>`;
+}
+async function addPdfs(files) {
+  let n = 0;
+  for (const f of files) {
+    if (!/\.pdf$/i.test(f.name) && f.type !== 'application/pdf') continue;
+    const id = uid();
+    try { await idb.put({id, blob:f}); } catch { toast('Penyimpanan penuh atau ditolak browser'); break; }
+    S.pdfs.push({id, name:f.name.replace(/\.pdf$/i, ''), course:'', size:f.size, date:todayISO(), page:1}); n++;
+  }
+  if (n) { save(); render({keep:true}); toast(`${n} PDF ditambahkan`); }
+}
+function pdfEdit(id) {
+  const f = S.pdfs.find(x => x.id === id);
+  openModal(`<h3>Ubah PDF</h3><form id="pf"><label class="field">Nama<input id="pf-n" value="${esc(f.name)}"></label><label class="field">Mata kuliah<input id="pf-c" list="cl" value="${esc(f.course)}" placeholder="Pilih atau ketik" autocomplete="off"></label>${courseDL()}<div class="mact"><button type="button" class="btn ghost" data-act="close">Batal</button><button class="btn">Simpan</button></div></form>`);
+  $('#pf').onsubmit = e => { e.preventDefault(); f.name = $('#pf-n').value.trim() || f.name; f.course = $('#pf-c').value.trim(); save(); closeModal(); render({keep:true}); };
+}
+const loadPdfJs = () => window.pdfjsLib ? Promise.resolve() : new Promise((ok, no) => {
+  const s = document.createElement('script'); s.src = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js';
+  s.onload = () => { pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js'; ok(); }; s.onerror = no; document.head.appendChild(s);
+});
+async function roomMount() {
+  const q = $('#room-q'); if (q) q.oninput = () => { const v = q.value.toLowerCase(); document.querySelectorAll('.pdf').forEach(c => c.hidden = !c.dataset.s.includes(v)); };
+  const dz = $('#drop');
+  if (dz) { ['dragover', 'dragenter'].forEach(t => dz.addEventListener(t, e => { e.preventDefault(); dz.classList.add('on'); })); ['dragleave', 'drop'].forEach(t => dz.addEventListener(t, e => { e.preventDefault(); dz.classList.remove('on'); })); dz.addEventListener('drop', e => addPdfs([...e.dataTransfer.files])); }
+  const pi = $('#pdf-in'); if (pi) pi.onchange = () => addPdfs([...pi.files]);
+  const f = rdId && S.pdfs.find(x => x.id === rdId), box = $('#rd-pages'); if (!f || !box) { rd = null; return; }
+  const my = rd = {id:rdId, cur:f.page || 1}; let rec;
+  try {
+    rec = await idb.get(rdId); if (!rec) throw 0;
+    await loadPdfJs();
+    const doc = await pdfjsLib.getDocument({data:await rec.blob.arrayBuffer()}).promise;
+    if (rd !== my) return;
+    my.doc = doc; $('#rd-n').textContent = doc.numPages; $('#rd-go').max = doc.numPages; $('#rd-go').onchange = e => goPage(+e.target.value);
+    await layoutPages(my); requestAnimationFrame(() => goPage(Math.min(my.cur, doc.numPages), true));
+  } catch { box.innerHTML = rec ? `<iframe class="rd-if" src="${URL.createObjectURL(rec.blob)}"></iframe>` : '<div class="empty">PDF tidak bisa dibuka. Coba unggah ulang filenya.</div>'; }
+}
+async function layoutPages(my) {
+  const box = $('#rd-pages'); if (!box) return;
+  const w = Math.round(Math.min(box.clientWidth - 32, 980) * rdZ), v = (await my.doc.getPage(1)).getViewport({scale:1}), h = Math.round(w * v.height / v.width);
+  my.obs?.disconnect();
+  box.innerHTML = Array.from({length:my.doc.numPages}, (_, i) => `<div class="pgbox" data-n="${i + 1}" style="width:${w}px;height:${h}px"><canvas></canvas></div>`).join('');
+  my.pgs = [...box.children];
+  my.obs = new IntersectionObserver(es => es.forEach(e => e.isIntersecting && paint(my, e.target, w)), {root:$('#stage'), rootMargin:'1200px 0px'});
+  my.pgs.forEach(p => my.obs.observe(p));
+}
+async function paint(my, el, w) {
+  if (el.dataset.d) return; el.dataset.d = 1;
+  try {
+    const pg = await my.doc.getPage(+el.dataset.n); if (rd !== my) return;
+    const v0 = pg.getViewport({scale:1}), v = pg.getViewport({scale:w / v0.width * Math.min(devicePixelRatio || 1, 2)}), cv = el.firstChild;
+    cv.width = v.width; cv.height = v.height; el.style.height = w * v0.height / v0.width + 'px';
+    await pg.render({canvasContext:cv.getContext('2d'), viewport:v}).promise;
+  } catch {}
+}
+const goPage = (n, instant) => { const p = rd?.pgs?.[Math.min(Math.max(1, n | 0), rd.pgs.length) - 1]; if (p) p.scrollIntoView({block:'start', behavior:instant ? 'instant' : 'smooth'}); };
+function rdSync() {
+  rdTick = 0; if (!rd?.pgs) return;
+  const top = $('#stage').getBoundingClientRect().top + 90; let n = 1;
+  for (let i = 0; i < rd.pgs.length; i++) { if (rd.pgs[i].getBoundingClientRect().top > top) break; n = i + 1; }
+  rd.cur = n; const g = $('#rd-go'); if (g && document.activeElement !== g) g.value = n;
+  clearTimeout(rd.t); rd.t = setTimeout(() => { const f = S.pdfs.find(x => x.id === rd?.id); if (f && f.page !== n) { f.page = n; save(); } }, 500);
+}
+$('#stage').addEventListener('scroll', () => { if (view === 'room' && rd?.pgs && !rdTick) rdTick = requestAnimationFrame(rdSync); }, {passive:true});
+
+/* ---------- Latihan (pilihan ganda) ---------- */
+const SAMPLE = 'Ibu kota Indonesia adalah …\nA. Bandung\nB. Jakarta *\nC. Surabaya\nD. Medan\nPenjelasan: Jakarta adalah ibu kota saat ini.\n\nBasis data relasional menyimpan data dalam bentuk …\nA. Graf\nB. Tabel\nC. Pohon\nD. Tumpukan\nJawaban: B';
+function parseQ(txt) {
+  const qs = []; let c = null;
+  const push = () => { if (c && c.q && c.o.length > 1) { if (c.a < 0) c.a = 0; qs.push({q:c.q, o:c.o, a:c.a, e:c.e}); } c = null; };
+  txt.split(/\r?\n/).forEach(raw => {
+    const l = raw.trim(); if (!l) return; let m;
+    if (c && (m = l.match(/^(?:jawaban|kunci)\s*[:=]\s*([A-Ha-h])/i))) { c.a = m[1].toUpperCase().charCodeAt(0) - 65; return; }
+    if (c && (m = l.match(/^(?:penjelasan|pembahasan)\s*[:=]\s*(.*)/i))) { c.e = m[1]; return; }
+    if (c && (m = l.match(/^(\*)?\s*([A-Ha-h])[.)]\s*(.+?)\s*(\*|✓)?$/))) { if (m[1] || m[4]) c.a = c.o.length; c.o.push(m[3]); return; }
+    if (c && !c.o.length) { c.q += ' ' + l; return; }
+    push(); c = {q:l.replace(/^\d+[.)]\s*/, ''), o:[], a:-1, e:''};
+  });
+  push(); return qs;
+}
+const shuffle = a => { for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+const L = i => String.fromCharCode(65 + i);
+const qzOf = () => S.quizzes.find(x => x.id === QZ.id);
+function vLatihan() {
+  if (QZ) return QZ.end ? qzResult() : qzCard();
+  const cards = S.quizzes.map(z => `<article class="card glass fx pdf rise" style="${ix()};--c:${colorOf(z.course || z.title)}"><div class="pdf-ic">${ic('latihan')}</div><b>${esc(z.title)}</b><small>${esc(z.course || 'Tanpa mata kuliah')} · ${z.qs.length} soal${z.best != null ? ' · terbaik ' + z.best + '%' : ''}</small>
+    <div class="acts"><button class="btn" data-act="qz-start" data-id="${z.id}">${ic('play')}Mulai</button><button class="round-btn" data-act="qz-edit" data-id="${z.id}" aria-label="Ubah">${ic('edit')}</button></div></article>`).join('');
+  return head('Latihan', 'Tempel soal dalam format sederhana, langsung jadi kuis pilihan ganda interaktif.',
+    `<div class="chips"><button class="chip-b" data-act="qz-shuf" aria-pressed="${!!S.qshuf}">Acak soal</button><button class="btn" data-act="qz-edit">${ic('plus')}Buat set soal</button></div>`) +
+    (cards ? `<div class="pdfs">${cards}</div>` : `<div class="card glass empty rise" style="${ix()}">Belum ada set soal. Tempel soalmu, jadilah kuis.<button class="btn" data-act="qz-edit">${ic('plus')}Buat set soal</button></div>`);
+}
+function qzEdit(id) {
+  const z = id ? S.quizzes.find(x => x.id === id) : {title:'', course:'', src:''};
+  openModal(`<h3>${id ? 'Ubah' : 'Buat'} set soal</h3><form id="qf" novalidate><div class="two"><label class="field">Judul<input id="qf-t" value="${esc(z.title)}" placeholder="Contoh: Kuis Basis Data bab 2" autocomplete="off"></label><label class="field">Mata kuliah<input id="qf-c" list="cl" value="${esc(z.course)}" autocomplete="off"></label></div>${courseDL()}
+    <label class="field">Soal<textarea id="qf-s" class="qsrc" placeholder="Tempel soal di sini">${esc(z.src)}</textarea></label>
+    <div class="qhint"><span id="qf-n"></span><button type="button" class="chip-b" data-act="qz-sample">Isi contoh</button><button type="button" class="chip-b" data-act="qz-file">Impor .txt</button></div>
+    <small class="qfmt">Tulis soal, lalu pilihan A–E di baris baru. Tandai jawaban benar dengan * di akhir pilihan, atau tambah baris "Jawaban: B". Baris "Penjelasan: …" boleh ditambahkan. Pisahkan tiap soal dengan baris kosong.</small>
+    <div class="err" id="err" hidden></div>
+    <div class="mact">${id ? `<button type="button" class="btn ghost spacer" data-act="qz-del" data-id="${id}">Hapus</button>` : ''}<button type="button" class="btn ghost" data-act="close">Batal</button><button class="btn">Simpan</button></div></form><input type="file" id="qf-f" accept=".txt,text/plain" hidden>`);
+  $('#modal').style.width = 'min(660px,100%)';
+  const upd = () => { $('#qf-n').textContent = parseQ($('#qf-s').value).length + ' soal terdeteksi'; }; $('#qf-s').oninput = upd; upd();
+  $('#qf-f').onchange = async e => { const f = e.target.files[0]; if (f) { $('#qf-s').value = await f.text(); upd(); } };
+  $('#qf').onsubmit = e => {
+    e.preventDefault(); const src = $('#qf-s').value, qs = parseQ(src), er = $('#err');
+    if (!qs.length) { er.hidden = false; er.textContent = 'Belum ada soal yang terbaca. Pastikan tiap soal punya minimal 2 pilihan (A. B.).'; return; }
+    const d = {title:$('#qf-t').value.trim() || 'Set soal baru', course:$('#qf-c').value.trim(), src, qs};
+    if (id) Object.assign(z, d); else S.quizzes.push({id:uid(), best:null, ...d});
+    save(); closeModal(); render({keep:true}); toast('Set soal disimpan');
+  };
+}
+function qzStart(id, only) {
+  const z = S.quizzes.find(x => x.id === id); let o = only ? [...only] : z.qs.map((_, i) => i); if (S.qshuf) shuffle(o);
+  QZ = {id, order:o, i:0, ans:{}, end:false}; render({anim:true});
+}
+function qzPick(i) { if (QZ.ans[QZ.i] == null) { QZ.ans[QZ.i] = i; render({keep:true}); } }
+function qzNext() {
+  if (QZ.i + 1 < QZ.order.length) QZ.i++;
+  else { QZ.end = true; const z = qzOf(), pct = Math.round(QZ.order.filter((qi, i) => QZ.ans[i] === z.qs[qi].a).length / QZ.order.length * 100); if (QZ.order.length === z.qs.length) { z.best = Math.max(z.best ?? 0, pct); save(); } }
+  render({anim:true});
+}
+function qzCard() {
+  const z = qzOf(), n = QZ.order.length, q = z.qs[QZ.order[QZ.i]], a = QZ.ans[QZ.i], done = a != null;
+  return `<div class="page-head rise" style="${ix()}"><div><h2>${esc(z.title)}</h2><p>Soal ${QZ.i + 1} dari ${n}</p></div><button class="btn ghost" data-act="qz-quit">Keluar</button></div>
+  <div class="card glass quiz rise" style="${ix()}"><div class="bar"><i style="width:${(QZ.i + (done ? 1 : 0)) / n * 100}%"></i></div>
+    <h3 class="qq">${esc(q.q)}</h3>
+    <div class="opts">${q.o.map((t, i) => `<button class="opt ${done ? (i === q.a ? 'ok' : i === a ? 'no' : 'dim') : ''}" data-act="qz-pick" data-i="${i}" ${done ? 'disabled' : ''}><b>${L(i)}</b><span>${esc(t)}</span></button>`).join('')}</div>
+    ${done ? `<div class="fb"><b>${a === q.a ? 'Benar' : 'Kurang tepat'}</b>${a !== q.a ? `<span>Jawaban benar: ${L(q.a)}. ${esc(q.o[q.a])}</span>` : ''}${q.e ? `<p>${esc(q.e)}</p>` : ''}</div>
+    <div class="mact"><button class="btn" data-act="qz-next">${QZ.i + 1 < n ? 'Lanjut' : 'Lihat hasil'}${ic('next')}</button></div>` : ''}</div>`;
+}
+function qzResult() {
+  const z = qzOf(), n = QZ.order.length, wrong = QZ.order.filter((qi, i) => QZ.ans[i] !== z.qs[qi].a), pct = Math.round((n - wrong.length) / n * 100);
+  QZ.wrong = wrong;
+  return head('Hasil latihan', esc(z.title)) + `<div class="grades"><div class="card glass gpa rise" style="${ix()}">${ring(pct / 100, pct + '%', `${n - wrong.length} dari ${n} benar`, {cls:'mid'})}
+    <b>${pct >= 80 ? 'Mantap, pertahankan' : pct >= 60 ? 'Sudah bagus, ulangi yang salah' : 'Ayo ulangi pelan-pelan'}</b>
+    <div class="mact" style="justify-content:center;margin-top:18px">${wrong.length ? '<button class="btn" data-act="qz-redo">Ulangi yang salah</button>' : ''}<button class="btn ghost" data-act="qz-again">Ulangi semua</button><button class="btn ghost" data-act="qz-quit">Selesai</button></div></div>
+    <div class="card glass rise" style="${ix()}">${wrong.length ? QZ.order.map((qi, i) => { const q = z.qs[qi]; return QZ.ans[i] === q.a ? '' : `<div class="rv"><b>${esc(q.q)}</b><small>Jawabanmu: ${L(QZ.ans[i])}. ${esc(q.o[QZ.ans[i]])}</small><small>Benar: ${L(q.a)}. ${esc(q.o[q.a])}</small>${q.e ? `<small>${esc(q.e)}</small>` : ''}</div>`; }).join('') : '<div class="empty">Semua jawabanmu benar. Keren.</div>'}</div></div>`;
+}
+
+document.addEventListener('click', e => {
+  const el = e.target.closest('[data-act]'); if (!el) return; const d = el.dataset;
+  switch (d.act) {
+    case 'room-pick': $('#pdf-in').click(); break;
+    case 'room-open': rdId = d.id; rdZ = 1; render({anim:true}); break;
+    case 'room-close': rdId = null; rd = null; render({anim:true}); break;
+    case 'room-edit': pdfEdit(d.id); break;
+    case 'room-del': { const f = S.pdfs.find(x => x.id === d.id); if (confirm(`Hapus "${f.name}" dari My Room?`)) { idb.del(d.id); S.pdfs = S.pdfs.filter(x => x.id !== d.id); save(); render({keep:true}); toast('PDF dihapus'); } break; }
+    case 'rd-zoom': rdZ = Math.min(2.2, Math.max(.6, rdZ + +d.z)); $('#rd-z').textContent = Math.round(rdZ * 100) + '%'; if (rd?.doc) { const c = rd.cur || 1; layoutPages(rd).then(() => goPage(c, true)); } break;
+    case 'qz-edit': qzEdit(d.id); break;
+    case 'qz-sample': $('#qf-s').value = SAMPLE; $('#qf-s').dispatchEvent(new Event('input')); break;
+    case 'qz-file': $('#qf-f').click(); break;
+    case 'qz-del': if (confirm('Hapus set soal ini?')) { S.quizzes = S.quizzes.filter(x => x.id !== d.id); save(); closeModal(); render({keep:true}); toast('Set soal dihapus'); } break;
+    case 'qz-shuf': S.qshuf = !S.qshuf; save(); render({keep:true}); break;
+    case 'qz-start': qzStart(d.id); break;
+    case 'qz-pick': qzPick(+d.i); break;
+    case 'qz-next': qzNext(); break;
+    case 'qz-quit': QZ = null; render({anim:true}); break;
+    case 'qz-again': qzStart(QZ.id); break;
+    case 'qz-redo': qzStart(QZ.id, QZ.wrong); break;
   }
 });
-document.addEventListener('pointerout', e => {
-  const t = e.target.closest && e.target.closest('.fx');
-  if (t && !t.contains(e.relatedTarget)) { t.style.setProperty('--rx', '0deg'); t.style.setProperty('--ry', '0deg'); }
-  const sc = e.target.closest && e.target.closest('[data-scene]');
-  if (sc && !sc.contains(e.relatedTarget)) { sc.style.setProperty('--mx', 0); sc.style.setProperty('--my', 0); }
+document.addEventListener('keydown', e => {
+  if (view !== 'latihan' || !QZ || QZ.end || !$('#overlay').hidden || e.target.closest('input,textarea,select')) return;
+  const k = e.key.toUpperCase(), q = qzOf().qs[QZ.order[QZ.i]];
+  if (QZ.ans[QZ.i] == null) { const i = /^\d$/.test(k) ? +k - 1 : /^[A-H]$/.test(k) ? k.charCodeAt(0) - 65 : -1; if (i >= 0 && i < q.o.length) qzPick(i); }
+  else if (e.key === 'Enter') qzNext();
 });
 
 /* ---------- Mulai ---------- */
