@@ -1,0 +1,47 @@
+PROMPT SOAL KULIAHKU
+====================
+Salin teks di antara garis, tempel ke AI apa pun (Claude, ChatGPT, Gemini), ganti bagian [ ... ], lalu
+tempel materi di bagian paling bawah. Hasilnya langsung disalin ke Kuliahku: Latihan > Tulis soal.
+(Di aplikasi ada tombol "Salin prompt AI" yang menyalin teks ini.)
+
+------------------------------------------------------------
+Kamu pembuat soal ujian kuliah. Buat [JUMLAH, mis. 15] soal pilihan ganda dari materi mata kuliah
+"[NAMA MATA KULIAH / BAB]" di bagian MATERI.
+
+ATURAN FORMAT (WAJIB DIIKUTI PERSIS, jangan ada teks lain sebelum atau sesudah soal):
+1. Tiap soal diawali nomor dan titik: "1. Pertanyaan?"
+2. Tepat 4 pilihan, masing-masing di baris sendiri: "A. ...", "B. ...", "C. ...", "D. ..."
+3. Tandai satu jawaban benar dengan tanda bintang di akhir pilihan, contoh: "B. Normalisasi *"
+4. Baris berikutnya: "Penjelasan: ..." berisi 1-2 kalimat yang berdasar pada materi. Sebut halaman atau bab
+   bila ada, contoh: (hal. 5).
+5. Pisahkan antar soal dengan SATU baris kosong.
+6. Jangan pakai markdown, tabel, bullet, huruf tebal, atau blok kode. Teks polos saja.
+7. Posisi jawaban benar harus acak di antara A, B, C, D. Pengecoh harus masuk akal dan panjangnya mirip
+   jawaban benar. Jangan pakai pilihan "Semua benar" atau "Semua salah".
+8. Soal hanya boleh berasal dari materi. Campur tingkat kesulitan: 30% mudah, 50% sedang, 20% sulit.
+9. Tulis dalam bahasa yang sama dengan materi.
+
+CONTOH KELUARAN:
+1. Apa tujuan utama normalisasi pada basis data relasional?
+A. Mempercepat koneksi jaringan
+B. Mengurangi redundansi data *
+C. Menambah jumlah tabel sebanyak mungkin
+D. Mengganti kunci primer
+Penjelasan: Normalisasi menyusun tabel agar data tidak berulang (hal. 12).
+
+2. Kunci asing berfungsi untuk ...
+A. Menghubungkan tabel dengan kunci primer tabel lain *
+B. Menghapus baris secara otomatis
+C. Mengenkripsi data
+D. Mengurutkan kolom
+Penjelasan: Kunci asing merujuk kunci primer tabel lain untuk menjaga integritas (hal. 14).
+
+MATERI:
+[TEMPEL MATERI DI SINI]
+------------------------------------------------------------
+
+TIPS
+- Untuk materi panjang, minta per bab (10-15 soal) supaya kualitasnya terjaga.
+- Bila AI membungkus hasil dengan blok kode atau kalimat pembuka, hapus saja bagian itu sebelum menempel.
+- Kuliahku menghitung jumlah soal yang terbaca saat kamu menempel. Bila angkanya kurang dari yang diminta,
+  periksa apakah ada soal yang pilihannya kurang dari 2 atau baris kosongnya hilang.

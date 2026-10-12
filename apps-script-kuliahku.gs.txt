@@ -1,0 +1,110 @@
+/**
+ * Kuliahku | penyimpan data dan PDF di Google Sheet + Google Drive milikmu sendiri.
+ * Cara pakai: Google Sheet BARU > Ekstensi > Apps Script > tempel seluruh kode ini.
+ * Panduan lengkap: PANDUAN-KULIAHKU.txt
+ */
+var KODE = '';        // OPSIONAL. Biarkan kosong: kode dibuat dari aplikasi saat pertama menyambung.
+var SHEET_ID = '';    // OPSIONAL. Isi ID Spreadsheet bila skrip dibuat terpisah dari Sheet.
+var CHUNK = 45000;    // batas aman karakter per sel Google Sheet
+
+function setup() { ss_(); folder_(); }   // jalankan sekali untuk memberi izin Sheet dan Drive
+
+function kode_() { return KODE || PropertiesService.getScriptProperties().getProperty('kode') || ''; }
+
+function doGet() {
+  var ok = false; try { ok = !!ss_(); } catch (e) {}
+  return out_({ ok: true, sheet: ok ? 'terhubung' : 'belum', kode: kode_() ? 'sudah diatur' : 'belum' });
+}
+
+function doPost(e) {
+  try {
+    var d = JSON.parse((e && e.postData && e.postData.contents) || '{}');
+    var cache = CacheService.getScriptCache(), fails = Number(cache.get('gagal') || 0);
+    if (fails >= 10) return out_({ ok: false, error: 'tunggu' });          // ditahan 10 menit setelah 10 kali salah
+    var K = kode_(), k = String(d.kode || '');
+    if (d.aksi === 'claim') {                                               // pertama kali: kode dibuat dari aplikasi
+      if (k.length < 6 || k.length > 60) return out_({ ok: false, error: 'pendek' });
+      if (!K) { PropertiesService.getScriptProperties().setProperty('kode', k); return out_({ ok: true, baru: true }); }
+    }
+    if (K.length < 6) return out_({ ok: false, error: 'belumkode' });
+    if (!eq_(k, K)) { cache.put('gagal', String(fails + 1), 600); return out_({ ok: false, error: 'kode' }); }
+    if (d.aksi === 'claim') return out_({ ok: true });
+    var lock = LockService.getScriptLock();
+    lock.waitLock(25000);
+    try {
+      switch (d.aksi) {
+        case 'pull': return out_(pull_(d));
+        case 'ping': return out_({ ok: true });
+        case 'push': return out_(push_(d));
+        case 'pdfput': return out_(pdfput_(d));
+        case 'pdfget': return out_(pdfget_(d));
+        case 'pdfdel': return out_(pdfdel_(d));
+        default: return out_({ ok: false, error: 'aksi' });
+      }
+    } finally { lock.releaseLock(); }
+  } catch (err) {
+    console.error(err);
+    return out_({ ok: false, error: 'server' });
+  }
+}
+
+/* ===== Data utama (JSON dipecah ke beberapa sel) ===== */
+function pull_(d) {
+  var ts = Number(sheet_('Meta').getRange('A1').getValue() || 0);
+  if (!ts) return { ok: true, ts: 0, json: '' };
+  if (Number(d.since || 0) === ts) return { ok: true, same: true, ts: ts };
+  var sh = sheet_('Data'), n = sh.getLastRow(), parts = n ? sh.getRange(1, 1, n, 1).getValues() : [];
+  return { ok: true, ts: ts, json: parts.map(function (r) { return r[0]; }).join('') };
+}
+
+function push_(d) {
+  var json = String(d.json || ''), ts = Number(d.ts || 0);
+  if (!json || json.length > 4000000 || !ts) return { ok: false, error: 'data' };
+  var meta = sheet_('Meta'), cur = Number(meta.getRange('A1').getValue() || 0);
+  if (cur > ts) { var p = pull_({}); return { ok: false, error: 'konflik', ts: p.ts, json: p.json }; }   // data di Sheet lebih baru
+  var sh = sheet_('Data'), rows = [];
+  for (var i = 0; i < json.length; i += CHUNK) rows.push([json.substr(i, CHUNK)]);
+  sh.clear();
+  sh.getRange(1, 1, rows.length, 1).setNumberFormat('@').setValues(rows);   // '@' = teks, mencegah dibaca sebagai rumus
+  meta.getRange('A1').setValue(ts);
+  meta.getRange('B1').setValue(new Date());
+  return { ok: true };
+}
+
+/* ===== PDF di Google Drive (dipecah per bagian) ===== */
+function pdfput_(d) {
+  var id = safe_(d.id), i = Number(d.i), n = Number(d.n), data = String(d.data || '');
+  if (!id || !(i >= 0) || !(n >= 1) || n > 120 || !data || data.length > 3000000) return { ok: false, error: 'data' };
+  var f = folder_(), name = id + '.' + i, it = f.getFilesByName(name);
+  while (it.hasNext()) it.next().setTrashed(true);
+  f.createFile(Utilities.newBlob(Utilities.base64Decode(data), 'application/octet-stream', name));
+  return { ok: true };
+}
+
+function pdfget_(d) {
+  var it = folder_().getFilesByName(safe_(d.id) + '.' + Number(d.i));
+  if (!it.hasNext()) return { ok: false, error: 'nofile' };
+  return { ok: true, data: Utilities.base64Encode(it.next().getBlob().getBytes()) };
+}
+
+function pdfdel_(d) {
+  var id = safe_(d.id), f = folder_();
+  for (var i = 0; i < 120; i++) {
+    var it = f.getFilesByName(id + '.' + i);
+    if (!it.hasNext()) break;
+    while (it.hasNext()) it.next().setTrashed(true);
+  }
+  return { ok: true };
+}
+
+/* ===== Pembantu ===== */
+function ss_() { return SHEET_ID ? SpreadsheetApp.openById(SHEET_ID) : SpreadsheetApp.getActiveSpreadsheet(); }
+function sheet_(name) { var s = ss_(), sh = s.getSheetByName(name); return sh || s.insertSheet(name); }
+function folder_() {
+  var p = PropertiesService.getScriptProperties(), id = p.getProperty('folder');
+  if (id) { try { return DriveApp.getFolderById(id); } catch (e) {} }
+  var f = DriveApp.createFolder('Kuliahku PDF'); p.setProperty('folder', f.getId()); return f;
+}
+function safe_(s) { return String(s || '').replace(/[^A-Za-z0-9_\-]/g, '').slice(0, 40); }
+function eq_(a, b) { if (a.length !== b.length) return false; var r = 0; for (var i = 0; i < a.length; i++) r |= a.charCodeAt(i) ^ b.charCodeAt(i); return r === 0; }
+function out_(o) { return ContentService.createTextOutput(JSON.stringify(o)).setMimeType(ContentService.MimeType.JSON); }

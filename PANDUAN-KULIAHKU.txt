@@ -1,0 +1,56 @@
+PANDUAN KULIAHKU v2
+===================
+Tujuan: semua perangkat yang tersambung memiliki data yang sama, tersimpan di Google Sheet + Drive milikmu.
+
+BERKAS
+- index.html                    : aplikasi (tidak perlu diedit)
+- kuliahku-config.js            : opsional (boleh dibiarkan kosong)
+- apps-script-kuliahku.gs.txt   : kode backend (di aplikasi ada tombol "Salin kode backend", jadi berkas ini hanya cadangan)
+- PROMPT-SOAL.txt               : prompt agar semua soal buatan AI berpola sama
+
+LANGKAH SEKALI SAJA (sekitar 3 menit)
+1. Pasang index.html (dan kuliahku-config.js) di GitHub Pages, repositori terpisah dari situs BEM.
+   Settings > Pages > Deploy from a branch > main > / (root).
+2. Buka situsmu, ketuk ikon awan di bar atas. Ikuti 3 langkah di jendela itu:
+   a. Ketuk "Salin kode backend".
+   b. Buka sheets.new (Google Sheet baru) > Ekstensi > Apps Script > hapus isi bawaan > tempel > Simpan.
+      Terapkan > Deployment baru > Aplikasi web > Jalankan sebagai: Saya, Akses: Siapa saja > Terapkan >
+      izinkan akses > salin URL berakhiran /exec.
+   c. Tempel URL itu di aplikasi, ketik kode sinkron buatanmu sendiri (minimal 6 karakter), ketuk Sambungkan.
+      Kode otomatis tersimpan di skrip pada penyambungan pertama.
+
+MENYAMBUNGKAN PERANGKAT LAIN (10 detik)
+- Di perangkat yang sudah tersambung: ikon awan > pindai QR dengan kamera perangkat lain, atau ketuk
+  "Salin tautan sambung" lalu kirim ke dirimu sendiri (WhatsApp, Telegram, dll).
+- Buka tautan itu di perangkat baru: otomatis tersambung dan datanya sama. Tidak perlu mengetik URL atau kode.
+- Jangan bagikan tautan sambung ke orang lain: isinya adalah kunci aksesmu.
+
+DATA YANG SUDAH ADA DI PERANGKAT
+- Perangkat yang sudah punya data sendiri digabung otomatis dengan data di Sheet, tanpa menghapus apa pun.
+  Item yang identik tidak dobel.
+
+CARA KERJA
+- Perubahan terkirim sekitar 1,5 detik setelah mengedit. Perangkat lain memeriksa tiap 30 detik dan saat aplikasi dibuka.
+- Bila dua perangkat mengedit bersamaan, simpanan terakhir yang dipakai.
+- Tanpa internet aplikasi tetap jalan, perubahan terkirim saat tersambung lagi.
+- Tema (gelap/terang) tidak ikut sinkron.
+- PDF otomatis ke folder Drive "Kuliahku PDF" dan diunduh otomatis saat pertama dibuka di perangkat baru.
+
+MODE OTOMATIS TANPA TAUTAN (opsional)
+- Isi window.KULIAHKU_ENDPOINT dan window.KULIAHKU_KODE di kuliahku-config.js, unggah ulang ke GitHub.
+  Semua perangkat langsung tersambung hanya dengan membuka situsmu. Konsekuensinya, siapa pun yang tahu alamat
+  situs bisa melihat dan mengubah datamu. Pakai hanya bila alamat situs rahasia.
+
+SOAL
+- Latihan > Tulis soal > tombol "Salin prompt AI" menyalin prompt standar (sama dengan PROMPT-SOAL.txt).
+  Tempel prompt + materi ke AI, salin hasilnya ke kolom soal. Semua soal akan berpola sama.
+- Buat dari PDF membuat soal isian rumpang otomatis tanpa AI (kualitas dasar).
+
+KEAMANAN
+- Semua permintaan wajib membawa kode. Salah kode 10 kali = ditahan 10 menit.
+- Bila lupa kode: di Apps Script, Pengaturan proyek > Properti skrip > hapus "kode", lalu sambungkan lagi dengan kode baru.
+- Bila kode skrip diubah, buat Deployment BARU dan perbarui URL (QR/tautan sambung dibuat ulang otomatis).
+
+CATATAN
+- Tab "Data" di Sheet berisi JSON aplikasi. Jangan diedit manual. Batas data teks sekitar 4 MB; PDF tidak dihitung.
+- Pratinjau di Claude hanya menyimpan lokal dan tidak bisa menghubungi Google. Sinkron hanya jalan di situs milikmu.
