@@ -755,6 +755,22 @@ body{background-image:none}
 @media (min-width:861px) and (max-height:860px){.logo{display:none}.rail-btn{width:38px;height:38px}}
 @media (min-width:861px) and (max-height:720px){.rail-btn{width:34px;height:34px}.rail{padding:12px 0 12px 18px}.rail-top,.rail-foot{gap:8px}.swatch{width:24px;height:24px;margin:5px 5px 0}.themes{padding:0 0 5px}.avatar{width:38px;height:38px}}
 @media (max-width:860px){.rail-btn{width:31px;height:31px}.rail-btn svg{width:18px;height:18px}.mb{padding:16px}.mb-pct{font-size:26px}}
+
+/* =========================================================
+   SINKRON & SKALA NILAI
+   ========================================================= */
+.pill.sync{gap:6px}
+.pill.sync .i{width:18px;height:18px}
+.pill.sync[data-st=ok]{color:#58d68d}
+.pill.sync[data-st=err],.pill.sync[data-st=big]{color:#ff8a6a}
+.pill.sync[data-st=busy] .i,.pill.sync[data-st=wait] .i{animation:tw 1s ease-in-out infinite alternate}
+.sy-t{font-size:12.5px;font-weight:600}
+.sc{width:68px;height:34px;border-radius:12px;padding:0 6px;text-align:center;color:inherit;background:var(--m-field,var(--panel));border:1px solid var(--m-line,var(--panel-line))}
+.scl{display:grid;grid-template-columns:repeat(auto-fill,minmax(92px,1fr));gap:8px}
+.scl div{padding:10px 8px;border-radius:14px;background:color-mix(in srgb,currentColor 8%,transparent);text-align:center;font-size:12px;color:var(--p-muted)}
+.scl b{display:block;font-size:16px;color:var(--p-text)}
+.scl small{display:block;margin-top:2px;font-weight:600}
+@media (max-width:860px){.sy-t{display:none}.pill.sync{padding:0;width:40px;justify-content:center}}
 </style>
 </head>
 <body>
@@ -786,6 +802,7 @@ body{background-image:none}
         <div><small>IPK</small><b id="s-gpa">0.00</b></div>
       </div>
       <div class="topbar-r">
+        <button class="pill sync" id="sync" data-act="sync-info" data-st="off" aria-label="Sinkronisasi"><svg class="i" viewBox="0 0 24 24"><path d="M7 18a4 4 0 0 1-.5-8A6 6 0 0 1 18 9a4.5 4.5 0 0 1 0 9z"/></svg><span class="sy-t">Lokal</span></button>
         <button class="pill theme-cycle" data-act="cycle" aria-label="Ganti tema">
           <svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 3v18M12 3a9 9 0 0 1 0 18z" fill="currentColor"/></svg>
         </button>
@@ -894,6 +911,7 @@ const seed = () => ({
     {id:uid(), title:'Daftar belanja kos', body:'Printer tinta, map plastik, kopi sachet.', date:todayISO()}
   ]
 });
+const HAD = !!localStorage.getItem(KEY);
 let S;
 try { S = JSON.parse(localStorage.getItem(KEY)) || seed(); } catch { S = seed(); }
 if (S.theme === 'dusk') S.theme = 'malam';
@@ -901,14 +919,14 @@ if (S.theme === 'light') S.theme = 'fajar';
 if (!S.sessions) S.sessions = {date:'', count:0};
 if (S.name === 'Mahasiswa') S.name = 'Affan';
 if (!S.events) S.events = seedEvents();
-const save = () => { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch {} };
+const save = () => { S._ts = Date.now(); try { localStorage.setItem(KEY, JSON.stringify(S)); } catch {} try { syncSoon(); } catch {} };
 let view = 'home', taskFilter = 'all', ri = 0;
 const ix = () => `--i:${Math.min(ri++, 14)}`;
 
 /* ---------- Data turunan ---------- */
 const gpaOf = () => {
-  const sks = S.courses.reduce((a, c) => a + +c.sks, 0);
-  const pts = S.courses.reduce((a, c) => a + +c.sks * GRADES[c.grade], 0);
+  const gl = S.courses.filter(graded), sks = gl.reduce((a, c) => a + +c.sks, 0);
+  const pts = gl.reduce((a, c) => a + +c.sks * bandOf(c).p, 0);
   return {sks, gpa: sks ? pts / sks : 0};
 };
 const predikat = g => g >= 3.51 ? 'Pujian (cum laude)' : g >= 3.01 ? 'Sangat memuaskan' : g >= 2.76 ? 'Memuaskan' : g > 0 ? 'Cukup' : 'Belum ada nilai';
@@ -1279,8 +1297,8 @@ const FORMS = {
   course:{label:'mata kuliah', coll:'courses', fields:[
     {n:'name', l:'Nama mata kuliah', req:1},
     {row:[{n:'sem', l:'Semester', t:'select', o:Array.from({length:14}, (_, i) => [i + 1, 'Semester ' + (i + 1)]), num:1}, {n:'sks', l:'SKS', t:'number', req:1, min:1, max:8, num:1}]},
-    {row:[{n:'grade', l:'Nilai huruf', t:'select', o:Object.keys(GRADES).map(k => [k, k])}, {n:'score', l:'Nilai angka (opsional)', t:'number', ph:'0–100'}]}
-  ], def:() => ({name:'', sem:pendSem || S.curSem || 1, sks:2, grade:'A', score:''})},
+    {n:'score', l:'Nilai angka 0–100 (kosongkan jika belum ada)', t:'number', ph:'mis. 85'}
+  ], def:() => ({name:'', sem:pendSem || S.curSem || 1, sks:2, grade:'', score:''})},
   event:{label:'kegiatan', coll:'events', fields:[
     {n:'title', l:'Nama kegiatan', req:1, ph:'Contoh: Rapat organisasi'},
     {n:'date', l:'Tanggal', t:'date', req:1},
@@ -1467,7 +1485,7 @@ async function roomMount() {
   const f = rdId && S.pdfs.find(x => x.id === rdId), box = $('#rd-pages'); if (!f || !box) { rd = null; return; }
   const my = rd = {id:rdId, cur:f.page || 1}; let rec;
   try {
-    rec = await idb.get(rdId); if (!rec) throw 0;
+    rec = await pdfBlob(rdId); if (!rec) throw 0;
     await loadPdfJs();
     const doc = await pdfjsLib.getDocument({data:await rec.blob.arrayBuffer()}).promise;
     if (rd !== my) return;
@@ -1556,7 +1574,7 @@ document.addEventListener('click', e => {
     case 'room-open': rdId = d.id; rdZ = 1; render({anim:true}); break;
     case 'room-close': rdId = null; rd = null; render({anim:true}); break;
     case 'room-edit': pdfEdit(d.id); break;
-    case 'room-del': { const f = S.pdfs.find(x => x.id === d.id); if (confirm(`Hapus "${f.name}" dari My Room?`)) { idb.del(d.id); S.pdfs = S.pdfs.filter(x => x.id !== d.id); save(); render({keep:true}); toast('PDF dihapus'); } break; }
+    case 'room-del': { const f = S.pdfs.find(x => x.id === d.id); if (confirm(`Hapus "${f.name}" dari My Room?`)) { idb.del(d.id); if (f.aid && SY.assets) SY.assets.delete(f.aid).catch(() => {}); S.pdfs = S.pdfs.filter(x => x.id !== d.id); save(); render({keep:true}); toast('PDF dihapus'); } break; }
     case 'rd-zoom': rdZ = Math.min(2.2, Math.max(.6, rdZ + +d.z)); $('#rd-z').textContent = Math.round(rdZ * 100) + '%'; if (rd?.doc) { const c = rd.cur || 1; layoutPages(rd).then(() => goPage(c, true)); } break;
     case 'qz-edit': qzEdit(d.id); break;
     case 'qz-sample': $('#qf-s').value = SAMPLE; $('#qf-s').dispatchEvent(new Event('input')); break;
@@ -1679,23 +1697,23 @@ S.courses.forEach(c => { if (!c.sem) c.sem = 1; });
 if (!S.curSem) S.curSem = Math.max(1, ...S.courses.map(c => +c.sem));
 const scoreOf = c => { const v = parseFloat(c.score); return isFinite(v) && v >= 0 && v <= 100 ? v : null; };
 function statOf(list) {
-  const sks = list.reduce((a, c) => a + +c.sks, 0), pts = list.reduce((a, c) => a + +c.sks * GRADES[c.grade], 0), sc = list.map(scoreOf).filter(v => v != null);
-  return {sks, n:list.length, ips:sks ? pts / sks : 0, avg:sc.length ? sc.reduce((a, b) => a + b, 0) / sc.length : null};
+  const gl = list.filter(graded), sg = gl.reduce((a, c) => a + +c.sks, 0), pts = gl.reduce((a, c) => a + +c.sks * bandOf(c).p, 0), sc = list.map(scoreOf).filter(v => v != null);
+  return {sks:list.reduce((a, c) => a + +c.sks, 0), n:list.length, ng:gl.length, ips:sg ? pts / sg : 0, avg:sc.length ? sc.reduce((a, b) => a + b, 0) / sc.length : null};
 }
 const semNo = c => +c.sem || 1;
 function vGrades() {
   const g = statOf(S.courses), cur = S.curSem || 1, top = Math.max(cur, ...S.courses.map(semNo)), fa = v => v == null ? '–' : v.toFixed(1);
   const per = Array.from({length:top}, (_, i) => { const n = i + 1, l = S.courses.filter(c => semNo(c) === n); return {n, l, st:statOf(l), ipk:statOf(S.courses.filter(c => semNo(c) <= n)).ips}; });
-  const bars = per.map(p => `<div class="sb ${p.n === cur ? 'now' : ''}"><div class="sbar"><i style="height:${p.st.n ? Math.max(5, p.st.ips / 4 * 100) : 0}%"></i></div><b>${p.st.n ? p.st.ips.toFixed(2) : '–'}</b><small>S${p.n}</small></div>`).join('');
-  const row = c => `<div class="crow"><div><b>${esc(c.name)}</b><br><small>${c.sks} SKS${scoreOf(c) != null ? ' · angka ' + scoreOf(c) : ''}</small><div class="clnk"><button class="chip-b" data-act="to-room" data-c="${esc(c.name)}">PDF ${S.pdfs.filter(f => f.course === c.name).length}</button><button class="chip-b" data-act="to-qz" data-c="${esc(c.name)}">Latihan ${S.quizzes.filter(z => z.course === c.name).length}</button></div></div><small class="bw">Bobot ${GRADES[c.grade].toFixed(1)}</small><select class="sel" data-grade="${c.id}" aria-label="Nilai ${esc(c.name)}">${Object.keys(GRADES).map(k => `<option ${k === c.grade ? 'selected' : ''}>${k}</option>`).join('')}</select><button class="x" data-act="edit" data-t="course" data-id="${c.id}" aria-label="Ubah ${esc(c.name)}">${ic('edit')}</button></div>`;
+  const bars = per.map(p => `<div class="sb ${p.n === cur ? 'now' : ''}"><div class="sbar"><i style="height:${p.st.ng ? Math.max(5, p.st.ips / 4 * 100) : 0}%"></i></div><b>${p.st.ng ? p.st.ips.toFixed(2) : '–'}</b><small>S${p.n}</small></div>`).join('');
+  const row = c => `<div class="crow"><div><b>${esc(c.name)}</b><br><small>${c.sks} SKS${scoreOf(c) != null ? ' · angka ' + scoreOf(c) : ''}</small><div class="clnk"><button class="chip-b" data-act="to-room" data-c="${esc(c.name)}">PDF ${S.pdfs.filter(f => f.course === c.name).length}</button><button class="chip-b" data-act="to-qz" data-c="${esc(c.name)}">Latihan ${S.quizzes.filter(z => z.course === c.name).length}</button></div></div><small class="bw">${(b => b ? b.l + ' · ' + (+b.p).toFixed(2) : 'belum ada')(graded(c) ? bandOf(c) : null)}</small><input class="sc" type="number" min="0" max="100" step="0.1" inputmode="decimal" placeholder="angka" value="${scoreOf(c) ?? ''}" data-score="${c.id}" aria-label="Nilai angka ${esc(c.name)}"><button class="x" data-act="edit" data-t="course" data-id="${c.id}" aria-label="Ubah ${esc(c.name)}">${ic('edit')}</button></div>`;
   const sec = per.slice().reverse().map(p => `<article class="card glass sem rise" style="${ix()}"><div class="ch"><h3>Semester ${p.n}${p.n === cur ? '<span class="badge live">Sekarang</span>' : ''}</h3><button class="round-btn" data-act="add-course" data-sem="${p.n}" aria-label="Tambah mata kuliah semester ${p.n}">${ic('plus')}</button></div>
-    <div class="semfacts"><div><b>${p.st.n ? p.st.ips.toFixed(2) : '–'}</b>IPS</div><div><b>${p.st.n ? p.ipk.toFixed(2) : '–'}</b>IPK</div><div><b>${fa(p.st.avg)}</b>Rata² angka</div><div><b>${p.st.sks}</b>SKS</div></div>
+    <div class="semfacts"><div><b>${p.st.ng ? p.st.ips.toFixed(2) : '–'}</b>IPS</div><div><b>${p.st.ng ? p.ipk.toFixed(2) : '–'}</b>IPK</div><div><b>${fa(p.st.avg)}</b>Rata² angka</div><div><b>${p.st.sks}</b>SKS</div></div>
     ${p.l.map(row).join('') || '<div class="none">Belum ada mata kuliah di semester ini.</div>'}</article>`).join('');
   const sel = `<label class="semsel">Semester sekarang<select class="sel" data-cursem>${Array.from({length:14}, (_, i) => `<option value="${i + 1}" ${i + 1 === cur ? 'selected' : ''}>${i + 1}</option>`).join('')}</select></label>`;
   return head('Nilai & IPK', 'Nilai per mata kuliah, dikelompokkan per semester. IPS = IPK satu semester, IPK = kumulatif.', `<div class="chips">${sel}${addBtn('course', 'Tambah mata kuliah')}</div>`) +
     `<div class="grades"><div class="card glass gpa rise" style="${ix()}">${ring(g.ips / 4, g.ips.toFixed(2), 'IPK total', {cls:'mid', count:g.ips.toFixed(2), dec:2})}<b>${predikat(g.ips)}</b>
       <div class="facts"><div><b>${g.sks}</b>Total SKS</div><div><b>${g.n}</b>Mata kuliah</div><div><b>${fa(g.avg)}</b>Rata² angka total</div><div><b>${cur}</b>Semester sekarang</div></div></div>
-      <div class="semcol"><article class="card glass rise" style="${ix()}"><div class="ch"><h3>IPS per semester</h3></div><div class="sbars">${bars}</div></article>${sec}</div></div>`;
+      <div class="semcol"><article class="card glass rise" style="${ix()}"><div class="ch"><h3>IPS per semester</h3></div><div class="sbars">${bars}</div></article>${scaleCard()}${sec}</div></div>`;
 }
 document.addEventListener('change', e => { const s = e.target.closest('[data-cursem]'); if (s) { S.curSem = +s.value; save(); render({keep:true}); } });
 document.addEventListener('click', e => { const el = e.target.closest('[data-act=add-course]'); if (el) { pendSem = +el.dataset.sem; openForm('course'); pendSem = 0; } });
@@ -1738,7 +1756,7 @@ async function savePdfs(files, course) {
     try { await idb.put({id, blob:f}); } catch { toast('Penyimpanan penuh atau ditolak browser'); break; }
     S.pdfs.push({id, name:f.name.replace(/\.pdf$/i, ''), course, size:f.size, date:todayISO(), page:1}); n++;
   }
-  if (n) { save(); render({keep:true}); toast(`${n} PDF ditambahkan`); }
+  if (n) { save(); render({keep:true}); toast(`${n} PDF ditambahkan`); pdfUpAll(); }
 }
 function pdfEdit(id) {
   const f = S.pdfs.find(x => x.id === id);
@@ -1776,7 +1794,7 @@ function qzEdit(id) {
   };
 }
 async function pdfText(id, a, b) {
-  await loadPdfJs(); const rec = await idb.get(id), doc = await pdfjsLib.getDocument({data:await rec.blob.arrayBuffer()}).promise; let out = '';
+  await loadPdfJs(); const rec = await pdfBlob(id), doc = await pdfjsLib.getDocument({data:await rec.blob.arrayBuffer()}).promise; let out = '';
   for (let p = a; p <= Math.min(b, doc.numPages) && out.length < 45000; p++) { const tc = await (await doc.getPage(p)).getTextContent(); out += `\n[Hal ${p}] ` + tc.items.map(i => i.str).join(' ').replace(/\s+/g, ' '); }
   return out.trim();
 }
@@ -1894,6 +1912,124 @@ document.addEventListener('click', e => {
     case 'mb-del': if (confirm(`Hapus target "${t.title}"?`)) { S.mut = S.mut.filter(x => x.id !== d.t); save(); render({keep:true}); toast('Target dihapus'); } break;
   }
 });
+
+/* ---------- Skala nilai ---------- */
+const SCALE0 = [['A+', 91, 100, 4], ['A', 86, 90, 4], ['A-', 81, 85, 3.7], ['B+', 76, 80, 3.3], ['B', 71, 75, 3], ['B-', 66, 70, 2.7], ['B', 61, 65, 2.5], ['C+', 56, 60, 2.3], ['C', 51, 55, 2], ['C-', 46, 50, 1.7], ['E', 0, 45, 0]].map(([l, min, max, p]) => ({l, min, max, p}));
+const scale = () => S.scale && S.scale.length ? S.scale : SCALE0;
+const LEG = {AB:'A-', BC:'B-', D:'C-'};
+function bandOf(c) {
+  const sc = scale(), v = scoreOf(c);
+  if (v != null) { const r = Math.round(v); return sc.find(b => r >= b.min && r <= b.max) || sc.reduce((a, b) => (r > a.max ? (b.max > a.max ? b : a) : (b.min < a.min ? b : a)), sc[0]); }
+  const g = LEG[c.grade] || c.grade; return sc.find(b => b.l === g) || null;
+}
+const graded = c => !!bandOf(c);
+function scaleCard() {
+  return `<article class="card glass rise" style="${ix()}"><div class="ch"><h3>Skala nilai</h3><button class="chip-b" data-act="scale-edit">Ubah skala</button></div><div class="scl">${scale().map(b => `<div><b>${esc(b.l)}</b>${b.min}–${b.max}<small>${(+b.p).toFixed(2)}</small></div>`).join('')}</div></article>`;
+}
+function scaleEdit() {
+  openModal(`<h3>Skala nilai</h3><form id="sf"><label class="field">Satu baris per huruf: huruf, rentang angka, bobot<textarea id="sf-t" class="qsrc" rows="11">${scale().map(b => `${b.l} ${b.min}-${b.max} ${b.p}`).join('\n')}</textarea></label><small class="qfmt">Contoh: A+ 91-100 4.0. Bobot dipakai untuk menghitung IPS dan IPK. Dua baris boleh memakai huruf yang sama.</small><div class="err" id="err" hidden></div><div class="mact"><button type="button" class="btn ghost spacer" data-act="scale-reset">Kembalikan standar</button><button type="button" class="btn ghost" data-act="close">Batal</button><button class="btn">Simpan</button></div></form>`);
+  $('#modal').style.width = 'min(520px,100%)';
+  $('#sf').onsubmit = e => {
+    e.preventDefault(); const sc = $('#sf-t').value.split('\n').map(l => l.trim().match(/^(\S+)\s+(\d+)\s*[-–]\s*(\d+)\s+(\d+(?:[.,]\d+)?)/)).filter(Boolean).map(m => ({l:m[1], min:+m[2], max:+m[3], p:parseFloat(m[4].replace(',', '.'))})).filter(b => b.max >= b.min);
+    if (sc.length < 2) { const er = $('#err'); er.hidden = false; er.textContent = 'Tulis minimal 2 baris dengan format: A+ 91-100 4.0'; return; }
+    S.scale = sc; save(); closeModal(); render({keep:true}); toast('Skala nilai disimpan');
+  };
+}
+document.addEventListener('change', e => { const s = e.target.closest('[data-score]'); if (!s) return; const c = S.courses.find(x => x.id === s.dataset.score); c.score = s.value.trim(); save(); render({keep:true}); });
+
+/* ---------- Sinkronisasi antar perangkat ---------- */
+var SY = {ref:null, assets:null, busy:false, again:false, timer:0, lastTs:0, st:'off', pending:null, choose:null};
+const SYT = {off:'Lokal', wait:'Menunggu', busy:'Sinkron…', ok:'Tersinkron', err:'Gagal', big:'Terlalu besar'};
+function setSt(st) { SY.st = st; const b = $('#sync'); if (!b) return; b.dataset.st = st; b.querySelector('.sy-t').textContent = SYT[st]; }
+function shape() {
+  ['pdfs', 'quizzes', 'todos', 'mut'].forEach(k => { if (!S[k]) S[k] = []; });
+  S.courses.forEach(c => { if (!c.sem) c.sem = 1; });
+  if (!S.curSem) S.curSem = Math.max(1, ...S.courses.map(c => +c.sem));
+  S.quizzes.forEach(z => { if (!z.qs) z.qs = parseQ(z.src || ''); });
+}
+const NOSYNC = ['theme', 'sessions', '_ts', '_synced'];
+function slim() { const o = {}; Object.keys(S).forEach(k => { if (!NOSYNC.includes(k)) o[k] = S[k]; }); o.quizzes = (S.quizzes || []).map(({qs, ...z}) => z); return o; }
+const typing = () => /INPUT|TEXTAREA|SELECT/.test(document.activeElement?.tagName || '') || !$('#overlay').hidden || (view === 'room' && rdId);
+function syncSoon() { if (!SY || !SY.ref) return; clearTimeout(SY.timer); setSt('wait'); SY.timer = setTimeout(push, 1500); }
+async function push() {
+  if (SY.busy) { SY.again = true; return; } SY.busy = true; setSt('busy');
+  try {
+    const ts = S._ts || Date.now(), json = JSON.stringify(slim()); if (json.length > 245000) throw {big:1};
+    await SY.ref.set({ts, json}); SY.lastTs = ts; S._synced = 1; try { localStorage.setItem(KEY, JSON.stringify(S)); } catch {} setSt('ok');
+  } catch (e) { setSt(e && e.big ? 'big' : 'err'); }
+  SY.busy = false; if (SY.again) { SY.again = false; syncSoon(); }
+}
+function applyRemote(r) {
+  const keep = {theme:S.theme, sessions:S.sessions}, d = JSON.parse(r.json);
+  Object.keys(S).forEach(k => delete S[k]); Object.assign(S, d, keep, {_ts:r.ts, _synced:1}); shape();
+  try { localStorage.setItem(KEY, JSON.stringify(S)); } catch {} SY.lastTs = r.ts; chrome(); render({keep:true});
+}
+function mergeRemote(r) {
+  const d = JSON.parse(r.json), key = x => JSON.stringify({...x, id:0, qs:0}), objs = a => a.every(x => x && typeof x === 'object');
+  Object.keys(d).forEach(k => {
+    if (Array.isArray(d[k]) && Array.isArray(S[k]) && objs(d[k]) && objs(S[k])) {
+      const m = new Map(S[k].map(x => [x.id, x])), seen = new Set(S[k].map(key));
+      d[k].forEach(x => { if (m.has(x.id) || !seen.has(key(x))) m.set(x.id, x); }); S[k] = [...m.values()];
+    } else S[k] = d[k];
+  });
+  shape(); S._ts = Date.now();
+}
+function chooseSync(r, done) {
+  openModal(`<h3>Sinkronkan data</h3><p class="qfmt">Perangkat ini dan cloud sudah punya data yang berbeda. "Gabungkan" menyatukan keduanya tanpa menghapus apa pun.</p><div class="mact" style="flex-direction:column;align-items:stretch"><button class="btn" data-act="sy-merge">Gabungkan (disarankan)</button><button class="btn ghost" data-act="sy-cloud">Pakai data cloud, timpa perangkat ini</button><button class="btn ghost" data-act="sy-local">Pakai data perangkat ini, timpa cloud</button></div>`);
+  SY.choose = async m => {
+    closeModal();
+    if (m === 'cloud') applyRemote(r);
+    else { if (m === 'merge') mergeRemote(r); else S._ts = Date.now(); try { localStorage.setItem(KEY, JSON.stringify(S)); } catch {} chrome(); render({keep:true}); await push(); }
+    done();
+  };
+}
+function onRemote(r) {
+  if (!r || r.ts === SY.lastTs || r.ts <= (S._ts || 0)) return;
+  if (typing()) { SY.pending = r; return; }
+  applyRemote(r); toast('Data diperbarui dari perangkat lain');
+}
+setInterval(() => { const r = SY.pending; if (r && !typing()) { SY.pending = null; if (r.ts > (S._ts || 0)) { applyRemote(r); toast('Data diperbarui dari perangkat lain'); } } }, 3000);
+async function syncInit() {
+  if (!window.claude) return;
+  try {
+    const [db, user, assets] = await Promise.all([claude.use('db'), claude.use('user'), claude.use('assets')]);
+    SY.assets = assets; const id = user ? await user.id() : null; if (!db || !id) return setSt('off');
+    SY.ref = db.doc(`data/users/${id}/state`); setSt('busy');
+    const snap = await SY.ref.get();
+    if (!snap.exists) { S._ts = S._ts || Date.now(); await push(); }
+    else {
+      const r = snap.data();
+      if (!HAD) applyRemote(r);
+      else if (S._synced) { if (r.ts > (S._ts || 0)) applyRemote(r); else if ((S._ts || 0) > r.ts) await push(); }
+      else await new Promise(res => chooseSync(r, res));
+    }
+    SY.ref.onSnapshot(s => { if (s.exists) onRemote(s.data()); });
+    if (SY.st !== 'err' && SY.st !== 'big') setSt('ok'); pdfUpAll();
+  } catch { setSt('off'); }
+}
+async function pdfUp(f) {
+  if (!SY.assets || f.aid || f.size > 20 * 1048576) return;
+  try { const rec = await idb.get(f.id); if (!rec) return; const a = await SY.assets.upload(new Blob([rec.blob], {type:'application/pdf'})); f.aid = a.id; save(); } catch {}
+}
+async function pdfUpAll() { for (const f of S.pdfs.slice()) await pdfUp(f); }
+async function pdfBlob(id) {
+  let rec = await idb.get(id); if (rec) return rec;
+  const f = S.pdfs.find(x => x.id === id); if (!f || !f.aid) return null;
+  const r = await fetch('/_blob/' + f.aid); if (!r.ok) return null;
+  rec = {id, blob:await r.blob()}; try { await idb.put(rec); } catch {} return rec;
+}
+document.addEventListener('click', e => {
+  const el = e.target.closest('[data-act]'); if (!el) return; const d = el.dataset.act;
+  if (d === 'scale-edit') scaleEdit();
+  else if (d === 'scale-reset') { delete S.scale; save(); closeModal(); render({keep:true}); toast('Skala standar dipulihkan'); }
+  else if (d === 'sy-merge' || d === 'sy-cloud' || d === 'sy-local') SY.choose?.(d.slice(3));
+  else if (d === 'sy-now') { closeModal(); (async () => { if (!SY.ref) return; setSt('busy'); const s = await SY.ref.get(); const r = s.exists ? s.data() : null; if (r && r.ts > (S._ts || 0)) applyRemote(r); else { S._ts = Date.now(); await push(); } pdfUpAll(); toast('Sinkron selesai'); })(); }
+  else if (d === 'sync-info') {
+    const n = S.pdfs.filter(f => f.aid).length, msg = {ok:'Datamu tersimpan di akun claude.ai-mu dan otomatis muncul di HP, tablet, atau PC lain yang membuka halaman ini dengan akun yang sama.', off:'Sinkronisasi belum aktif. Buka halaman ini lewat claude.ai dengan akun yang sama di semua perangkat. Sementara itu data tersimpan lokal di perangkat ini.', err:'Gagal menyimpan ke cloud. Akan dicoba lagi saat ada perubahan berikutnya.', big:'Datamu melebihi batas sinkron. Hapus catatan atau soal yang tidak perlu.', busy:'Sedang menyinkronkan…', wait:'Perubahan akan segera dikirim.'}[SY.st];
+    openModal(`<h3>Sinkronisasi</h3><p class="qfmt">${msg}</p>${SY.ref ? `<p class="qfmt">PDF di cloud: ${n} dari ${S.pdfs.length} (maksimal 20 MB per file). PDF dibuka dari cloud saat pertama dibaca di perangkat baru.</p>` : ''}<div class="mact"><button type="button" class="btn ghost" data-act="close">Tutup</button>${SY.ref ? '<button type="button" class="btn" data-act="sy-now">Sinkronkan sekarang</button>' : ''}</div>`);
+  }
+});
+shape(); syncInit();
 
 /* ---------- Mulai ---------- */
 buildChrome();
