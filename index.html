@@ -762,7 +762,7 @@ body{background-image:none}
 .pill.sync{gap:6px}
 .pill.sync .i{width:18px;height:18px}
 .pill.sync[data-st=ok]{color:#58d68d}
-.pill.sync[data-st=err],.pill.sync[data-st=big]{color:#ff8a6a}
+.pill.sync[data-st=err],.pill.sync[data-st=big],.pill.sync[data-st=kode]{color:#ff8a6a}
 .pill.sync[data-st=busy] .i,.pill.sync[data-st=wait] .i{animation:tw 1s ease-in-out infinite alternate}
 .sy-t{font-size:12.5px;font-weight:600}
 .sc{width:68px;height:34px;border-radius:12px;padding:0 6px;text-align:center;color:inherit;background:var(--m-field,var(--panel));border:1px solid var(--m-line,var(--panel-line))}
@@ -771,6 +771,12 @@ body{background-image:none}
 .scl b{display:block;font-size:16px;color:var(--p-text)}
 .scl small{display:block;margin-top:2px;font-weight:600}
 @media (max-width:860px){.sy-t{display:none}.pill.sync{padding:0;width:40px;justify-content:center}}
+
+/* ---------- Jendela sinkron & QR ---------- */
+.qrbox{width:210px;max-width:70%;margin:6px auto 10px;border-radius:14px;overflow:hidden;background:#fff;padding:8px}
+.qrbox svg{display:block;width:100%;height:auto}
+.steps{margin:0 0 14px 20px;padding:0;display:grid;gap:8px;font-size:13px;line-height:1.55}
+.steps a{color:var(--a1);font-weight:600}
 </style>
 </head>
 <body>
@@ -820,6 +826,245 @@ body{background-image:none}
 <div class="overlay" id="overlay" hidden><div class="modal" id="modal" role="dialog" aria-modal="true"></div></div>
 <div class="toast" id="toast" role="status"></div>
 
+<script>
+/* qr.js: pembuat QR Code mandiri (mode byte, koreksi galat L/M, versi 1-20).
+   Tanpa pustaka luar dan tanpa internet. Dipakai oleh Samasta Corner untuk barcode absensi.
+   Pemakaian:
+     var q = QR.make("https://contoh.id/#corner/irjen/isi/abc");   // {size, get(x,y)}
+     el.innerHTML = QR.svg(q, {border: 3, dark: "#0d2a38", light: "#ffffff"});
+     QR.canvas(canvasEl, q, 12, 3);                                  // untuk unduh PNG */
+(function (root) {
+  "use strict";
+
+  var ECC_PER = {
+    L: [-1, 7, 10, 15, 20, 26, 18, 20, 24, 30, 18, 20, 24, 26, 30, 22, 24, 28, 30, 28, 28],
+    M: [-1, 10, 16, 26, 18, 24, 16, 18, 22, 22, 26, 30, 22, 22, 24, 24, 28, 28, 26, 26, 26]
+  };
+  var NBLK = {
+    L: [-1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 4, 4, 4, 4, 4, 6, 6, 6, 6, 7, 8],
+    M: [-1, 1, 1, 1, 2, 2, 4, 4, 4, 5, 5, 5, 8, 9, 9, 10, 10, 11, 13, 14, 16]
+  };
+  var FMT = { L: 1, M: 0 };
+  var MAXV = 20;
+
+  function rawModules(v) {
+    var r = (16 * v + 128) * v + 64;
+    if (v >= 2) { var n = Math.floor(v / 7) + 2; r -= (25 * n - 10) * n - 55; if (v >= 7) r -= 36; }
+    return r;
+  }
+  function dataCw(v, e) { return Math.floor(rawModules(v) / 8) - ECC_PER[e][v] * NBLK[e][v]; }
+
+  /* ---- Reed-Solomon di GF(256) ---- */
+  function gmul(x, y) { var z = 0; for (var i = 7; i >= 0; i--) { z = (z << 1) ^ ((z >>> 7) * 0x11D); z ^= ((y >>> i) & 1) * x; } return z; }
+  function rsDiv(deg) {
+    var r = [], i, j, root = 1;
+    for (i = 0; i < deg - 1; i++) r.push(0);
+    r.push(1);
+    for (i = 0; i < deg; i++) {
+      for (j = 0; j < r.length; j++) { r[j] = gmul(r[j], root); if (j + 1 < r.length) r[j] ^= r[j + 1]; }
+      root = gmul(root, 2);
+    }
+    return r;
+  }
+  function rsRem(data, div) {
+    var r = div.map(function () { return 0; });
+    data.forEach(function (b) {
+      var f = b ^ r.shift(); r.push(0);
+      div.forEach(function (c, i) { r[i] ^= gmul(c, f); });
+    });
+    return r;
+  }
+
+  function utf8(s) {
+    var u = unescape(encodeURIComponent(String(s))), out = [], i;
+    for (i = 0; i < u.length; i++) out.push(u.charCodeAt(i));
+    return out;
+  }
+
+  function alignPos(v) {
+    if (v === 1) return [];
+    var n = Math.floor(v / 7) + 2, size = v * 4 + 17;
+    var step = Math.ceil((v * 4 + 4) / (n * 2 - 2)) * 2, r = [6];
+    for (var p = size - 7; r.length < n; p -= step) r.splice(1, 0, p);
+    return r;
+  }
+
+  function bitsOf(bytes, v, e) {
+    var bits = [];
+    function put(val, len) { for (var i = len - 1; i >= 0; i--) bits.push((val >>> i) & 1); }
+    put(4, 4); put(bytes.length, v < 10 ? 8 : 16);
+    bytes.forEach(function (b) { put(b, 8); });
+    var cap = dataCw(v, e) * 8;
+    put(0, Math.min(4, cap - bits.length));
+    put(0, (8 - bits.length % 8) % 8);
+    for (var pad = 0xEC; bits.length < cap; pad ^= 0xEC ^ 0x11) put(pad, 8);
+    var out = [];
+    for (var i = 0; i < bits.length; i += 8) {
+      var b = 0; for (var k = 0; k < 8; k++) b = (b << 1) | bits[i + k];
+      out.push(b);
+    }
+    return out;
+  }
+
+  function interleave(data, v, e) {
+    var nb = NBLK[e][v], epb = ECC_PER[e][v], raw = Math.floor(rawModules(v) / 8);
+    var shortBlocks = nb - raw % nb, shortLen = Math.floor(raw / nb), div = rsDiv(epb), blocks = [], k = 0, i;
+    for (i = 0; i < nb; i++) {
+      var len = shortLen - epb + (i < shortBlocks ? 0 : 1);
+      var dat = data.slice(k, k + len); k += len;
+      var ecc = rsRem(dat, div);
+      if (i < shortBlocks) dat.push(0);
+      blocks.push(dat.concat(ecc));
+    }
+    var res = [];
+    for (i = 0; i < blocks[0].length; i++) {
+      blocks.forEach(function (b, j) { if (i !== shortLen - epb || j >= shortBlocks) res.push(b[i]); });
+    }
+    return res;
+  }
+
+  function matrix(v, e, cw) {
+    var size = v * 4 + 17, m = [], fn = [], x, y;
+    for (y = 0; y < size; y++) { m.push(new Array(size).fill(false)); fn.push(new Array(size).fill(false)); }
+    function set(px, py, dark) { if (px >= 0 && px < size && py >= 0 && py < size) { m[py][px] = !!dark; fn[py][px] = true; } }
+    for (x = 0; x < size; x++) { set(6, x, x % 2 === 0); set(x, 6, x % 2 === 0); }
+    function finder(cx, cy) {
+      for (var dy = -4; dy <= 4; dy++) for (var dx = -4; dx <= 4; dx++) {
+        var d = Math.max(Math.abs(dx), Math.abs(dy)); set(cx + dx, cy + dy, d !== 2 && d !== 4);
+      }
+    }
+    finder(3, 3); finder(size - 4, 3); finder(3, size - 4);
+    var ap = alignPos(v), n = ap.length;
+    ap.forEach(function (ax, i) { ap.forEach(function (ay, j) {
+      if ((i === 0 && j === 0) || (i === 0 && j === n - 1) || (i === n - 1 && j === 0)) return;
+      for (var dy = -2; dy <= 2; dy++) for (var dx = -2; dx <= 2; dx++) set(ax + dx, ay + dy, Math.max(Math.abs(dx), Math.abs(dy)) !== 1);
+    }); });
+    /* cadangkan area format agar tidak terisi data */
+    function format(mask) {
+      var data = (FMT[e] << 3) | mask, rem = data, i;
+      for (i = 0; i < 10; i++) rem = (rem << 1) ^ ((rem >>> 9) * 0x537);
+      var bits = ((data << 10) | rem) ^ 0x5412;
+      function b(k) { return ((bits >>> k) & 1) !== 0; }
+      for (i = 0; i <= 5; i++) set(8, i, b(i));
+      set(8, 7, b(6)); set(8, 8, b(7)); set(7, 8, b(8));
+      for (i = 9; i < 15; i++) set(14 - i, 8, b(i));
+      for (i = 0; i < 8; i++) set(size - 1 - i, 8, b(i));
+      for (i = 8; i < 15; i++) set(8, size - 15 + i, b(i));
+      set(8, size - 8, true);
+    }
+    format(0);
+    if (v >= 7) {
+      var rem = v, i;
+      for (i = 0; i < 12; i++) rem = (rem << 1) ^ ((rem >>> 11) * 0x1F25);
+      var bits = (v << 12) | rem;
+      for (i = 0; i < 18; i++) {
+        var c = ((bits >>> i) & 1) !== 0, a = size - 11 + i % 3, b = Math.floor(i / 3);
+        set(a, b, c); set(b, a, c);
+      }
+    }
+    /* data zig-zag */
+    var bi = 0, total = cw.length * 8;
+    for (var right = size - 1; right >= 1; right -= 2) {
+      if (right === 6) right = 5;
+      for (var vert = 0; vert < size; vert++) for (var j = 0; j < 2; j++) {
+        var xx = right - j, up = ((right + 1) & 2) === 0, yy = up ? size - 1 - vert : vert;
+        if (!fn[yy][xx] && bi < total) { m[yy][xx] = ((cw[bi >>> 3] >>> (7 - (bi & 7))) & 1) !== 0; bi++; }
+      }
+    }
+    return { m: m, fn: fn, size: size, format: format };
+  }
+
+  function maskBit(k, x, y) {
+    switch (k) {
+      case 0: return (x + y) % 2 === 0;
+      case 1: return y % 2 === 0;
+      case 2: return x % 3 === 0;
+      case 3: return (x + y) % 3 === 0;
+      case 4: return (Math.floor(x / 3) + Math.floor(y / 2)) % 2 === 0;
+      case 5: return x * y % 2 + x * y % 3 === 0;
+      case 6: return (x * y % 2 + x * y % 3) % 2 === 0;
+      default: return ((x + y) % 2 + x * y % 3) % 2 === 0;
+    }
+  }
+
+  function penalty(m, size) {
+    var p = 0, x, y, run, i;
+    function line(get) {
+      run = 1;
+      for (i = 1; i < size; i++) {
+        if (get(i) === get(i - 1)) { run++; if (run === 5) p += 3; else if (run > 5) p++; } else run = 1;
+      }
+    }
+    for (y = 0; y < size; y++) line(function (k) { return m[y][k]; });
+    for (x = 0; x < size; x++) line(function (k) { return m[k][x]; });
+    for (y = 0; y < size - 1; y++) for (x = 0; x < size - 1; x++) {
+      var c = m[y][x]; if (c === m[y][x + 1] && c === m[y + 1][x] && c === m[y + 1][x + 1]) p += 3;
+    }
+    var pat = [true, false, true, true, true, false, true, false, false, false, false];
+    function scan(get) {
+      for (var s = 0; s + 11 <= size; s++) {
+        var a = true, b = true;
+        for (var k = 0; k < 11; k++) { var val = get(s + k); if (val !== pat[k]) a = false; if (val !== pat[10 - k]) b = false; }
+        if (a || b) p += 40;
+      }
+    }
+    for (y = 0; y < size; y++) scan(function (k) { return m[y][k]; });
+    for (x = 0; x < size; x++) scan(function (k) { return m[k][x]; });
+    var dark = 0; for (y = 0; y < size; y++) for (x = 0; x < size; x++) if (m[y][x]) dark++;
+    p += Math.floor(Math.abs(dark * 20 - size * size * 10) / (size * size)) * 10;
+    return p;
+  }
+
+  function make(text, level) {
+    var bytes = utf8(text), levels = level ? [level] : ["M", "L"], e, v, found = null;
+    for (var li = 0; li < levels.length && !found; li++) {
+      e = levels[li];
+      for (v = 1; v <= MAXV; v++) {
+        var need = 4 + (v < 10 ? 8 : 16) + bytes.length * 8;
+        if (need <= dataCw(v, e) * 8) { found = { v: v, e: e }; break; }
+      }
+    }
+    if (!found) throw new Error("Teks terlalu panjang untuk QR");
+    var cw = interleave(bitsOf(bytes, found.v, found.e), found.v, found.e), best = null, bestP = Infinity;
+    for (var k = 0; k < 8; k++) {
+      var g = matrix(found.v, found.e, cw), size = g.size;
+      for (var y = 0; y < size; y++) for (var x = 0; x < size; x++) if (!g.fn[y][x] && maskBit(k, x, y)) g.m[y][x] = !g.m[y][x];
+      g.format(k);
+      var pe = penalty(g.m, size);
+      if (pe < bestP) { bestP = pe; best = g; }
+    }
+    var M = best.m, S = best.size;
+    return { size: S, version: found.v, level: found.e, get: function (x, y) { return x >= 0 && y >= 0 && x < S && y < S && M[y][x]; } };
+  }
+
+  function svg(q, o) {
+    o = o || {};
+    var b = o.border == null ? 3 : o.border, dark = o.dark || "#000", light = o.light || "#fff", s = q.size + b * 2, d = "";
+    for (var y = 0; y < q.size; y++) {
+      var x = 0;
+      while (x < q.size) {
+        if (!q.get(x, y)) { x++; continue; }
+        var st = x; while (x < q.size && q.get(x, y)) x++;
+        d += "M" + (st + b) + " " + (y + b) + "h" + (x - st) + "v1h" + (st - x) + "z";
+      }
+    }
+    return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ' + s + " " + s + '" shape-rendering="crispEdges" role="img" aria-label="' + (o.label || "Kode QR") + '">' +
+      '<rect width="' + s + '" height="' + s + '" fill="' + light + '"/><path d="' + d + '" fill="' + dark + '"/></svg>';
+  }
+
+  function canvas(cv, q, px, border) {
+    px = px || 10; border = border == null ? 3 : border;
+    var s = (q.size + border * 2) * px; cv.width = cv.height = s;
+    var c = cv.getContext("2d"); c.fillStyle = "#fff"; c.fillRect(0, 0, s, s); c.fillStyle = "#0d2a38";
+    for (var y = 0; y < q.size; y++) for (var x = 0; x < q.size; x++) if (q.get(x, y)) c.fillRect((x + border) * px, (y + border) * px, px, px);
+    return cv;
+  }
+
+  root.QR = { make: make, svg: svg, canvas: canvas };
+})(typeof window !== "undefined" ? window : this);
+
+</script>
+<script src="kuliahku-config.js"></script>
 <script>
 (() => {
 'use strict';
@@ -1574,7 +1819,7 @@ document.addEventListener('click', e => {
     case 'room-open': rdId = d.id; rdZ = 1; render({anim:true}); break;
     case 'room-close': rdId = null; rd = null; render({anim:true}); break;
     case 'room-edit': pdfEdit(d.id); break;
-    case 'room-del': { const f = S.pdfs.find(x => x.id === d.id); if (confirm(`Hapus "${f.name}" dari My Room?`)) { idb.del(d.id); if (f.aid && SY.assets) SY.assets.delete(f.aid).catch(() => {}); S.pdfs = S.pdfs.filter(x => x.id !== d.id); save(); render({keep:true}); toast('PDF dihapus'); } break; }
+    case 'room-del': { const f = S.pdfs.find(x => x.id === d.id); if (confirm(`Hapus "${f.name}" dari My Room?`)) { idb.del(d.id); pdfDel(f); S.pdfs = S.pdfs.filter(x => x.id !== d.id); save(); render({keep:true}); toast('PDF dihapus'); } break; }
     case 'rd-zoom': rdZ = Math.min(2.2, Math.max(.6, rdZ + +d.z)); $('#rd-z').textContent = Math.round(rdZ * 100) + '%'; if (rd?.doc) { const c = rd.cur || 1; layoutPages(rd).then(() => goPage(c, true)); } break;
     case 'qz-edit': qzEdit(d.id); break;
     case 'qz-sample': $('#qf-s').value = SAMPLE; $('#qf-s').dispatchEvent(new Event('input')); break;
@@ -1770,7 +2015,7 @@ function vLatihan() {
   const cards = list.map(z => `<article class="card glass fx pdf rise" style="${ix()};--c:${colorOf(z.course || z.title)}"><div class="pdf-ic">${ic('latihan')}</div><b>${esc(z.title)}</b><small>${esc(z.course || 'Tanpa mata kuliah')} · ${z.qs.length} soal${z.best != null ? ' · terbaik ' + z.best + '%' : ''}</small>
     <div class="acts"><button class="btn" data-act="qz-start" data-id="${z.id}">${ic('play')}Mulai</button><button class="round-btn" data-act="qz-edit" data-id="${z.id}" aria-label="Ubah">${ic('edit')}</button></div></article>`).join('');
   return head('Latihan', 'Soal terhubung ke mata kuliah. Buat otomatis dari PDF-mu, lengkap dengan penjelasan dari isinya.',
-    `<div class="chips"><button class="chip-b" data-act="qz-shuf" aria-pressed="${!!S.qshuf}">Acak soal</button><button class="btn ghost" data-act="qz-ai">${ic('latihan')}Buat dari PDF</button><button class="btn" data-act="qz-edit">${ic('plus')}Tulis soal</button></div>`) +
+    `<div class="chips"><button class="chip-b" data-act="qz-shuf" aria-pressed="${!!S.qshuf}">Acak soal</button><button class="chip-b" data-act="qz-prompt">Salin prompt AI</button><button class="btn ghost" data-act="qz-ai">${ic('latihan')}Buat dari PDF</button><button class="btn" data-act="qz-edit">${ic('plus')}Tulis soal</button></div>`) +
     `<div class="filter rise" style="${ix()}"><select class="sel" id="qz-c" aria-label="Mata kuliah">${courseOpts(quizCourse, 'Semua mata kuliah')}</select></div>` +
     (cards ? `<div class="pdfs">${cards}</div>` : `<div class="card glass empty rise" style="${ix()}">Belum ada set soal di sini. Buat dari PDF atau tulis sendiri.</div>`);
 }
@@ -1778,7 +2023,7 @@ function qzEdit(id) {
   const z = id ? S.quizzes.find(x => x.id === id) : {title:'', course:quizCourse, src:''};
   openModal(`<h3>${id ? 'Ubah' : 'Tulis'} set soal</h3><form id="qf" novalidate><label class="field">Judul<input id="qf-t" value="${esc(z.title)}" placeholder="Contoh: Kuis Basis Data bab 2" autocomplete="off"></label><label class="field">Mata kuliah<select id="qf-c">${courseOpts(z.course, 'Tanpa mata kuliah')}</select></label>
     <label class="field">Soal<textarea id="qf-s" class="qsrc" placeholder="Tempel soal di sini">${esc(z.src)}</textarea></label>
-    <div class="qhint"><span id="qf-n"></span><button type="button" class="chip-b" data-act="qz-sample">Isi contoh</button><button type="button" class="chip-b" data-act="qz-file">Impor .txt</button></div>
+    <div class="qhint"><span id="qf-n"></span><button type="button" class="chip-b" data-act="qz-sample">Isi contoh</button><button type="button" class="chip-b" data-act="qz-file">Impor .txt</button><button type="button" class="chip-b" data-act="qz-prompt">Salin prompt AI</button></div>
     <small class="qfmt">Tulis soal, lalu pilihan A–E di baris baru. Tandai jawaban benar dengan * di akhir pilihan, atau tambah baris "Jawaban: B". Baris "Penjelasan: …" boleh ditambahkan. Pisahkan tiap soal dengan baris kosong.</small>
     <div class="err" id="err" hidden></div>
     <div class="mact">${id ? `<button type="button" class="btn ghost spacer" data-act="qz-del" data-id="${id}">Hapus</button>` : ''}<button type="button" class="btn ghost" data-act="close">Batal</button><button class="btn">Simpan</button></div></form><input type="file" id="qf-f" accept=".txt,text/plain" hidden>`);
@@ -1804,17 +2049,17 @@ function qzAI() {
   openModal(`<h3>Buat soal dari PDF</h3><form id="af"><label class="field">PDF<select id="af-p">${list.map(f => `<option value="${f.id}">${esc(f.name)}${f.course ? ' · ' + esc(f.course) : ''}</option>`).join('')}</select></label>
     <div class="two"><label class="field">Dari halaman<input id="af-a" type="number" min="1" value="1"></label><label class="field">Sampai halaman<input id="af-b" type="number" min="1" value="25"></label></div>
     <label class="field">Jumlah soal<select id="af-n">${[5, 10, 15, 20].map(n => `<option ${n === 10 ? 'selected' : ''}>${n}</option>`).join('')}</select></label>
-    <small class="qfmt">Claude membaca halaman yang kamu pilih, lalu menyusun soal pilihan ganda. Penjelasan tiap soal diambil dari isi PDF beserta nomor halamannya. Soal tersimpan di mata kuliah milik PDF itu.</small>
+    <small class="qfmt">${window.claude ? 'Claude membaca halaman yang kamu pilih, lalu menyusun soal pilihan ganda.' : 'Soal dibuat otomatis dari kalimat penting di halaman yang kamu pilih (isian rumpang).'} Penjelasan tiap soal diambil dari isi PDF beserta nomor halamannya. Soal tersimpan di mata kuliah milik PDF itu.</small>
     <div class="err" id="err" hidden></div><div class="mact"><button type="button" class="btn ghost" data-act="close">Batal</button><button class="btn" id="af-go">Buat soal</button></div></form>`);
   $('#modal').style.width = 'min(560px,100%)';
   $('#af').onsubmit = async e => {
     e.preventDefault(); const f = S.pdfs.find(x => x.id === $('#af-p').value), n = +$('#af-n').value, a = Math.max(1, +$('#af-a').value || 1), b = Math.max(a, +$('#af-b').value || a), er = $('#err'), go = $('#af-go');
     const say = t => { er.hidden = false; er.textContent = t; }; go.disabled = true; say('Membaca PDF…');
     try {
-      const sample = window.claude ? await claude.use('sample') : null; if (!sample) throw {code:'none'};
+      const sample = window.claude ? await claude.use('sample').catch(() => null) : null;
       const txt = await pdfText(f.id, a, b); if (txt.length < 200) throw {code:'empty'};
-      say('Claude sedang menyusun soal, tunggu sebentar…');
-      const out = await sample.json(`Kamu pembuat soal ujian kuliah. Mata kuliah: "${f.course || f.name}". Berdasarkan HANYA materi di bawah, buat ${n} soal pilihan ganda berkualitas dalam bahasa yang sama dengan materi. Aturan: tiap soal punya 4 opsi dengan tepat 1 jawaban benar dan pengecoh yang masuk akal; sebar soal di seluruh materi dengan tingkat kesulitan bervariasi; acak posisi jawaban benar; jangan membuat soal tentang hal yang tidak ada di materi. Penjelasan "e" berisi 1-2 kalimat dari isi materi dan diakhiri nomor halaman sumbernya, contoh "(hal. 5)", berdasarkan penanda [Hal N]. Balas HANYA JSON array tanpa markdown: [{"q":"pertanyaan","o":["opsi A","opsi B","opsi C","opsi D"],"a":0,"e":"penjelasan (hal. N)"}] dengan "a" = indeks jawaban benar (0-3).\n\nMATERI:\n${txt}`, {modelTier:'default'});
+      say(sample ? 'Claude sedang menyusun soal, tunggu sebentar…' : 'Menyusun soal dari teks PDF…');
+      const out = sample ? await sample.json(`Kamu pembuat soal ujian kuliah. Mata kuliah: "${f.course || f.name}". Berdasarkan HANYA materi di bawah, buat ${n} soal pilihan ganda berkualitas dalam bahasa yang sama dengan materi. Aturan: tiap soal punya 4 opsi dengan tepat 1 jawaban benar dan pengecoh yang masuk akal; sebar soal di seluruh materi dengan tingkat kesulitan bervariasi; acak posisi jawaban benar; jangan membuat soal tentang hal yang tidak ada di materi. Penjelasan "e" berisi 1-2 kalimat dari isi materi dan diakhiri nomor halaman sumbernya, contoh "(hal. 5)", berdasarkan penanda [Hal N]. Balas HANYA JSON array tanpa markdown: [{"q":"pertanyaan","o":["opsi A","opsi B","opsi C","opsi D"],"a":0,"e":"penjelasan (hal. N)"}] dengan "a" = indeks jawaban benar (0-3).\n\nMATERI:\n${txt}`, {modelTier:'default'}) : localQuiz(txt, n);
       const qs = (Array.isArray(out) ? out : out?.soal || []).map(q => ({q:String(q.q || '').trim(), o:(q.o || []).map(String).slice(0, 5), a:+q.a, e:String(q.e || '').replace(/\s+/g, ' ').trim()})).filter(q => q.q && q.o.length >= 2 && q.a >= 0 && q.a < q.o.length);
       if (!qs.length) throw {};
       S.quizzes.push({id:uid(), title:'Soal: ' + f.name, course:f.course, src:toSrc(qs), qs, best:null, pdf:f.id});
@@ -1937,9 +2182,35 @@ function scaleEdit() {
 }
 document.addEventListener('change', e => { const s = e.target.closest('[data-score]'); if (!s) return; const c = S.courses.find(x => x.id === s.dataset.score); c.score = s.value.trim(); save(); render({keep:true}); });
 
-/* ---------- Sinkronisasi antar perangkat ---------- */
-var SY = {ref:null, assets:null, busy:false, again:false, timer:0, lastTs:0, st:'off', pending:null, choose:null};
-const SYT = {off:'Lokal', wait:'Menunggu', busy:'Sinkron…', ok:'Tersinkron', err:'Gagal', big:'Terlalu besar'};
+/* ---------- Soal otomatis dari teks PDF (tanpa AI, berjalan di perangkat) ---------- */
+function localQuiz(txt, n) {
+  const STOP = new Set('yang dengan untuk dalam adalah merupakan dapat akan pada dari atau juga sebagai oleh tersebut karena sehingga antara serta lebih telah sebuah dimana bahwa sedangkan misalnya secara selalu setiap bagian beberapa melalui antara hanya sangat harus yaitu yakni mereka terdapat memiliki menjadi dilakukan menggunakan digunakan sebelum sesudah ketika selama tetap berbagai seluruh semua masing lainnya tertentu sebagai terhadap kepada bukan belum sudah sedang masih bagaimana mengapa sebuah seorang suatu which their these those there about from with that this have been were into such than then also'.split(' '));
+  const pg = txt.split(/\[Hal (\d+)\]/), sents = [], freq = {};
+  for (let i = 1; i < pg.length; i += 2) (pg[i + 1] || '').split(/(?<=[.!?])\s+/).forEach(s => { s = s.trim(); if (s.length >= 50 && s.length <= 240) sents.push({s, p:+pg[i]}); });
+  (txt.toLowerCase().match(/[a-zà-ÿ]{6,}/g) || []).forEach(w => { if (!STOP.has(w)) freq[w] = (freq[w] || 0) + 1; });
+  const vocab = Object.keys(freq).filter(w => freq[w] >= 2), out = [], used = new Set();
+  if (vocab.length < 8 || sents.length < 3) return [];
+  for (const {s, p} of shuffle(sents)) {
+    if (out.length >= n) break;
+    const cand = (s.match(/[A-Za-zÀ-ÿ]{6,}/g) || []).filter(w => freq[w.toLowerCase()] >= 2 && !STOP.has(w.toLowerCase()));
+    if (!cand.length) continue; const ans = cand[Math.floor(Math.random() * cand.length)], k = ans.toLowerCase(); if (used.has(k)) continue;
+    const dis = shuffle(vocab.filter(w => w !== k && Math.abs(w.length - k.length) <= 3)).slice(0, 3); if (dis.length < 3) continue;
+    used.add(k); const cap = w => ans[0] === ans[0].toUpperCase() ? w[0].toUpperCase() + w.slice(1) : w, o = shuffle([ans, ...dis.map(cap)]);
+    out.push({q:'Lengkapi kalimat berikut: ' + s.replace(ans, '_____'), o, a:o.indexOf(ans), e:`Dari materi: "${s}" (hal. ${p})`});
+  }
+  return out;
+}
+
+/* ---------- Sinkronisasi lewat Google Apps Script (Sheet dan Drive milikmu sendiri) ---------- */
+var SY = {ready:false, busy:false, again:false, timer:0, lastTs:0, st:'off', pending:null, choose:null};
+const SYT = {off:'Lokal', wait:'Menunggu', busy:'Sinkron…', ok:'Tersinkron', err:'Gagal', kode:'Kode salah', big:'Terlalu besar'};
+const SYC = () => { let o = {}; try { o = JSON.parse(localStorage.getItem('kuliahku.sync')) || {}; } catch {} return {ep:o.ep || window.KULIAHKU_ENDPOINT || '', kode:o.kode || window.KULIAHKU_KODE || ''}; };
+const SYEP = () => String(SYC().ep || window.KULIAHKU_ENDPOINT || '').replace(/[\s"'\u201C\u201D\u2018\u2019]/g, '');
+async function api(body, ms = 30000) {
+  const ctl = new AbortController(), t = setTimeout(() => ctl.abort(), ms);
+  try { const r = await fetch(SYEP(), {method:'POST', mode:'cors', credentials:'omit', referrerPolicy:'no-referrer', redirect:'follow', headers:{'Content-Type':'text/plain;charset=utf-8'}, body:JSON.stringify({...body, kode:SYC().kode || ''}), signal:ctl.signal}); return await r.json(); }
+  finally { clearTimeout(t); }
+}
 function setSt(st) { SY.st = st; const b = $('#sync'); if (!b) return; b.dataset.st = st; b.querySelector('.sy-t').textContent = SYT[st]; }
 function shape() {
   ['pdfs', 'quizzes', 'todos', 'mut'].forEach(k => { if (!S[k]) S[k] = []; });
@@ -1947,21 +2218,24 @@ function shape() {
   if (!S.curSem) S.curSem = Math.max(1, ...S.courses.map(c => +c.sem));
   S.quizzes.forEach(z => { if (!z.qs) z.qs = parseQ(z.src || ''); });
 }
-const NOSYNC = ['theme', 'sessions', '_ts', '_synced'];
+const NOSYNC = ['theme', 'sessions', '_ts', '_synced', '_sy'];
 function slim() { const o = {}; Object.keys(S).forEach(k => { if (!NOSYNC.includes(k)) o[k] = S[k]; }); o.quizzes = (S.quizzes || []).map(({qs, ...z}) => z); return o; }
 const typing = () => /INPUT|TEXTAREA|SELECT/.test(document.activeElement?.tagName || '') || !$('#overlay').hidden || (view === 'room' && rdId);
-function syncSoon() { if (!SY || !SY.ref) return; clearTimeout(SY.timer); setSt('wait'); SY.timer = setTimeout(push, 1500); }
+function syncSoon() { if (!SY || !SY.ready) return; clearTimeout(SY.timer); setSt('wait'); SY.timer = setTimeout(push, 1500); }
 async function push() {
   if (SY.busy) { SY.again = true; return; } SY.busy = true; setSt('busy');
   try {
-    const ts = S._ts || Date.now(), json = JSON.stringify(slim()); if (json.length > 245000) throw {big:1};
-    await SY.ref.set({ts, json}); SY.lastTs = ts; S._synced = 1; try { localStorage.setItem(KEY, JSON.stringify(S)); } catch {} setSt('ok');
+    const ts = S._ts || Date.now(), json = JSON.stringify(slim()); if (json.length > 3900000) throw {big:1};
+    const r = await api({aksi:'push', ts, json});
+    if (r.ok) { SY.lastTs = ts; S._sy = 1; try { localStorage.setItem(KEY, JSON.stringify(S)); } catch {} setSt('ok'); }
+    else if (r.error === 'konflik' && r.json) { SY.pending = {ts:r.ts, json:r.json}; setSt('ok'); }
+    else setSt(r.error === 'kode' ? 'kode' : 'err');
   } catch (e) { setSt(e && e.big ? 'big' : 'err'); }
   SY.busy = false; if (SY.again) { SY.again = false; syncSoon(); }
 }
 function applyRemote(r) {
   const keep = {theme:S.theme, sessions:S.sessions}, d = JSON.parse(r.json);
-  Object.keys(S).forEach(k => delete S[k]); Object.assign(S, d, keep, {_ts:r.ts, _synced:1}); shape();
+  Object.keys(S).forEach(k => delete S[k]); Object.assign(S, d, keep, {_ts:r.ts, _sy:1}); shape();
   try { localStorage.setItem(KEY, JSON.stringify(S)); } catch {} SY.lastTs = r.ts; chrome(); render({keep:true});
 }
 function mergeRemote(r) {
@@ -1974,61 +2248,241 @@ function mergeRemote(r) {
   });
   shape(); S._ts = Date.now();
 }
-function chooseSync(r, done) {
-  openModal(`<h3>Sinkronkan data</h3><p class="qfmt">Perangkat ini dan cloud sudah punya data yang berbeda. "Gabungkan" menyatukan keduanya tanpa menghapus apa pun.</p><div class="mact" style="flex-direction:column;align-items:stretch"><button class="btn" data-act="sy-merge">Gabungkan (disarankan)</button><button class="btn ghost" data-act="sy-cloud">Pakai data cloud, timpa perangkat ini</button><button class="btn ghost" data-act="sy-local">Pakai data perangkat ini, timpa cloud</button></div>`);
-  SY.choose = async m => {
-    closeModal();
-    if (m === 'cloud') applyRemote(r);
-    else { if (m === 'merge') mergeRemote(r); else S._ts = Date.now(); try { localStorage.setItem(KEY, JSON.stringify(S)); } catch {} chrome(); render({keep:true}); await push(); }
-    done();
-  };
-}
-function onRemote(r) {
-  if (!r || r.ts === SY.lastTs || r.ts <= (S._ts || 0)) return;
-  if (typing()) { SY.pending = r; return; }
-  applyRemote(r); toast('Data diperbarui dari perangkat lain');
-}
-setInterval(() => { const r = SY.pending; if (r && !typing()) { SY.pending = null; if (r.ts > (S._ts || 0)) { applyRemote(r); toast('Data diperbarui dari perangkat lain'); } } }, 3000);
-async function syncInit() {
-  if (!window.claude) return;
+function takePending() { const r = SY.pending; if (r && !typing()) { SY.pending = null; if (r.ts > (S._ts || 0)) { applyRemote(r); toast('Data diperbarui dari perangkat lain'); } } }
+async function pull() {
   try {
-    const [db, user, assets] = await Promise.all([claude.use('db'), claude.use('user'), claude.use('assets')]);
-    SY.assets = assets; const id = user ? await user.id() : null; if (!db || !id) return setSt('off');
-    SY.ref = db.doc(`data/users/${id}/state`); setSt('busy');
-    const snap = await SY.ref.get();
-    if (!snap.exists) { S._ts = S._ts || Date.now(); await push(); }
-    else {
-      const r = snap.data();
-      if (!HAD) applyRemote(r);
-      else if (S._synced) { if (r.ts > (S._ts || 0)) applyRemote(r); else if ((S._ts || 0) > r.ts) await push(); }
-      else await new Promise(res => chooseSync(r, res));
-    }
-    SY.ref.onSnapshot(s => { if (s.exists) onRemote(s.data()); });
-    if (SY.st !== 'err' && SY.st !== 'big') setSt('ok'); pdfUpAll();
-  } catch { setSt('off'); }
+    const r = await api({aksi:'pull', since:SY.lastTs || 0});
+    if (!r.ok) { if (r.error === 'kode') setSt('kode'); return; }
+    if (!r.same && r.json && r.ts > (S._ts || 0)) { SY.pending = {ts:r.ts, json:r.json}; takePending(); }
+  } catch {}
 }
+async function syncInit() {
+  if (!SYEP() || !SYC().kode) return setSt('off');
+  try {
+    setSt('busy'); let r = await api({aksi:'pull'}); if (r.error === 'belumkode') { await api({aksi:'claim'}); r = await api({aksi:'pull'}); }
+    if (!r.ok) return setSt(r.error === 'kode' ? 'kode' : 'err');
+    const rr = {ts:r.ts, json:r.json}; SY.ready = true;
+    if (!r.json) { S._ts = S._ts || Date.now(); await push(); }
+    else if (!HAD) applyRemote(rr);
+    else if (S._sy) { if (rr.ts > (S._ts || 0)) applyRemote(rr); else if ((S._ts || 0) > rr.ts) await push(); }
+    else { mergeRemote(rr); try { localStorage.setItem(KEY, JSON.stringify(S)); } catch {} chrome(); render({keep:true}); await push(); toast('Data perangkat ini digabung dengan data di Sheet'); }
+    if (SY.st !== 'err' && SY.st !== 'kode') setSt('ok'); pdfUpAll();
+  } catch { setSt('err'); }
+}
+setInterval(() => { if (document.hidden) return; takePending(); if (!SYEP()) return; if (SY.ready) { if (!SY.busy) pull(); } else syncInit(); }, 30000);
+document.addEventListener('visibilitychange', () => { if (!document.hidden && SY.ready) pull(); });
+
+/* PDF ke Google Drive (dipecah per 1,2 MB) */
+const CH = 1200000, UPING = new Set();
+const b64 = blob => new Promise(res => { const fr = new FileReader(); fr.onload = () => res(String(fr.result).split(',')[1] || ''); fr.readAsDataURL(blob); });
 async function pdfUp(f) {
-  if (!SY.assets || f.aid || f.size > 20 * 1048576) return;
-  try { const rec = await idb.get(f.id); if (!rec) return; const a = await SY.assets.upload(new Blob([rec.blob], {type:'application/pdf'})); f.aid = a.id; save(); } catch {}
+  if (!SY.ready || f.cn || UPING.has(f.id)) return; UPING.add(f.id);
+  try {
+    const rec = await idb.get(f.id); if (!rec) return; const n = Math.max(1, Math.ceil(rec.blob.size / CH));
+    for (let i = 0; i < n; i++) { const r = await api({aksi:'pdfput', id:f.id, i, n, data:await b64(rec.blob.slice(i * CH, (i + 1) * CH))}, 60000); if (!r.ok) throw 0; }
+    f.cn = n; save();
+  } catch {} UPING.delete(f.id);
 }
 async function pdfUpAll() { for (const f of S.pdfs.slice()) await pdfUp(f); }
 async function pdfBlob(id) {
   let rec = await idb.get(id); if (rec) return rec;
-  const f = S.pdfs.find(x => x.id === id); if (!f || !f.aid) return null;
-  const r = await fetch('/_blob/' + f.aid); if (!r.ok) return null;
-  rec = {id, blob:await r.blob()}; try { await idb.put(rec); } catch {} return rec;
+  const f = S.pdfs.find(x => x.id === id); if (!f || !f.cn || !SY.ready) return null;
+  toast('Mengunduh PDF dari Drive…'); const parts = [];
+  for (let i = 0; i < f.cn; i++) { const r = await api({aksi:'pdfget', id, i}, 60000); if (!r.ok) return null; parts.push(Uint8Array.from(atob(r.data), c => c.charCodeAt(0))); }
+  rec = {id, blob:new Blob(parts, {type:'application/pdf'})}; try { await idb.put(rec); } catch {} return rec;
 }
+const pdfDel = f => { if (f.cn && SY.ready) api({aksi:'pdfdel', id:f.id}).catch(() => {}); };
+
 document.addEventListener('click', e => {
   const el = e.target.closest('[data-act]'); if (!el) return; const d = el.dataset.act;
   if (d === 'scale-edit') scaleEdit();
   else if (d === 'scale-reset') { delete S.scale; save(); closeModal(); render({keep:true}); toast('Skala standar dipulihkan'); }
-  else if (d === 'sy-merge' || d === 'sy-cloud' || d === 'sy-local') SY.choose?.(d.slice(3));
-  else if (d === 'sy-now') { closeModal(); (async () => { if (!SY.ref) return; setSt('busy'); const s = await SY.ref.get(); const r = s.exists ? s.data() : null; if (r && r.ts > (S._ts || 0)) applyRemote(r); else { S._ts = Date.now(); await push(); } pdfUpAll(); toast('Sinkron selesai'); })(); }
-  else if (d === 'sync-info') {
-    const n = S.pdfs.filter(f => f.aid).length, msg = {ok:'Datamu tersimpan di akun claude.ai-mu dan otomatis muncul di HP, tablet, atau PC lain yang membuka halaman ini dengan akun yang sama.', off:'Sinkronisasi belum aktif. Buka halaman ini lewat claude.ai dengan akun yang sama di semua perangkat. Sementara itu data tersimpan lokal di perangkat ini.', err:'Gagal menyimpan ke cloud. Akan dicoba lagi saat ada perubahan berikutnya.', big:'Datamu melebihi batas sinkron. Hapus catatan atau soal yang tidak perlu.', busy:'Sedang menyinkronkan…', wait:'Perubahan akan segera dikirim.'}[SY.st];
-    openModal(`<h3>Sinkronisasi</h3><p class="qfmt">${msg}</p>${SY.ref ? `<p class="qfmt">PDF di cloud: ${n} dari ${S.pdfs.length} (maksimal 20 MB per file). PDF dibuka dari cloud saat pertama dibaca di perangkat baru.</p>` : ''}<div class="mact"><button type="button" class="btn ghost" data-act="close">Tutup</button>${SY.ref ? '<button type="button" class="btn" data-act="sy-now">Sinkronkan sekarang</button>' : ''}</div>`);
-  }
+  else if (d === 'sync-info') syModal();
+  else if (d === 'sy-copy') { copyText(GS_SRC); toast('Kode backend disalin. Tempel di Apps Script.'); }
+  else if (d === 'sy-link') { copyText(joinLink()); toast('Tautan sambung disalin. Kirim ke dirimu sendiri.'); }
+  else if (d === 'sy-now') { closeModal(); (async () => { SY.lastTs = 0; await pull(); S._ts = Date.now(); await push(); pdfUpAll(); toast('Sinkron selesai'); })(); }
+  else if (d === 'sy-off') { if (confirm('Putuskan sinkronisasi di perangkat ini? Data di perangkat ini tetap ada.')) { localStorage.removeItem('kuliahku.sync'); SY.ready = false; closeModal(); setSt('off'); toast('Sinkronisasi diputuskan di perangkat ini'); } }
+  else if (d === 'qz-prompt') { copyText(QPROMPT); toast('Prompt disalin. Tempel ke AI bersama materimu.'); }
 });
+const copyText = async t => { try { await navigator.clipboard.writeText(t); } catch { const a = document.createElement('textarea'); a.value = t; a.style.cssText = 'position:fixed;opacity:0'; document.body.appendChild(a); a.select(); try { document.execCommand('copy'); } catch {} a.remove(); } };
+const joinLink = () => location.origin + location.pathname + '#sambung=' + encodeURIComponent(btoa(unescape(encodeURIComponent(JSON.stringify({ep:SYEP(), kode:SYC().kode})))));
+async function syConnect(ev) {
+  ev.preventDefault(); const ep = $('#sy-ep').value.trim(), kode = $('#sy-k').value, er = $('#err'), say = m => { er.hidden = false; er.textContent = m; };
+  if (!/^https:\/\/script\.google\.com\/macros\/s\/[^\/\s]+\/exec$/.test(ep)) return say('URL harus berawalan https://script.google.com/macros/s/ dan berakhiran /exec');
+  if (kode.length < 6) return say('Kode sinkron minimal 6 karakter');
+  localStorage.setItem('kuliahku.sync', JSON.stringify({ep, kode})); say('Menghubungkan…');
+  try {
+    let r = await api({aksi:'pull'}); if (r.error === 'belumkode') { r = await api({aksi:'claim'}); if (r.ok) r = await api({aksi:'pull'}); }
+    if (!r.ok) { localStorage.removeItem('kuliahku.sync'); return say(r.error === 'kode' ? 'Kode tidak cocok dengan kode yang sudah dibuat di skrip.' : r.error === 'tunggu' ? 'Terlalu banyak salah kode. Tunggu 10 menit.' : 'Skrip menolak permintaan. Coba buat Deployment baru lalu salin URL terbarunya.'); }
+  } catch { localStorage.removeItem('kuliahku.sync'); return say('Tidak bisa menghubungi skrip. Pastikan URL benar dan Akses diatur "Siapa saja".'); }
+  closeModal(); SY.ready = false; syncInit();
+}
+function syModal() {
+  if (SY.ready) {
+    let qr = ''; try { qr = QR.svg(QR.make(joinLink()), {border:2, dark:'#0d1b2a', light:'#ffffff'}); } catch {}
+    openModal(`<h3>Sinkronisasi aktif</h3><p class="qfmt">Status: ${SYT[SY.st]} · PDF di Drive: ${S.pdfs.filter(f => f.cn).length} dari ${S.pdfs.length}</p>${qr ? `<div class="qrbox">${qr}</div>` : ''}
+      <p class="qfmt">Pindai QR ini dengan kamera HP atau tablet lain lalu buka tautannya. Perangkat itu langsung tersambung dan datanya sama. Jangan bagikan ke orang lain.</p>
+      <div class="mact" style="flex-wrap:wrap"><button class="btn" data-act="sy-link">Salin tautan sambung</button><button class="btn ghost" data-act="sy-now">Sinkronkan sekarang</button><button class="btn ghost" data-act="sy-off">Putuskan</button></div>`);
+    return;
+  }
+  openModal(`<h3>Sambungkan sinkronisasi</h3><p class="qfmt">Sekali saja, sekitar 3 menit. Data tersimpan di Google Sheet dan Drive milikmu sendiri.</p>
+    <ol class="steps"><li><b>Salin kode backend.</b> <button type="button" class="chip-b" data-act="sy-copy">Salin kode backend</button></li>
+    <li>Buka <a href="https://sheets.new" target="_blank" rel="noopener">sheets.new</a>, pilih <b>Ekstensi &gt; Apps Script</b>, hapus isinya, tempel, lalu Simpan. Pilih <b>Terapkan &gt; Deployment baru &gt; Aplikasi web</b>, isi <b>Jalankan sebagai: Saya</b> dan <b>Akses: Siapa saja</b>, Terapkan, izinkan akses, lalu salin URL berakhiran /exec.</li>
+    <li>Tempel URL di bawah dan buat kode sinkron.</li></ol>
+    <form id="syf"><label class="field">URL (berakhiran /exec)<input id="sy-ep" value="${esc(SYEP())}" placeholder="https://script.google.com/macros/s/…/exec" autocomplete="off"></label>
+    <label class="field">Kode sinkron buatanmu (minimal 6 karakter)<input id="sy-k" type="password" value="${esc(SYC().kode || '')}" autocomplete="off"></label>
+    <div class="err" id="err" hidden></div><div class="mact"><button type="button" class="btn ghost" data-act="close">Tutup</button><button class="btn">Sambungkan</button></div></form>
+    <p class="qfmt">Sudah ada perangkat yang tersambung? Buka tautan sambung atau pindai QR dari perangkat itu, tanpa mengisi apa pun di sini.</p>`);
+  $('#syf').onsubmit = syConnect;
+}
+(function () {
+  const m = location.hash.match(/#sambung=([^&]+)/); if (!m) return;
+  try { const o = JSON.parse(decodeURIComponent(escape(atob(decodeURIComponent(m[1]))))); if (o.ep && o.kode) { localStorage.setItem('kuliahku.sync', JSON.stringify({ep:o.ep, kode:o.kode})); history.replaceState(null, '', location.pathname + location.search); setTimeout(() => toast('Perangkat tersambung'), 1200); } } catch {}
+})();
+const GS_SRC = String.raw`/**
+ * Kuliahku | penyimpan data dan PDF di Google Sheet + Google Drive milikmu sendiri.
+ * Cara pakai: Google Sheet BARU > Ekstensi > Apps Script > tempel seluruh kode ini.
+ * Panduan lengkap: PANDUAN-KULIAHKU.txt
+ */
+var KODE = '';        // OPSIONAL. Biarkan kosong: kode dibuat dari aplikasi saat pertama menyambung.
+var SHEET_ID = '';    // OPSIONAL. Isi ID Spreadsheet bila skrip dibuat terpisah dari Sheet.
+var CHUNK = 45000;    // batas aman karakter per sel Google Sheet
+
+function setup() { ss_(); folder_(); }   // jalankan sekali untuk memberi izin Sheet dan Drive
+
+function kode_() { return KODE || PropertiesService.getScriptProperties().getProperty('kode') || ''; }
+
+function doGet() {
+  var ok = false; try { ok = !!ss_(); } catch (e) {}
+  return out_({ ok: true, sheet: ok ? 'terhubung' : 'belum', kode: kode_() ? 'sudah diatur' : 'belum' });
+}
+
+function doPost(e) {
+  try {
+    var d = JSON.parse((e && e.postData && e.postData.contents) || '{}');
+    var cache = CacheService.getScriptCache(), fails = Number(cache.get('gagal') || 0);
+    if (fails >= 10) return out_({ ok: false, error: 'tunggu' });          // ditahan 10 menit setelah 10 kali salah
+    var K = kode_(), k = String(d.kode || '');
+    if (d.aksi === 'claim') {                                               // pertama kali: kode dibuat dari aplikasi
+      if (k.length < 6 || k.length > 60) return out_({ ok: false, error: 'pendek' });
+      if (!K) { PropertiesService.getScriptProperties().setProperty('kode', k); return out_({ ok: true, baru: true }); }
+    }
+    if (K.length < 6) return out_({ ok: false, error: 'belumkode' });
+    if (!eq_(k, K)) { cache.put('gagal', String(fails + 1), 600); return out_({ ok: false, error: 'kode' }); }
+    if (d.aksi === 'claim') return out_({ ok: true });
+    var lock = LockService.getScriptLock();
+    lock.waitLock(25000);
+    try {
+      switch (d.aksi) {
+        case 'pull': return out_(pull_(d));
+        case 'ping': return out_({ ok: true });
+        case 'push': return out_(push_(d));
+        case 'pdfput': return out_(pdfput_(d));
+        case 'pdfget': return out_(pdfget_(d));
+        case 'pdfdel': return out_(pdfdel_(d));
+        default: return out_({ ok: false, error: 'aksi' });
+      }
+    } finally { lock.releaseLock(); }
+  } catch (err) {
+    console.error(err);
+    return out_({ ok: false, error: 'server' });
+  }
+}
+
+/* ===== Data utama (JSON dipecah ke beberapa sel) ===== */
+function pull_(d) {
+  var ts = Number(sheet_('Meta').getRange('A1').getValue() || 0);
+  if (!ts) return { ok: true, ts: 0, json: '' };
+  if (Number(d.since || 0) === ts) return { ok: true, same: true, ts: ts };
+  var sh = sheet_('Data'), n = sh.getLastRow(), parts = n ? sh.getRange(1, 1, n, 1).getValues() : [];
+  return { ok: true, ts: ts, json: parts.map(function (r) { return r[0]; }).join('') };
+}
+
+function push_(d) {
+  var json = String(d.json || ''), ts = Number(d.ts || 0);
+  if (!json || json.length > 4000000 || !ts) return { ok: false, error: 'data' };
+  var meta = sheet_('Meta'), cur = Number(meta.getRange('A1').getValue() || 0);
+  if (cur > ts) { var p = pull_({}); return { ok: false, error: 'konflik', ts: p.ts, json: p.json }; }   // data di Sheet lebih baru
+  var sh = sheet_('Data'), rows = [];
+  for (var i = 0; i < json.length; i += CHUNK) rows.push([json.substr(i, CHUNK)]);
+  sh.clear();
+  sh.getRange(1, 1, rows.length, 1).setNumberFormat('@').setValues(rows);   // '@' = teks, mencegah dibaca sebagai rumus
+  meta.getRange('A1').setValue(ts);
+  meta.getRange('B1').setValue(new Date());
+  return { ok: true };
+}
+
+/* ===== PDF di Google Drive (dipecah per bagian) ===== */
+function pdfput_(d) {
+  var id = safe_(d.id), i = Number(d.i), n = Number(d.n), data = String(d.data || '');
+  if (!id || !(i >= 0) || !(n >= 1) || n > 120 || !data || data.length > 3000000) return { ok: false, error: 'data' };
+  var f = folder_(), name = id + '.' + i, it = f.getFilesByName(name);
+  while (it.hasNext()) it.next().setTrashed(true);
+  f.createFile(Utilities.newBlob(Utilities.base64Decode(data), 'application/octet-stream', name));
+  return { ok: true };
+}
+
+function pdfget_(d) {
+  var it = folder_().getFilesByName(safe_(d.id) + '.' + Number(d.i));
+  if (!it.hasNext()) return { ok: false, error: 'nofile' };
+  return { ok: true, data: Utilities.base64Encode(it.next().getBlob().getBytes()) };
+}
+
+function pdfdel_(d) {
+  var id = safe_(d.id), f = folder_();
+  for (var i = 0; i < 120; i++) {
+    var it = f.getFilesByName(id + '.' + i);
+    if (!it.hasNext()) break;
+    while (it.hasNext()) it.next().setTrashed(true);
+  }
+  return { ok: true };
+}
+
+/* ===== Pembantu ===== */
+function ss_() { return SHEET_ID ? SpreadsheetApp.openById(SHEET_ID) : SpreadsheetApp.getActiveSpreadsheet(); }
+function sheet_(name) { var s = ss_(), sh = s.getSheetByName(name); return sh || s.insertSheet(name); }
+function folder_() {
+  var p = PropertiesService.getScriptProperties(), id = p.getProperty('folder');
+  if (id) { try { return DriveApp.getFolderById(id); } catch (e) {} }
+  var f = DriveApp.createFolder('Kuliahku PDF'); p.setProperty('folder', f.getId()); return f;
+}
+function safe_(s) { return String(s || '').replace(/[^A-Za-z0-9_\-]/g, '').slice(0, 40); }
+function eq_(a, b) { if (a.length !== b.length) return false; var r = 0; for (var i = 0; i < a.length; i++) r |= a.charCodeAt(i) ^ b.charCodeAt(i); return r === 0; }
+function out_(o) { return ContentService.createTextOutput(JSON.stringify(o)).setMimeType(ContentService.MimeType.JSON); }
+`;
+const QPROMPT = `Kamu pembuat soal ujian kuliah. Buat [JUMLAH, mis. 15] soal pilihan ganda dari materi mata kuliah
+"[NAMA MATA KULIAH / BAB]" di bagian MATERI.
+
+ATURAN FORMAT (WAJIB DIIKUTI PERSIS, jangan ada teks lain sebelum atau sesudah soal):
+1. Tiap soal diawali nomor dan titik: "1. Pertanyaan?"
+2. Tepat 4 pilihan, masing-masing di baris sendiri: "A. ...", "B. ...", "C. ...", "D. ..."
+3. Tandai satu jawaban benar dengan tanda bintang di akhir pilihan, contoh: "B. Normalisasi *"
+4. Baris berikutnya: "Penjelasan: ..." berisi 1-2 kalimat yang berdasar pada materi. Sebut halaman atau bab
+   bila ada, contoh: (hal. 5).
+5. Pisahkan antar soal dengan SATU baris kosong.
+6. Jangan pakai markdown, tabel, bullet, huruf tebal, atau blok kode. Teks polos saja.
+7. Posisi jawaban benar harus acak di antara A, B, C, D. Pengecoh harus masuk akal dan panjangnya mirip
+   jawaban benar. Jangan pakai pilihan "Semua benar" atau "Semua salah".
+8. Soal hanya boleh berasal dari materi. Campur tingkat kesulitan: 30% mudah, 50% sedang, 20% sulit.
+9. Tulis dalam bahasa yang sama dengan materi.
+
+CONTOH KELUARAN:
+1. Apa tujuan utama normalisasi pada basis data relasional?
+A. Mempercepat koneksi jaringan
+B. Mengurangi redundansi data *
+C. Menambah jumlah tabel sebanyak mungkin
+D. Mengganti kunci primer
+Penjelasan: Normalisasi menyusun tabel agar data tidak berulang (hal. 12).
+
+2. Kunci asing berfungsi untuk ...
+A. Menghubungkan tabel dengan kunci primer tabel lain *
+B. Menghapus baris secara otomatis
+C. Mengenkripsi data
+D. Mengurutkan kolom
+Penjelasan: Kunci asing merujuk kunci primer tabel lain untuk menjaga integritas (hal. 14).
+
+MATERI:
+[TEMPEL MATERI DI SINI]`;
 shape(); syncInit();
 
 /* ---------- Mulai ---------- */
